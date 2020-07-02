@@ -1,5 +1,7 @@
 # RRulesParser
 
+![Python package](https://github.com/brsynth/RRulesParser2/workflows/Python%20package/badge.svg) ![Upload Python Package](https://github.com/brsynth/RRulesParser2/workflows/Upload%20Python%20Package/badge.svg)
+
 Parser for reaction rules. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org/).
 
 ## Input
