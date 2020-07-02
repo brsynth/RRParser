@@ -13,7 +13,7 @@ with open("rr_parser/requirements.txt", 'r') as f:
 
 setup(
     name="rr_parser",
-    version="1.0.2",
+    version="1.0.3",
     author="Thomas Duigou, Melchior du Lac, Joan Hérisson",
     author_email="joan.herisson@univ-evry.fr",
     description="RRulesParser",
