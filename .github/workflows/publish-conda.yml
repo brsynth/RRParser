@@ -30,5 +30,4 @@ jobs:
       run: |
         conda skeleton pypi ${PACKAGE}
         conda config --set anaconda_upload yes
-        conda build ${PACKAGE}
-        anaconda upload /opt/conda/conda-bld/linux-64/${PACKAGE}*"
+        conda build ${PACKAGE}"
