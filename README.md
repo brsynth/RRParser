@@ -14,7 +14,7 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 
 ## Ouput
 
-* **output**: (string): Path of the output file. Either a compressed TAR (containing a CSV) or CSV list of reaction rules that are in a RetroPath2.0 friendly format
+* **output**: (string): Path of the output file. Either a compressed tar.gz (containing a csv) or csv list of reaction rules that are in a RetroPath2.0 friendly format
 
 
 ## Install
