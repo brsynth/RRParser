@@ -4,7 +4,7 @@ out
 src/data/*
 
 # Generic
-__pycache__
+#__pycache__
 .DS_Store
 .pypirc
 .pytest_cache
