@@ -34,7 +34,7 @@ class Test_RR(TestCase):
         self.RRulesParser = RRulesParser()
 
     def test_my_function(benchmark):
-        result = benchmark(test)
+        result = benchmark(self.test_RetroRules__BadRuleTypeArgument)
 
     # 'test_' prefix is mandatory
     def test_RetroRules__BadRuleTypeArgument(self):
