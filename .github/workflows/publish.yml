@@ -9,19 +9,15 @@ on:
 
 jobs:
 
-  deploy:
+  pypi:
     runs-on: ubuntu-latest
+    container: docker://continuumio/miniconda3
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-
-  pypi:
-    runs-on: ubuntu-latest
-    container: docker://continuumio/miniconda3
-    steps:
     - name: Install dependencies
       run: |
         pip install setuptools wheel twine
