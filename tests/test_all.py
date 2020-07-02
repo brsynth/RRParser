@@ -10,7 +10,7 @@ from unittest import TestCase
 # Specific for tool
 from sys import path as sys_path
 from os import path as os_path
-from RRulesParser import RRulesParser
+from rrparser import Parser
 
 # Specific for tests themselves
 from os import stat
@@ -31,7 +31,7 @@ class Test_RR(TestCase):
 
     def setUp(self):
         self.diameters = ['2', '4', '6', '8', '10', '12', '14', '16']
-        self.RRulesParser = RRulesParser()
+        self.rr_parser = Parser()
 
     # 'test_' prefix is mandatory
     def test_RetroRules__BadRuleTypeArgument(self):
@@ -39,7 +39,7 @@ class Test_RR(TestCase):
             with self.subTest(rule_type=rule_type):
                 tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
                 self.assertRaises(ValueError,
-                                  self.RRulesParser.parse_rules,
+                                  self.rr_parser.parse_rules,
                                             outdir=tempdir.name,
                                             rule_type=rule_type,
                                             diameters='2')
@@ -50,7 +50,7 @@ class Test_RR(TestCase):
             with self.subTest(rule_type=rule_type):
                 tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
                 self.assertRaises(ValueError,
-                                  self.RRulesParser.parse_rules,
+                                  self.rr_parser.parse_rules,
                                             outdir=tempdir.name,
                                             rule_type=rule_type,
                                             diameters='2')
@@ -60,7 +60,7 @@ class Test_RR(TestCase):
         for diam in ['3']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_retro_'+diam)
-                outfile = self.RRulesParser.parse_rules(outdir=tempdir.name,
+                outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                      rule_type='retro',
                                                      diameters=diam)
                 self.assertEqual(stat(outfile).st_size, 135)
@@ -70,7 +70,7 @@ class Test_RR(TestCase):
         for diam in ['2']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_retro_'+diam)
-                outfile = self.RRulesParser.parse_rules(outdir=tempdir.name,
+                outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                      rule_type='retro',
                                                      diameters=diam)
                 self.assertEqual(
@@ -83,7 +83,7 @@ class Test_RR(TestCase):
         for diam in ['2-']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_retro_'+diam)
-                outfile = self.RRulesParser.parse_rules(outdir=tempdir.name,
+                outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                      rule_type='retro',
                                                      diameters=diam)
                 self.assertEqual(stat(outfile).st_size, 135)
@@ -98,7 +98,7 @@ class Test_RR(TestCase):
                 for diam in sub_diams:
                     with self.subTest(rule_type=rule_type, diam=diam):
                         tempdir = TemporaryDirectory(suffix='_'+rule_type+'_'+'-'.join(diam))
-                        outfile = self.RRulesParser.parse_rules(outdir=tempdir.name,
+                        outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                              rule_type=rule_type,
                                                              diameters=','.join(diam))
                         self.assertGreater(stat(outfile).st_size, 135)

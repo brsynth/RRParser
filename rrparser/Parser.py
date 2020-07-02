@@ -22,7 +22,7 @@ def build_args_parser():
     return parser
 
 
-class RRulesParser:
+class Parser:
 
     def __init__(self):
         self._retrorules_url = \

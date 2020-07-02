@@ -1,7 +1,7 @@
 from os import path, mkdir
 from logging import error as logging_error
 
-from RRulesParser import RRulesParser, build_args_parser
+from rrparser import Parser, build_args_parser
 
 
 def _cli():
@@ -17,11 +17,11 @@ def _cli():
         parser.error("at most one of --rules_file or --rule_type required")
 
     try:
-        return RRulesParser().parse_rules(outdir=params.output_folder,
-                                          rules_file=params.rules_file,
-                                          rule_type=params.rule_type,
-                                          diameters=params.diameters,
-                                          output_format=params.output_format)
+        return Parser().parse_rules(outdir=params.output_folder,
+                                    rules_file=params.rules_file,
+                                    rule_type=params.rule_type,
+                                    diameters=params.diameters,
+                                    output_format=params.output_format)
     except ValueError as e:
         logging_error(str(e))
 

@@ -9,9 +9,9 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/test.yml'
-      - 'RRulesParser/**.py'
-      - '!RRulesParser/__init__.py'
-      - '!RRulesParser/main.py'
+      - 'rrparser/**.py'
+      - '!rrparser/__init__.py'
+      - '!rrparser/main.py'
       - 'tests/**.py'
   pull_request:
     branches: [ master ]

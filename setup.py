@@ -9,16 +9,16 @@ required=[
 ]
 
 setup(
-    name="RRulesParser",
+    name="rrparser",
     version="1.0.0",
     author="Thomas Duigou, Melchior du Lac, Joan Hérisson",
     author_email="joan.herisson@univ-evry.fr",
     description="Reaction Rules Parser",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/brsynth/RetroRules",
-    packages=['RRulesParser'],
-    package_dir={'RRulesParser': 'RRulesParser'},
+    url="https://github.com/brsynth/RRulesParser",
+    packages=['rrparser'],
+    package_dir={'rrparser': 'rrparser'},
     install_requires=required,
     include_package_data=True,
     test_suite='discover_tests',
