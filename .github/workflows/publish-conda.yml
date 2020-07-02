@@ -28,6 +28,7 @@ jobs:
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
         PACKAGE: rr_parser
       run: |
-        conda skeleton pypi ${PACKAGE} --version ${VERSION}
+        conda skeleton pypi ${PACKAGE}
+        conda config --set anaconda_upload yes
         conda build ${PACKAGE}
-        anaconda --token `cat /run/secrets/token` upload /opt/conda/conda-bld/linux-64/${PACKAGE}*"
+        anaconda upload /opt/conda/conda-bld/linux-64/${PACKAGE}*"
