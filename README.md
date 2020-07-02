@@ -25,6 +25,33 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 [sudo] conda install -c brsynth rrparser
 ```
 
+## Use
+
+### Function call from Python code
+```python
+from rrparser import Parser
+
+outfile = Parser().parse_rules(rule_type, out_folder, diameters)
+```
+
+If parameters from CLI have to be parsed, the function `build_args_parser` is available:
+```python
+from rrparser import build_args_parser
+
+parser = buildparser()
+params = parser.parse_args()
+```
+
+### Run from CLI
+```sh
+python -m rrparser.main \
+  [--rules_file <filename>] \
+  [--rule_type {all,retro,forward}] \
+  --output <folder> \
+  [--diameters {2,4,6,8,10,12,14,16}] \
+  --output_format {csv,tar.gz}
+```
+
 
 ## Authors
 
