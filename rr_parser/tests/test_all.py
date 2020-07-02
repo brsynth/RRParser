@@ -98,8 +98,7 @@ class Test_RR(TestCase):
                 sub_diams = sample(diams, 1)
                 for diam in sub_diams:
                     with self.subTest(rule_type=rule_type, diam=diam):
-                        tempdir = TemporaryDirectory(suffix=os_path.join(
-                                        '_', rule_type, '_', '-').join(diam))
+                        tempdir = TemporaryDirectory(suffix='_'+rule_type+'_'+'-'.join(diam))
                         outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                              rule_type=rule_type,
                                                              diameters=','.join(diam))

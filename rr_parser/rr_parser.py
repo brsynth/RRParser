@@ -42,10 +42,8 @@ class RRulesParser:
             if self._rules_path == "":
                 self._rules_path = NamedTemporaryFile().name+'/rules'
             rules_file = os_path.join(self._rules_path,
-                                      '/retrorules_rr02_rp2_hs',
-                                      '/retrorules_rr02_rp2_flat_',
-                                      rule_type,
-                                      '.csv')
+                                      'retrorules_rr02_rp2_hs',
+                                      'retrorules_rr02_rp2_flat_'+rule_type+'.csv')
             if not os_path.exists(rules_file):
                 _download(self._retrorules_url, self._rules_path)
         elif not rules_file:
@@ -63,10 +61,8 @@ class RRulesParser:
         outfile = \
             _pkg_out(outfile_temp.name,
                      outdir,
-                     os_path.join(os_path.basename(
-                                        os_path.splitext(rules_file)[0]),
-                                  '_', '-').join(diameters_list),
-                     output_format)
+                     os_path.basename(os_path.splitext(rules_file)[0])+'_'+'-'.join(diameters_list),
+                                      output_format)
 
         return outdir+'/'+outfile
 
