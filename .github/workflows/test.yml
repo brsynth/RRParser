@@ -8,6 +8,7 @@ on:
   #   branches: [ master ]
   push:
     paths:
+      - '.github/workflows/test.yml'
       - 'RRulesParser/**.py'
       - '!RRulesParser/__init__.py'
       - '!RRulesParser/main.py'
