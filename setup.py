@@ -1,7 +1,3 @@
-import setuptools
-
-from glob import glob
-from os import remove, path
 from setuptools import setup
 
 
@@ -24,7 +20,7 @@ setup(
     package_dir={'rr_parser': 'rr_parser'},
     install_requires=required,
     include_package_data=True,
-    test_suite = 'discover_tests',
+    test_suite='discover_tests',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

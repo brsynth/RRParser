@@ -10,7 +10,6 @@ from unittest import TestCase
 # Specific for tool
 from sys import path as sys_path
 from os import path as os_path
-sys_path.insert(0, os_path.dirname(__file__)+'/..')
 from rr_parser import RRulesParser
 
 # Specific for tests themselves
@@ -22,6 +21,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
+sys_path.insert(0, os_path.dirname(__file__)+'/..')
+
+
 # Cette classe est un groupe de tests. Son nom DOIT commencer
 # par 'Test' et la classe DOIT hériter de unittest.TestCase.
 # 'Test_' prefix is mandatory
@@ -29,7 +31,7 @@ class Test_RR(TestCase):
 
     def __init__(self, testname):
         super(Test_RR, self).__init__(testname)
-        self.diameters = ['2','4','6','8','10','12','14','16']
+        self.diameters = ['2', '4', '6', '8', '10', '12', '14', '16']
         self.rr_parser = RRulesParser()
 
     # 'test_' prefix is mandatory
@@ -74,7 +76,7 @@ class Test_RR(TestCase):
                                                      diameters=diam)
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(),
-                    '68cca7d6b890676d62ef0d950db3ce9a1ca5f991e54d91932e551b4fb42ff709'
+            '68cca7d6b890676d62ef0d950db3ce9a1ca5f991e54d91932e551b4fb42ff709'
                                 )
                 tempdir.cleanup()
 
@@ -91,12 +93,13 @@ class Test_RR(TestCase):
     def test_RetroRules__AllTypes_RandomDiam(self):
         for rule_type in ['all', 'retro', 'forward']:
             for i in range(len(self.diameters)):
-                diams = list(combinations(self.diameters,i+1))
+                diams = list(combinations(self.diameters, i+1))
                 seed(2)
-                sub_diams = sample(diams,1)
+                sub_diams = sample(diams, 1)
                 for diam in sub_diams:
                     with self.subTest(rule_type=rule_type, diam=diam):
-                        tempdir = TemporaryDirectory(suffix='_'+rule_type+'_'+'-'.join(diam))
+                        tempdir = TemporaryDirectory(suffix=os_path.join(
+                                        '_', rule_type, '_', '-').join(diam))
                         outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                              rule_type=rule_type,
                                                              diameters=','.join(diam))
