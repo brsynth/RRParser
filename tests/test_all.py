@@ -33,9 +33,6 @@ class Test_RR(TestCase):
         self.diameters = ['2', '4', '6', '8', '10', '12', '14', '16']
         self.RRulesParser = RRulesParser()
 
-    def test_my_function(benchmark):
-        result = benchmark(self.test_RetroRules__BadRuleTypeArgument)
-
     # 'test_' prefix is mandatory
     def test_RetroRules__BadRuleTypeArgument(self):
         for rule_type in ['test', 'reto']:
