@@ -1,12 +1,2 @@
-# Release history
-
-## v1.0.9
-### Removed
-- requirements.txt
-
-## v1.0.3 -> v1.0.8
-### Test
-
-## v1.0.2
-### Added
-- Handle errors with exceptions
+Jul 02, 2020 - 1.0.0
+    - first version

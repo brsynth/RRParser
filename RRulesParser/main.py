@@ -1,7 +1,7 @@
 from os import path, mkdir
 from logging import error as logging_error
 
-from rr_parser import RRulesParser, build_args_parser
+from RRulesParser import RRulesParser, build_args_parser
 
 
 def _cli():

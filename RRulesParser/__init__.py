@@ -7,6 +7,6 @@ Created on June 23 2020
 """
 
 
-from .rr_parser import RRulesParser, build_args_parser
+from .RRulesParser import RRulesParser, build_args_parser
 
 __all__ = ["RRulesParser", "build_args_parser"]

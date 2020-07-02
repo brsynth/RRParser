@@ -2,7 +2,7 @@
 
 ![Test Python Package](https://github.com/brsynth/RRulesParser2/workflows/Test%20Python%20Package/badge.svg) ![Publish Python Package](https://github.com/brsynth/RRulesParser2/workflows/Publish%20Python%20Package/badge.svg)
 
-Parser for reaction rules. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org/).
+Reaction Rules Parser. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org/).
 
 ## Input
 
@@ -18,11 +18,11 @@ Parser for reaction rules. If no input reaction files is provided, retrieves the
 ## Install
 ### From pip
 ```sh
-[sudo] python -m pip install rr_parser
+[sudo] python -m pip install RRulesParser
 ```
 ### From Conda
 ```sh
-[sudo] conda install -c synbiocad rr_parser
+[sudo] conda install -c brsynth RRulesParser
 ```
 
 

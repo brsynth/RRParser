@@ -35,7 +35,7 @@ jobs:
     - name: Build and Publish
       env:
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
-        PACKAGE: rr_parser
+        PACKAGE: RRulesParser
       run: |
         conda skeleton pypi ${PACKAGE}
         conda config --set anaconda_upload yes

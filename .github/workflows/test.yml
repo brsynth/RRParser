@@ -8,9 +8,9 @@ on:
   #   branches: [ master ]
   push:
     paths:
-      - 'rr_parser/**.py'
-      - '!rr_parser/__init__.py'
-      - '!rr_parser/main.py'
+      - 'RRulesParser/**.py'
+      - '!RRulesParser/__init__.py'
+      - '!RRulesParser/main.py'
   pull_request:
     branches: [ master ]
 
