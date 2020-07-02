@@ -1,2 +1,1 @@
 include rr_parser/requirements.txt
-include changelog.txt
