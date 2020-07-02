@@ -28,6 +28,7 @@ jobs:
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
         PACKAGE: rr_parser
       run: |
+        sleep 60
         conda skeleton pypi ${PACKAGE}
         conda config --set anaconda_upload yes
         conda build --user brsynth --token ${CONDA_TOKEN} ${PACKAGE}
