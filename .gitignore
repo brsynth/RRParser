@@ -1,0 +1,13 @@
+# Specific
+rules
+out
+src/data/*
+
+# Generic
+__pycache__
+.DS_Store
+.pypirc
+.pytest_cache
+*.sec
+*.simg
+requirements/requirements.txt
