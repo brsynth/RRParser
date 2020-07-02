@@ -11,6 +11,7 @@ on:
       - 'RRulesParser/**.py'
       - '!RRulesParser/__init__.py'
       - '!RRulesParser/main.py'
+      - 'tests/**.py'
   pull_request:
     branches: [ master ]
 
