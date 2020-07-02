@@ -4,12 +4,16 @@ from setuptools import setup
 with open("README.md", 'r') as fh:
     long_description = fh.read()
 
-with open("rr_parser/requirements.txt", 'r') as f:
-    required = f.read().splitlines()
+# with open("rr_parser/requirements.txt", 'r') as f:
+#     required = f.read().splitlines()
+
+required=[
+   'requests==2.24.0'
+]
 
 setup(
     name="rr_parser",
-    version="1.0.8",
+    version="1.0.9",
     author="Thomas Duigou, Melchior du Lac, Joan Hérisson",
     author_email="joan.herisson@univ-evry.fr",
     description="RRulesParser",
