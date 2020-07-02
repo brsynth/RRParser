@@ -4,8 +4,13 @@
 name: Python package
 
 on:
+  # push:
+  #   branches: [ master ]
   push:
-    branches: [ master ]
+    paths:
+      - 'rr_parser/**.py'
+      - '!rr_parser/__init__.py'
+      - '!rr_parser/main.py'
   pull_request:
     branches: [ master ]
 
