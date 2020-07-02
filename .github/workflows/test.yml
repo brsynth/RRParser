@@ -10,7 +10,6 @@ on:
     paths:
       - '.github/workflows/test.yml'
       - 'rrparser/**.py'
-      - '!rrparser/__init__.py'
       - '!rrparser/main.py'
       - 'tests/**.py'
   pull_request:
