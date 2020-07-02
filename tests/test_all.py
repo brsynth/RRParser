@@ -29,10 +29,12 @@ sys_path.insert(0, os_path.dirname(__file__)+'/..')
 # 'Test_' prefix is mandatory
 class Test_RR(TestCase):
 
-    def __init__(self, testname):
-        super(Test_RR, self).__init__(testname)
+    def setUp(self):
         self.diameters = ['2', '4', '6', '8', '10', '12', '14', '16']
         self.RRulesParser = RRulesParser()
+
+    def test_my_function(benchmark):
+        result = benchmark(test)
 
     # 'test_' prefix is mandatory
     def test_RetroRules__BadRuleTypeArgument(self):
