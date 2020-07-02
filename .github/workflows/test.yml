@@ -4,8 +4,7 @@
 name: Test Python Package
 
 on:
-  # push:
-  #   branches: [ master ]
+
   push:
     paths:
       - '.github/workflows/test.yml'
