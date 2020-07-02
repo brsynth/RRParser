@@ -1,0 +1,36 @@
+# This workflows will upload a Python Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Upload Python Package
+
+on:
+  push:
+    branches: [ stable ]
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install packages
+      uses: docker://continuumio/miniconda3
+      run: |
+        conda install -y  \
+              anaconda-client \
+              conda-build     \
+              conda-verify    \
+        conda config --set anaconda_upload no
+    - name: Build and publish
+      env:
+        CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
+        PACKAGE: rr_parser
+      run: |
+        conda skeleton pypi ${PACKAGE} --version ${VERSION}
+        conda build ${PACKAGE}
+        anaconda --token `cat /run/secrets/token` upload /opt/conda/conda-bld/linux-64/${PACKAGE}*"
