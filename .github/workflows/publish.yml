@@ -1,26 +1,29 @@
 # This workflows will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
-name: Publish (PyPi) Python Package
+name: Publish Python Package
 
 on:
   push:
     branches: [ stable ]
 
 jobs:
+
   deploy:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+
+  pypi:
+    runs-on: ubuntu-latest
+    container: docker://continuumio/miniconda3
+    steps:
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install setuptools wheel twine
     - name: Build and publish
       env:
@@ -29,3 +32,16 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
+
+  conda:
+    runs-on: ubuntu-latest
+    container: docker://continuumio/anaconda3
+    steps:
+    - name: Build and Publish
+      env:
+        CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
+        PACKAGE: rr_parser
+      run: |
+        conda skeleton pypi ${PACKAGE}
+        conda config --set anaconda_upload yes
+        conda build --user brsynth --token ${CONDA_TOKEN} ${PACKAGE}
