@@ -8,13 +8,12 @@ Created on May 4 2020
 
 import csv
 from tarfile import open as tf_open
-from os import path, makedirs, remove
 from argparse import ArgumentParser as argparse_ArgumentParser
 from requests import get as r_get
-from tempfile import NamedTemporaryFile, mkdtemp
+from tempfile import NamedTemporaryFile
 from shutil import copyfile
-
-
+from os import path as os_path
+from os import makedirs
 
 
 def build_args_parser():
@@ -22,23 +21,36 @@ def build_args_parser():
     parser = _add_arguments(parser)
     return parser
 
+
 class RRulesParser:
 
     def __init__(self):
-        self._retrorules_url = 'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
+        self._retrorules_url = \
+            'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
         self._rules_path = ""
 
-    def parse_rules(self, outdir, rules_file='', rule_type='', diameters='2,4,6,8,10,12,14,16', output_format='csv'):
+    def parse_rules(self,
+                    outdir,
+                    rules_file='',
+                    rule_type='',
+                    diameters='2,4,6,8,10,12,14,16',
+                    output_format='csv'):
 
         if rule_type:
-            if not rule_type in ['all', 'retro', 'forward']:
+            if rule_type not in ['all', 'retro', 'forward']:
                 raise ValueError('Cannot detect input: '+str(rule_type))
-            if self._rules_path=="":
+            if self._rules_path == "":
                 self._rules_path = NamedTemporaryFile().name+'/rules'
-            rules_file = self._rules_path+'/retrorules_rr02_rp2_hs'+'/retrorules_rr02_rp2_flat_'+rule_type+'.csv'
-            if not path.exists(rules_file):
+            rules_file = os_path.join(self._rules_path,
+                                      '/retrorules_rr02_rp2_hs',
+                                      '/retrorules_rr02_rp2_flat_',
+                                      rule_type,
+                                      '.csv')
+            if not os_path.exists(rules_file):
                 _download(self._retrorules_url, self._rules_path)
-        elif not rules_file: raise ValueError("at least one of --rules_file or --rule_type required")
+        elif not rules_file:
+            raise ValueError(
+                    "at least one of --rules_file or --rule_type required")
 
         diameters_list = diameters.split(',')
 
@@ -51,16 +63,17 @@ class RRulesParser:
         outfile = \
             _pkg_out(outfile_temp.name,
                      outdir,
-                     path.basename(path.splitext(rules_file)[0])+'_'+'-'.join(diameters_list),
+                     os_path.join(os_path.basename(
+                                        os_path.splitext(rules_file)[0]),
+                                  '_', '-').join(diameters_list),
                      output_format)
 
         return outdir+'/'+outfile
 
 
-
 def _pkg_out(file_res_name, outdir, outfile_name, output_format):
     makedirs(outdir, exist_ok=True)
-    if output_format.lower()=='tar.gz':
+    if output_format.lower() == 'tar.gz':
         with tf_open(outdir+'/'+outfile_name+'.tar.gz', mode='w:gz') as tf:
             tf.add(file_res_name, outfile_name+'.csv')
         outfile_name += '.tar.gz'
@@ -68,7 +81,6 @@ def _pkg_out(file_res_name, outdir, outfile_name, output_format):
         outfile_name += '.csv'
         copyfile(file_res_name, outdir+'/'+outfile_name)
     return outfile_name
-
 
 
 def _parse_and_write(infile, diameters, outfile_temp):
@@ -82,7 +94,9 @@ def _parse_and_write(infile, diameters, outfile_temp):
                     if row[4] in diameters:
                         o_csv.writerow(row)
                 except ValueError:
-                    raise ValueError('Cannot convert diameter to integer: '+str(row[4]))
+                    raise ValueError(
+                        'Cannot convert diameter to integer: '+str(row[4]))
+
 
 def _download(url, path):
     makedirs(path, exist_ok=True)
@@ -94,28 +108,26 @@ def _download(url, path):
         tar.close()
 
 
-
-
 def _add_arguments(parser):
     parser.add_argument('-rf', '--rules_file',
-                            type=str,
-                            help="rules file to parse")
+                        type=str,
+                        help="rules file to parse")
     parser.add_argument('-rt', '--rule_type',
-                            type=str,
-                            choices=['all', 'retro', 'forward'],
-                            help="rules file to parse")
+                        type=str,
+                        choices=['all', 'retro', 'forward'],
+                        help="rules file to parse")
     parser.add_argument('output_folder',
-                            type=str,
-                            default='./out',
-                            help="folder where result file is written")
+                        type=str,
+                        default='./out',
+                        help="folder where result file is written")
     parser.add_argument('-d', '--diameters',
-                            type=str,
-                            default='2,4,6,8,10,12,14,16',
-                            help='diameter of the sphere including the atoms around the reacting center (default is including all values: 2,4,6,8,10,12,14,16). The higher is the diameter, the more specific are the rules')
+                        type=str,
+                        default='2,4,6,8,10,12,14,16',
+                        help='diameter of the sphere including the atoms around the reacting center (default is including all values: 2,4,6,8,10,12,14,16). The higher is the diameter, the more specific are the rules')
     parser.add_argument('-of', '--output_format',
-                            type=str,
-                            choices=['csv', 'tar.gz'],
-                            default='csv',
-                            help='output file format (default: csv)')
+                        type=str,
+                        choices=['csv', 'tar.gz'],
+                        default='csv',
+                        help='output file format (default: csv)')
 
     return parser
