@@ -2,7 +2,6 @@
 Created on May 4 2020
 
 @author: Melchior du Lac, Joan Hérisson
-@description: Return RetroRules
 
 """
 

@@ -2,7 +2,6 @@
 Created on June 23 2020
 
 @author: Joan Hérisson
-@description: Return RetroRules
 
 """
 

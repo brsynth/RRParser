@@ -34,7 +34,7 @@ class Test_RR(TestCase):
         self.rr_parser = Parser()
 
     # 'test_' prefix is mandatory
-    def test_RetroRules__BadRuleTypeArgument(self):
+    def test_BadRuleTypeArgument(self):
         for rule_type in ['test', 'reto']:
             with self.subTest(rule_type=rule_type):
                 tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
@@ -45,7 +45,7 @@ class Test_RR(TestCase):
                                             diameters='2')
                 tempdir.cleanup()
 
-    def test_RetroRules__EmptyRuleTypeArgument(self):
+    def test_EmptyRuleTypeArgument(self):
         for rule_type in ['']:
             with self.subTest(rule_type=rule_type):
                 tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
@@ -56,7 +56,7 @@ class Test_RR(TestCase):
                                             diameters='2')
                 tempdir.cleanup()
 
-    def test_RetroRules__BadDiametersArgument(self):
+    def test_BadDiametersArgument(self):
         for diam in ['3']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_retro_'+diam)
@@ -66,7 +66,7 @@ class Test_RR(TestCase):
                 self.assertEqual(stat(outfile).st_size, 135)
                 tempdir.cleanup()
 
-    def test_RetroRules__OneDiameter(self):
+    def test_OneDiameter(self):
         for diam in ['2']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_retro_'+diam)
@@ -79,7 +79,7 @@ class Test_RR(TestCase):
                                 )
                 tempdir.cleanup()
 
-    def test_RetroRules__MiscDiametersArgument(self):
+    def test_MiscDiametersArgument(self):
         for diam in ['2-']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_retro_'+diam)
@@ -89,7 +89,7 @@ class Test_RR(TestCase):
                 self.assertEqual(stat(outfile).st_size, 135)
                 tempdir.cleanup()
 
-    def test_RetroRules__AllTypes_RandomDiam(self):
+    def test_AllTypes_RandomDiam(self):
         for rule_type in ['all', 'retro', 'forward']:
             for i in range(len(self.diameters)):
                 diams = list(combinations(self.diameters, i+1))
