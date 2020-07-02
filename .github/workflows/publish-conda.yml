@@ -30,4 +30,4 @@ jobs:
       run: |
         conda skeleton pypi ${PACKAGE}
         conda config --set anaconda_upload yes
-        conda build -c brsynth --token ${CONDA_TOKEN} ${PACKAGE}
+        conda build --user brsynth --token ${CONDA_TOKEN} ${PACKAGE}
