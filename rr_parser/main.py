@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-
-# Converted all tabs to spaces
-
-
 from os import path, mkdir
 from logging import error as logging_error
 
