@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     container: docker://continuumio/anaconda3
     steps:
-    - name: Build and publish
+    - name: Build and Publish
       env:
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
         PACKAGE: rr_parser
