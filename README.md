@@ -6,6 +6,7 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 
 ## Input
 
+* **rules_file**: (string) Specify the filename of reaction rules
 * **rule_type**: (string) Valid options: retro, forward, all. Return the rules that are in reverse, forward or both direction
 * **out_folder**: (string) Specify the path where output files will be written
 * **diameters**: (integer list): Valid options: 2, 4, 6, 8, 10, 12, 14, 16. The diameter of the rules to return
