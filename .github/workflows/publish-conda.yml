@@ -29,5 +29,4 @@ jobs:
         PACKAGE: rr_parser
       run: |
         conda skeleton pypi ${PACKAGE}
-        conda config --set anaconda_upload yes
-        conda build --token ${CONDA_TOKEN} ${PACKAGE}"
+        conda config --set anaconda_upload yes"
