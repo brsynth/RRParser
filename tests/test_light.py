@@ -40,16 +40,3 @@ class Test_RR(TestCase):
             'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
                                 )
                 tempdir.cleanup()
-
-    def test_Precedence(self):
-        diam = '2'
-        tempdir = TemporaryDirectory(suffix='_'+diam)
-        outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
-                                             rules_file='tests/data/rules.csv',
-                                             rule_type='retro',
-                                             diameters=diam)
-        self.assertEqual(
-            sha256(Path(outfile).read_bytes()).hexdigest(),
-            'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
-                        )
-        tempdir.cleanup()

@@ -34,16 +34,31 @@ class Test_RR(TestCase):
         self.rr_parser = Parser()
 
     # 'test_' prefix is mandatory
-    # def test_Precedence(self):
-    #     for rule_type in ['test', 'reto']:
-    #         with self.subTest(rule_type=rule_type):
-    #             tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
-    #             self.assertRaises(ValueError,
-    #                               self.rr_parser.parse_rules,
-    #                                         outdir=tempdir.name,
-    #                                         rule_type=rule_type,
-    #                                         diameters='2')
-    #             tempdir.cleanup()
+    def test_Precedence(self):
+        diam = '2'
+        tempdir = TemporaryDirectory(suffix='_'+diam)
+        outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
+                                             rules_file='tests/data/rules.csv',
+                                             rule_type='retro',
+                                             diameters=diam)
+        self.assertEqual(
+            sha256(Path(outfile).read_bytes()).hexdigest(),
+            'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
+                        )
+        tempdir.cleanup()
+
+    def test_SmallRulesFile_OneDiameter(self):
+        for diam in ['2']:
+            with self.subTest(diam=diam):
+                tempdir = TemporaryDirectory(suffix='_'+diam)
+                outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
+                                                     rules_file='tests/data/rules.csv',
+                                                     diameters=diam)
+                self.assertEqual(
+                    sha256(Path(outfile).read_bytes()).hexdigest(),
+            'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
+                                )
+                tempdir.cleanup()
 
     def test_BadRuleTypeArgument(self):
         for rule_type in ['test', 'reto']:
