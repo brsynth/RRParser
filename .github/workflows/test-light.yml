@@ -50,7 +50,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest --verbose tests/test_light.py
+        pytest --verbose tests/src/test_light.py
 
     - name: Test CLI call
       run: |
