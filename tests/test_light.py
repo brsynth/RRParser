@@ -8,16 +8,9 @@ Created on June 17 2020
 from unittest import TestCase
 
 # Specific for tool
-from sys import path as sys_path
-from os import path as os_path
 from rrparser import Parser
 
 # Specific for tests themselves
-from os import stat
-from itertools import combinations
-from random import sample, seed
-from hashlib import sha256
-from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
