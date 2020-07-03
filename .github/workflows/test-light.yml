@@ -11,9 +11,8 @@ on:
       - '!master'
       - '!stable'
     paths:
-      - 'rrparser/**.py'
-      - '!rrparser/main.py'
-      - 'tests/**.py'
+      - 'rrparser'
+      - 'tests/src/**'
   pull_request:
     branches: [ master ]
 
@@ -52,4 +51,8 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest --verbose tests/test_light.py
+        pytest --verbose tests/src/test_light.py
+
+    - name: Test CLI call
+      run: |
+        python rrparser/main.py --rules_file tests/data/rules.csv ./out --diameters 2

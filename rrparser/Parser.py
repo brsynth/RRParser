@@ -7,7 +7,7 @@ Created on May 4 2020
 
 import csv
 from tarfile import open as tf_open
-from argparse import ArgumentParser as argparse_ArgumentParser
+from argparse import ArgumentParser
 from requests import get as r_get
 from tempfile import NamedTemporaryFile
 from shutil import copyfile
@@ -16,7 +16,7 @@ from os import makedirs
 
 
 def build_args_parser():
-    parser = argparse_ArgumentParser('Python wrapper to fetch RetroRules')
+    parser = ArgumentParser('Python wrapper to fetch RetroRules')
     parser = _add_arguments(parser)
     return parser
 
@@ -62,7 +62,7 @@ class Parser:
         outfile = \
             _pkg_out(outfile_temp.name,
                      outdir,
-                     os_path.basename(os_path.splitext(rules_file)[0])+'_'+'-'.join(diameters_list),
+                     os_path.basename(os_path.splitext(rules_file)[0])+'_d'+'-'.join(diameters_list),
                                       output_format)
 
         return outdir+'/'+outfile

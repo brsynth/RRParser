@@ -1,7 +1,4 @@
 # Specific
-#rules
-#out
-#src/data/*
 
 # Generic
 __pycache__
