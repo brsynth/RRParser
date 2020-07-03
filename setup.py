@@ -10,7 +10,7 @@ required=[
 
 setup(
     name="rrparser",
-    version="1.0.0",
+    version="1.0.1",
     author="Thomas Duigou, Melchior du Lac, Joan Hérisson",
     author_email="joan.herisson@univ-evry.fr",
     description="Reaction Rules Parser",
