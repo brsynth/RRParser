@@ -42,7 +42,7 @@ class Test_RR(TestCase):
                 tempdir.cleanup()
 
     def test_Precedence(self):
-        diam = ['2']
+        diam = '2'
         tempdir = TemporaryDirectory(suffix='_'+diam)
         outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                              rules_file='tests/data/rules.csv',
