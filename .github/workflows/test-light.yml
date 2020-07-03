@@ -9,7 +9,6 @@ on:
     branches:
       - '**'
     paths:
-      - '.github/workflows/test-light.yml'
       - 'rrparser/**.py'
       - '!rrparser/main.py'
       - 'tests/**.py'
