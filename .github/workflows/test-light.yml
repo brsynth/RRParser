@@ -51,3 +51,7 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --verbose tests/test_light.py
+
+    - name: Test CLI call
+      run: |
+        python rrparser/main.py --rules_file tests/data/rules.csv --output ./out --diameters 2
