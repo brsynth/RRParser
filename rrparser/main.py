@@ -8,9 +8,6 @@ def _cli():
     parser = build_args_parser()
     params = parser.parse_args()
 
-    if not path.exists(params.output_folder):
-        mkdir(params.output_folder)
-
     try:
         return Parser().parse_rules(outdir=params.output_folder,
                                     rules_file=params.rules_file,
