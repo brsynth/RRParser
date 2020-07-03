@@ -12,6 +12,7 @@ from rrparser import Parser
 
 # Specific for tests themselves
 from hashlib import sha256
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
