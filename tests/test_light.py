@@ -52,7 +52,7 @@ class Test_RR(TestCase):
                 tempdir = TemporaryDirectory(suffix='_'+diam)
                 outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                      rules_file='tests/data/rules.csv',
-                                                     rule_type='retro'
+                                                     rule_type='retro',
                                                      diameters=diam)
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(),
