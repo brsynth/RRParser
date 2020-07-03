@@ -11,6 +11,7 @@ from unittest import TestCase
 from rrparser import Parser
 
 # Specific for tests themselves
+from hashlib import sha256
 from tempfile import TemporaryDirectory
 
 
