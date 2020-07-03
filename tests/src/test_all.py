@@ -21,8 +21,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
-sys_path.insert(0, os_path.dirname(__file__)+'/rrparser')
-
 
 # Cette classe est un groupe de tests. Son nom DOIT commencer
 # par 'Test' et la classe DOIT hériter de unittest.TestCase.
