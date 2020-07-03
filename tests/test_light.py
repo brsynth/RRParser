@@ -38,7 +38,7 @@ class Test_RR(TestCase):
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_'+diam)
                 outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
-                                                     rules_file='data/rules.csv',
+                                                     rules_file='tests/data/rules.csv',
                                                      diameters=diam)
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(),
