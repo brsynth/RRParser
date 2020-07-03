@@ -17,6 +17,7 @@ from tempfile import TemporaryDirectory
 
 
 
+
 # Cette classe est un groupe de tests. Son nom DOIT commencer
 # par 'Test' et la classe DOIT hériter de unittest.TestCase.
 # 'Test_' prefix is mandatory
