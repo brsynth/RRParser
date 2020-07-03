@@ -62,7 +62,7 @@ class Parser:
         outfile = \
             _pkg_out(outfile_temp.name,
                      outdir,
-                     os_path.basename(os_path.splitext(rules_file)[0])+'_'+'-'.join(diameters_list),
+                     os_path.basename(os_path.splitext(rules_file)[0])+'_d'+'-'.join(diameters_list),
                                       output_format)
 
         return outdir+'/'+outfile
