@@ -10,7 +10,7 @@ on:
       - '**'
     paths:
       - 'rrparser'
-      - 'tests'
+      - 'tests/src/**'
   pull_request:
     branches: [ master ]
 
