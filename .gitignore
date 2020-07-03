@@ -7,4 +7,5 @@
 __pycache__
 .DS_Store
 .pypirc
+pytest
 .pytest_cache

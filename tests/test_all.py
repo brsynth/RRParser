@@ -34,6 +34,17 @@ class Test_RR(TestCase):
         self.rr_parser = Parser()
 
     # 'test_' prefix is mandatory
+    # def test_Precedence(self):
+    #     for rule_type in ['test', 'reto']:
+    #         with self.subTest(rule_type=rule_type):
+    #             tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
+    #             self.assertRaises(ValueError,
+    #                               self.rr_parser.parse_rules,
+    #                                         outdir=tempdir.name,
+    #                                         rule_type=rule_type,
+    #                                         diameters='2')
+    #             tempdir.cleanup()
+
     def test_BadRuleTypeArgument(self):
         for rule_type in ['test', 'reto']:
             with self.subTest(rule_type=rule_type):

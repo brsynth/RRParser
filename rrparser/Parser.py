@@ -35,19 +35,21 @@ class Parser:
                     diameters='2,4,6,8,10,12,14,16',
                     output_format='csv'):
 
-        if rule_type:
-            if rule_type not in ['all', 'retro', 'forward']:
-                raise ValueError('Cannot detect input: '+str(rule_type))
-            if self._rules_path == "":
-                self._rules_path = NamedTemporaryFile().name+'/rules'
-            rules_file = os_path.join(self._rules_path,
-                                      'retrorules_rr02_rp2_hs',
-                                      'retrorules_rr02_rp2_flat_'+rule_type+'.csv')
-            if not os_path.exists(rules_file):
-                _download(self._retrorules_url, self._rules_path)
-        elif not rules_file:
-            raise ValueError(
-                    "at least one of --rules_file or --rule_type required")
+        # If rules_file is set, it takes precedence on rule_type
+        if not rules_file:
+            if rule_type:
+                if rule_type not in ['all', 'retro', 'forward']:
+                    raise ValueError('Cannot detect \'rule_type\' input: '+str(rule_type))
+                if self._rules_path == "":
+                    self._rules_path = NamedTemporaryFile().name+'/rules'
+                rules_file = os_path.join(self._rules_path,
+                                          'retrorules_rr02_rp2_hs',
+                                          'retrorules_rr02_rp2_flat_'+rule_type+'.csv')
+                if not os_path.exists(rules_file):
+                    _download(self._retrorules_url, self._rules_path)
+            else:
+                raise ValueError(
+                        "at least one of --rules_file or --rule_type required")
 
         diameters_list = diameters.split(',')
 

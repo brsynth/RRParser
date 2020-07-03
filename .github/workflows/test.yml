@@ -6,7 +6,8 @@ name: Test
 on:
 
   push:
-    branches: [ master ]
+    branches:
+      - '**'
     paths:
       - '.github/workflows/test.yml'
       - 'rrparser/**.py'
