@@ -1,4 +1,7 @@
-1.1.0 - Jul 06, 2020
+1.1.2 - Jul 06, 2020
+    - relocate doc files (REAMDE.md, RELEASE, LICENSE)
+
+1.1.1 - Jul 06, 2020
     - put README.md and RELEASE in package
 
 1.0.9 - Jul 06, 2020
