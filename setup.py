@@ -8,7 +8,7 @@ required=[
 ]
 
 extra_files={
-    'release': ['release/RELEASE.md']
+    'release': ['RELEASE.md']
 }
 
 with open(extra_files['release'][0], 'r') as f:
