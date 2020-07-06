@@ -51,7 +51,7 @@ params = parser.parse_args()
 
 ### Run from CLI
 ```sh
-rrparser \
+python -m rrparser \
   [--rules-file <filename>] \
   [--rule-type {all,retro,forward}] \
   [--outdir <folder>] \
