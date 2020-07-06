@@ -11,6 +11,10 @@ required=[
 with open('RELEASE.md', 'r') as f:
     _version = f.readline().split()[0]
 
+additional_files=[
+    ('release', ['RELEASE.md'])
+]
+
 setup(
     name="rrparser",
     version=_version,
@@ -26,7 +30,7 @@ setup(
     include_package_data=True,
     test_suite='discover_tests',
     scripts=['bin/rrparser'],
-    data_files=[('release', ['RELEASE.md'])],
+    data_files=additional_files,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
