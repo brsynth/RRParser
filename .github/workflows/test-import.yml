@@ -33,7 +33,7 @@ jobs:
 
     - name: Import module from test.pypi.org
       run: |
-        pip install git+https://github.com/brsynth/rrparser
+        pip install git+https://github.com/brsynth/RRulesParser
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         # virtual env (needed for importing custom module)
         pip install -e .
