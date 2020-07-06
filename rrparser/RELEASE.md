@@ -1,3 +1,6 @@
+1.0.8 - Jul 06, 2020
+    - move (again) RELEASE.md location
+
 1.0.7 - Jul 06, 2020
     - move RELEASE.md location
 

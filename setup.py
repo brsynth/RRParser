@@ -1,14 +1,20 @@
 from setuptools import setup
 
-with open("README.md", 'r') as fh:
-    long_description = fh.read()
+with open(".env", 'r') as f:
+    for line in f:
+        if line.startswith('PACKAGE'):
+            _package = line.splitlines()[0].split('=')[1]
+            break
+
+with open("README.md", 'r') as f:
+    long_description = f.read()
 
 required=[
    'requests==2.24.0'
 ]
 
 extra_files={
-    'release': ['RELEASE.md']
+    'release': [_package+'/RELEASE.md']
 }
 
 with open(extra_files['release'][0], 'r') as f:
@@ -16,7 +22,7 @@ with open(extra_files['release'][0], 'r') as f:
 
 
 setup(
-    name="rrparser",
+    name=_package,
     version=_version,
     author="Thomas Duigou, Melchior du Lac, Joan Hérisson",
     author_email="joan.herisson@univ-evry.fr",
@@ -24,8 +30,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/brsynth/RRulesParser",
-    packages=['rrparser'],
-    package_dir={'rrparser': 'rrparser'},
+    packages=[_package],
+    package_dir={_package: _package},
     install_requires=required,
     include_package_data=True,
     test_suite='discover_tests',
