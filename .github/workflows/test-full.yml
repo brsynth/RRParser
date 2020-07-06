@@ -16,7 +16,7 @@ on:
 
 jobs:
 
-  test import:
+  test-import:
 
     runs-on: ubuntu-latest
 
@@ -45,7 +45,7 @@ jobs:
         rrparser --rules-file tests/data/rules.csv --outdir ./out --diameters 2
 
 
-  test features:
+  test-features:
 
     runs-on: ubuntu-latest
 
