@@ -42,7 +42,7 @@ jobs:
 
     - name: Test CLI call
       run: |
-        rrparser --rules-file tests/data/rules.csv --outdir ./out --diameters 2
+        rrparser --version
 
 
   test-features:
