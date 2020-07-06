@@ -29,7 +29,6 @@ setup(
     install_requires=required,
     include_package_data=True,
     test_suite='discover_tests',
-    scripts=['bin/rrparser'],
     data_files=[(k, v) for k, v in extra_files.items()],
     classifiers=[
         "Programming Language :: Python :: 3",
