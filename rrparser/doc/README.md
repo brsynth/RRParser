@@ -1,4 +1,4 @@
-# RRParser
+# RRulesParser
 
 ![Test](https://github.com/brsynth/RRulesParser/workflows/Test/badge.svg) ![Publish](https://github.com/brsynth/RRulesParser/workflows/Publish/badge.svg)
 
