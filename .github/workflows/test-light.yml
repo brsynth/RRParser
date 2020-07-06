@@ -55,4 +55,4 @@ jobs:
 
     - name: Test CLI call
       run: |
-        python rrparser/main.py --rules_file tests/data/rules.csv ./out --diameters 2
+        rrparser --rules-file tests/data/rules.csv --outdir ./out --diameters 2

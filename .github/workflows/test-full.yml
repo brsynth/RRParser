@@ -9,7 +9,7 @@ on:
     branches: [ master ]
     paths:
       - 'rrparser/**.py'
-      - '!rrparser/main.py'
+      - 'bin/**'
       - 'tests/**.py'
   pull_request:
     branches: [ master ]
