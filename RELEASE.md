@@ -1,3 +1,6 @@
+1.0.5 - Jul 06, 2020
+    - fix 1.0.4 exec bug
+
 1.0.4 - Jul 06, 2020
     - import version from RELEASE.md
     - create bin folder
