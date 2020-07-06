@@ -1,3 +1,6 @@
+1.0.9 - Jul 06, 2020
+    - remove version
+
 1.0.8 - Jul 06, 2020
     - move (again) RELEASE.md location
 

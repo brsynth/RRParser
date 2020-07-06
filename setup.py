@@ -1,20 +1,16 @@
 from setuptools import setup
 
-with open(".env", 'r') as f:
-    for line in f:
-        if line.startswith('PACKAGE'):
-            _package = line.splitlines()[0].split('=')[1]
-            break
-
 with open("README.md", 'r') as f:
-    long_description = f.read()
+    line = f.readline()
+    long_description = line+f.read()
+    _package = line.splitlines()[0].split()[1].lower()
 
 required=[
    'requests==2.24.0'
 ]
 
 extra_files={
-    'release': [_package+'/RELEASE.md']
+    'release': ['RELEASE.md']
 }
 
 with open(extra_files['release'][0], 'r') as f:

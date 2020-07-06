@@ -42,7 +42,7 @@ jobs:
 
     - name: Test CLI call
       run: |
-        python -m rrparser --version
+        python -m rrparser --help
 
 
   test-features:
