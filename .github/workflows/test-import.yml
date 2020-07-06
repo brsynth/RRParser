@@ -1,0 +1,59 @@
+# This workflows will upload a Python Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Test (import)
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'RELEASE.md'
+
+jobs:
+
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        pip install setuptools wheel twine
+    - name: Build and publish
+      env:
+        TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
+      run: |
+        python setup.py sdist bdist_wheel
+        twine upload --repository-url testpypi dist/*
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Immort module from test.pypi.org
+      run: |
+        pip install --index-url https://test.pypi.org/simple/ rrparser
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        # virtual env (needed for importing custom module)
+        pip install -e .
+
+    - name: Test CLI call
+      run: |
+        rrparser --rules-file tests/data/rules.csv --outdir ./out --diameters 2
