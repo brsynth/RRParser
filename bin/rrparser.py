@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from os import path, mkdir
 from logging import error as logging_error
 
