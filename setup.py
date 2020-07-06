@@ -9,7 +9,7 @@ with open(_readme, 'r') as f:
     _package = line.splitlines()[0].split()[1].lower()
 
 required = []
-with open(_package+'/'+'requirements.txt', 'r') as f:
+with open(_package+'/'+'doc/requirements.txt', 'r') as f:
     for l in f:
         required += [l]
 
