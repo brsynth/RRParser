@@ -1,3 +1,6 @@
+1.0.9 - Jul 06, 2020
+    - remove version
+
 1.0.8 - Jul 06, 2020
     - move (again) RELEASE.md location
 
@@ -23,5 +26,5 @@
 1.0.1 - Jul 03, 2020
     - if both are filled, 'rules_file' takes precedence on 'rule_type'
 
- - 1.0.0 - Jul 02, 2020
+1.0.0 - Jul 02, 2020
     - first version
