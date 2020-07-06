@@ -19,6 +19,7 @@ from random import sample, seed
 from hashlib import sha256
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from tarfile import open as tf_open
 
 
 # Cette classe est un groupe de tests. Son nom DOIT commencer
