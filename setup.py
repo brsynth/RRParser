@@ -8,9 +8,12 @@ required=[
    'requests==2.24.0'
 ]
 
+with open('RELEASE.md', 'r') as f:
+    _version = f.readline().split()[0]
+
 setup(
     name="rrparser",
-    version="1.0.3",
+    version=_version,
     author="Thomas Duigou, Melchior du Lac, Joan Hérisson",
     author_email="joan.herisson@univ-evry.fr",
     description="Reaction Rules Parser",
@@ -22,6 +25,7 @@ setup(
     install_requires=required,
     include_package_data=True,
     test_suite='discover_tests',
+    scripts=['bin/rrparser'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
