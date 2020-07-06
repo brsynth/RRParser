@@ -8,6 +8,7 @@ on:
     branches: [ master ]
     paths:
       - 'RELEASE.md'
+      - 'setup.py'
 
 jobs:
 
