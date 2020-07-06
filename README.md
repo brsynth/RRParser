@@ -6,11 +6,11 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 
 ## Input
 
-* **rules_file**: (string) Filename of reaction rules
-* **rule_type**: (string) Valid options: retro, forward, all. Return the rules that are in reverse, forward or both direction
-* **out_folder**: (string) Path where output files will be written
+* **rules-file**: (string) Filename of reaction rules
+* **rule-type**: (string) Valid options: retro, forward, all. Return the rules that are in reverse, forward or both direction
+* **outdir**: (string) Path where output files will be written
 * **diameters**: (integer list) Valid options: 2, 4, 6, 8, 10, 12, 14, 16. The diameter of the rules to return
-* **output_format**: (string) Valid options: csv, tar.gz. Format of the returned file
+* **output-format**: (string) Valid options: csv, tar.gz. Format of the returned file
 
 ## Ouput
 
@@ -33,7 +33,7 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 ```python
 from rrparser import Parser
 
-outfile = Parser().parse_rules(rule_type, out_folder, diameters)
+outfile = Parser().parse_rules(rule_type, outdir, diameters)
 ```
 
 If parameters from CLI have to be parsed, the function `build_args_parser` is available:
@@ -47,11 +47,11 @@ params = parser.parse_args()
 ### Run from CLI
 ```sh
 python -m rrparser.main \
-  [--rules_file <filename>] \
-  [--rule_type {all,retro,forward}] \
+  [--rules-file <filename>] \
+  [--rule-type {all,retro,forward}] \
   --output <folder> \
   [--diameters {2,4,6,8,10,12,14,16}] \
-  --output_format {csv,tar.gz}
+  --output-format {csv,tar.gz}
 ```
 
 

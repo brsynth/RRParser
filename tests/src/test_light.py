@@ -25,6 +25,7 @@ class Test_RR(TestCase):
     def setUp(self):
         self.diameters = ['2', '4', '6', '8', '10', '12', '14', '16']
         self.rr_parser = Parser()
+        self.hash_d2 = 'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
 
     def test_SmallRulesFile_OneDiameter(self):
         for diam in ['2']:
@@ -34,10 +35,9 @@ class Test_RR(TestCase):
                                                      rules_file='tests/data/rules.csv',
                                                      diameters=diam)
                 self.assertEqual(
-                    sha256(Path(outfile).read_bytes()).hexdigest(),
-            'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
-                                )
+                    sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
                 tempdir.cleanup()
+
 
     # def test_SmallRulesFile_OneDiameter_WithFingerPrint(self):
     #     for diam in ['2']:
