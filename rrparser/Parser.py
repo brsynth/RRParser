@@ -14,7 +14,7 @@ from shutil import copyfile
 from os import path as os_path
 from os import makedirs
 from os.path import dirname
-from _version import __version__
+from .version import __version__
 
 def build_args_parser():
     parser = ArgumentParser('Python wrapper to fetch RetroRules')
