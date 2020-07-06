@@ -1,3 +1,6 @@
+1.0.6 - Jul 06, 2020
+    - change CLI call (remove 'bin' folder)
+
 1.0.5 - Jul 06, 2020
     - fix 1.0.4 exec bug
 

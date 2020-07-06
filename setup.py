@@ -7,12 +7,13 @@ required=[
    'requests==2.24.0'
 ]
 
-with open('RELEASE.md', 'r') as f:
+extra_files={
+    'release': ['release/RELEASE.md']
+}
+
+with open(extra_files['release'][0], 'r') as f:
     _version = f.readline().split()[0]
 
-additional_files=[
-    ('release', ['RELEASE.md'])
-]
 
 setup(
     name="rrparser",
@@ -28,8 +29,7 @@ setup(
     install_requires=required,
     include_package_data=True,
     test_suite='discover_tests',
-    scripts=['bin/rrparser'],
-    data_files=additional_files,
+    data_files=[(k, v) for k, v in extra_files.items()],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

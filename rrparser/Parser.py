@@ -28,8 +28,6 @@ class Parser:
         self._retrorules_url = \
             'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
         self._rules_path = ""
-        with open(dirname(__file__) + '/../RELEASE.md', 'r') as f:
-            self.version = f.readline().split()[0]
 
     def parse_rules(self,
                     rules_file='',
