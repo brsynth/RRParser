@@ -9,7 +9,7 @@ on:
     branches: [ master ]
     paths:
       - .github/workflows/test-import.yml
-      - 'RELEASE.md'
+      - 'RELEASE'
       - 'setup.py'
 
 jobs:

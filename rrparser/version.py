@@ -8,5 +8,5 @@ Created on June 23 2020
 
 from os.path import dirname
 
-with open(dirname(__file__) + '/RELEASE.md', 'r') as f:
+with open(dirname(__file__) + '/RELEASE', 'r') as f:
     __version__ = f.readline().split()[0]
