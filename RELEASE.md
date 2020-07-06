@@ -1,3 +1,6 @@
+Jul 06, 2020 - 1.0.3
+    - specify outfile
+
 Jul 03, 2020 - 1.0.2
     - lighten main.py
 
