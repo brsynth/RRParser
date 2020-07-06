@@ -13,7 +13,8 @@ from tempfile import NamedTemporaryFile
 from shutil import copyfile
 from os import path as os_path
 from os import makedirs
-
+from os.path import dirname
+from _version import __version__
 
 def build_args_parser():
     parser = ArgumentParser('Python wrapper to fetch RetroRules')
@@ -27,6 +28,8 @@ class Parser:
         self._retrorules_url = \
             'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
         self._rules_path = ""
+        with open(dirname(__file__) + '/../RELEASE.md', 'r') as f:
+            self.version = f.readline().split()[0]
 
     def parse_rules(self,
                     rules_file='',
@@ -142,5 +145,6 @@ def _add_arguments(parser):
                         choices=['csv', 'tar.gz'],
                         default='csv',
                         help='output file format (default: csv)')
-
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(version=__version__))
     return parser

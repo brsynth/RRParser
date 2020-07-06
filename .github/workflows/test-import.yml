@@ -31,7 +31,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Import module from test.pypi.org
+    - name: Import module from GIT
       run: |
         pip install git+https://github.com/brsynth/RRulesParser
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi

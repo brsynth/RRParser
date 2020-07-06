@@ -6,10 +6,10 @@ name: Publish
 on:
   push:
     branches: [ stable ]
-    paths:
-      - 'rrparser/**'
-      - 'setup.py'
-      - 'README.md'
+    # paths:
+    #   - 'rrparser/**'
+    #   - 'setup.py'
+    #   - 'README.md'
 
 jobs:
 
