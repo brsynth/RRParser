@@ -26,6 +26,7 @@ setup(
     include_package_data=True,
     test_suite='discover_tests',
     scripts=['bin/rrparser'],
+    data_files=[('release', ['RELEASE.md'])],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
