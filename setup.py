@@ -34,7 +34,7 @@ setup(
     # package_dir={_package: _package},
     install_requires=required,
     test_suite='discover_tests',
-    package_data={_package: [_readme, _release]},
+    package_data={_package: ['doc/*']},
 #    include_package_data=True,
 #    data_files=[v for v in extra_files.values()],
     license='MIT',
