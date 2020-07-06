@@ -33,7 +33,12 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 ```python
 from rrparser import Parser
 
-outfile = Parser().parse_rules(rule_type, outdir, diameters)
+outfile = Parser().parse_rules(rule_type,
+                               rules_file,
+                               diameters,
+                               outdir,
+                               outfile,
+                               output_format)
 ```
 
 If parameters from CLI have to be parsed, the function `build_args_parser` is available:
