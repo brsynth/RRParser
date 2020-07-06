@@ -69,7 +69,7 @@ python -m rrparser \
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ### How to cite RetroRules?
 Please cite:
