@@ -14,26 +14,7 @@ on:
 
 jobs:
 
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        pip install setuptools wheel twine
-    - name: Build and publish
-      env:
-        TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
-      run: |
-        python setup.py sdist bdist_wheel
-        twine upload --repository testpypi dist/*
-
-  test:
+  build:
 
     runs-on: ubuntu-latest
 
@@ -52,7 +33,7 @@ jobs:
 
     - name: Import module from test.pypi.org
       run: |
-        pip install -i https://test.pypi.org/simple/ rrparser==`$(head -n 1 RELEASE.md)|awk '{print $1}'`
+        pip install git+https://github.com/brsynth/rrparser@`$(head -n 1 RELEASE.md)|awk '{print $1}'`
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         # virtual env (needed for importing custom module)
         pip install -e .
