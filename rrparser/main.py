@@ -9,10 +9,11 @@ def _cli():
     params = parser.parse_args()
 
     try:
-        return Parser().parse_rules(outdir=params.output_folder,
-                                    rules_file=params.rules_file,
+        return Parser().parse_rules(rules_file=params.rules_file,
                                     rule_type=params.rule_type,
                                     diameters=params.diameters,
+                                    outdir=params.outdir,
+                                    outfile=params.outfile,
                                     output_format=params.output_format)
     except ValueError as e:
         logging_error(str(e))

@@ -29,11 +29,14 @@ class Parser:
         self._rules_path = ""
 
     def parse_rules(self,
-                    outdir,
                     rules_file='',
                     rule_type='',
                     diameters='2,4,6,8,10,12,14,16',
+                    outdir='./out',
+                    outfile=None,
                     output_format='csv'):
+
+        # Check args is here since the method is directly callable.
 
         # If rules_file is set, it takes precedence on rule_type
         if not rules_file:
@@ -53,19 +56,29 @@ class Parser:
 
         diameters_list = diameters.split(',')
 
-        outfile_temp = NamedTemporaryFile()
+        outfile_temp = NamedTemporaryFile().name
         try:
-            _parse_and_write(rules_file, diameters_list, outfile_temp.name)
+            _parse_and_write(rules_file, diameters_list, outfile_temp)
         except ValueError as e:
             raise ValueError(str(e))
 
-        outfile = \
-            _pkg_out(outfile_temp.name,
-                     outdir,
-                     os_path.basename(os_path.splitext(rules_file)[0])+'_d'+'-'.join(diameters_list),
-                                      output_format)
+        output_format = output_format.lower()
+        if not outfile or outfile == '':
+            outfile = os_path.basename(os_path.splitext(rules_file)[0]) + \
+                      '_d' + '-'.join(diameters_list)
+            outfile = _pkg_out(outfile_temp, outdir, outfile, output_format)
+            return outdir+'/'+outfile
+        else:
+            if output_format == 'tar.gz':
+                outfile_name = os_path.basename(os_path.splitext(rules_file)[0]) + \
+                          '_d' + '-'.join(diameters_list)
+                with tf_open(outfile, mode='w:gz') as tf:
+                    tf.add(outfile_temp, outfile_name+'.csv')
+            else:
+                copyfile(outfile_temp, outfile)
+            return outfile
 
-        return outdir+'/'+outfile
+
 
 
 def _pkg_out(file_res_name, outdir, outfile_name, output_format):
@@ -80,9 +93,9 @@ def _pkg_out(file_res_name, outdir, outfile_name, output_format):
     return outfile_name
 
 
-def _parse_and_write(infile, diameters, outfile_temp):
+def _parse_and_write(infile, diameters, outfile):
     with open(infile, 'r') as rf:
-        with open(outfile_temp, 'w') as o:
+        with open(outfile, 'w') as o:
             rf_csv = csv.reader(rf)
             o_csv = csv.writer(o, delimiter=',', quotechar='"')
             o_csv.writerow(next(rf_csv))
@@ -106,22 +119,25 @@ def _download(url, path):
 
 
 def _add_arguments(parser):
-    parser.add_argument('-rf', '--rules_file',
+    parser.add_argument('-rf', '--rules-file',
                         type=str,
                         help="rules file to parse")
-    parser.add_argument('-rt', '--rule_type',
+    parser.add_argument('-rt', '--rule-type',
                         type=str,
                         choices=['all', 'retro', 'forward'],
                         help="rules file to parse")
-    parser.add_argument('output_folder',
+    parser.add_argument('--outdir',
                         type=str,
                         default='./out',
                         help="folder where result file is written")
+    parser.add_argument('--outfile',
+                        type=str,
+                        help="file where results are written")
     parser.add_argument('-d', '--diameters',
                         type=str,
                         default='2,4,6,8,10,12,14,16',
                         help='diameter of the sphere including the atoms around the reacting center (default is including all values: 2,4,6,8,10,12,14,16). The higher is the diameter, the more specific are the rules')
-    parser.add_argument('-of', '--output_format',
+    parser.add_argument('-of', '--output-format',
                         type=str,
                         choices=['csv', 'tar.gz'],
                         default='csv',

@@ -29,6 +29,7 @@ class Test_RR(TestCase):
     def setUp(self):
         self.diameters = ['2', '4', '6', '8', '10', '12', '14', '16']
         self.rr_parser = Parser()
+        self.hash_d2 = 'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
 
     # 'test_' prefix is mandatory
     def test_Precedence(self):
@@ -55,6 +56,25 @@ class Test_RR(TestCase):
                     sha256(Path(outfile).read_bytes()).hexdigest(),
             'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
                                 )
+                tempdir.cleanup()
+
+    def test_SmallRulesFile_OneDiameter_SpecifyOutfile(self):
+        hash = 'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
+        for format in ['csv', 'tar.gz']:
+            with self.subTest(format=format):
+                diam = '2'
+                tempdir = TemporaryDirectory(suffix='_'+diam)
+                outfile = self.rr_parser.parse_rules(outfile='./results.'+format,
+                                                     rules_file='tests/data/rules.csv',
+                                                     diameters=diam,
+                                                     output_format=format)
+                if format=='tar.gz':
+                    tar = tf_open(outfile)
+                    tar.extractall()
+                    tar.close()
+                    outfile = 'rules_d2.csv'
+                self.assertEqual(
+                    sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
                 tempdir.cleanup()
 
     def test_BadRuleTypeArgument(self):
