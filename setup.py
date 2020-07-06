@@ -11,7 +11,7 @@ with open('RELEASE.md', 'r') as f:
     _version = f.readline().split()[0]
 
 additional_files=[
-    ('release', ['RELEASE.md'])
+    ('release', ['release/RELEASE.md'])
 ]
 
 setup(
