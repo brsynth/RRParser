@@ -11,7 +11,7 @@ extra_files={
     'release': ['release/RELEASE.md']
 }
 
-with open(extra_files['release'], 'r') as f:
+with open(extra_files['release'][0], 'r') as f:
     _version = f.readline().split()[0]
 
 
