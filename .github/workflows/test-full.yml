@@ -8,8 +8,8 @@ on:
   push:
     branches: [ master ]
     paths:
+      - .github/workflows/test-full.yml
       - 'rrparser/**.py'
-      - 'bin/**'
       - 'tests/**.py'
   pull_request:
     branches: [ master ]

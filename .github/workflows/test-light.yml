@@ -11,6 +11,7 @@ on:
       - '!master'
       - '!stable'
     paths:
+      - .github/workflows/test-light.yml
       - 'rrparser'
       - 'tests/src/**'
   pull_request:

@@ -1,6 +1,5 @@
 from setuptools import setup
 
-
 with open("README.md", 'r') as fh:
     long_description = fh.read()
 
@@ -10,6 +9,10 @@ required=[
 
 with open('RELEASE.md', 'r') as f:
     _version = f.readline().split()[0]
+
+additional_files=[
+    ('release', ['RELEASE.md'])
+]
 
 setup(
     name="rrparser",
@@ -26,6 +29,7 @@ setup(
     include_package_data=True,
     test_suite='discover_tests',
     scripts=['bin/rrparser'],
+    data_files=additional_files,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
