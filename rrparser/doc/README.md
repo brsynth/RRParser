@@ -4,7 +4,6 @@
 
 Reaction Rules Parser. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org).
 
-
 ## Input
 
 * **rules-file**: (string) Filename of reaction rules

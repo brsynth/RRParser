@@ -26,7 +26,9 @@ jobs:
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        PACKAGE: rrparser
       run: |
+        cp README* RELEASE* ${PACKAGE}
         python setup.py sdist bdist_wheel
         twine upload dist/*
 

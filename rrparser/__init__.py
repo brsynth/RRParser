@@ -6,7 +6,7 @@ Created on June 23 2020
 """
 
 
-#from .version import __version__
+from .version import __version__
 from .Parser import Parser, build_args_parser
 
 __all__ = ["Parser", "build_args_parser"]
