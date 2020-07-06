@@ -22,7 +22,7 @@ _release = 'RELEASE'
 # }
 
 # with open(extra_files['release'][1][0], 'r') as f:
-with open(_package+'/doc/'+_release], 'r') as f:
+with open(_package+'/doc/'+_release, 'r') as f:
     _version = f.readline().split()[0]
 
 setup(
