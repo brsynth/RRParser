@@ -54,9 +54,10 @@ params = parser.parse_args()
 python -m rrparser.main \
   [--rules-file <filename>] \
   [--rule-type {all,retro,forward}] \
-  --output <folder> \
+  [--outdir <folder>] \
+  [--outfile <file>] \
   [--diameters {2,4,6,8,10,12,14,16}] \
-  --output-format {csv,tar.gz}
+  [--output-format {csv,tar.gz}]
 ```
 
 
