@@ -6,8 +6,6 @@ name: Publish
 on:
   push:
     branches: [ stable ]
-    paths:
-      - 'RELEASE.md'
 
 jobs:
 
