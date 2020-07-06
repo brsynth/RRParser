@@ -7,12 +7,13 @@ required=[
    'requests==2.24.0'
 ]
 
-with open('RELEASE.md', 'r') as f:
-    _version = f.readline().split()[0]
-
 additional_files=[
     ('release', ['release/RELEASE.md'])
 ]
+
+with open(additional_files['release'], 'r') as f:
+    _version = f.readline().split()[0]
+
 
 setup(
     name="rrparser",
