@@ -12,6 +12,7 @@ def _cli():
 
     try:
         return Parser().parse_rules(rules_file=args.rules_file,
+                                    input_format=args.input_format,
                                     rule_type=args.rule_type,
                                     diameters=args.diameters,
                                     outdir=args.outdir,
