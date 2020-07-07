@@ -8,15 +8,15 @@ from rrparser import Parser, build_args_parser
 
 def _cli():
     parser = build_args_parser()
-    params = parser.parse_args()
+    args  = parser.parse_args()
 
     try:
-        return Parser().parse_rules(rules_file=params.rules_file,
-                                    rule_type=params.rule_type,
-                                    diameters=params.diameters,
-                                    outdir=params.outdir,
-                                    outfile=params.outfile,
-                                    output_format=params.output_format)
+        return Parser().parse_rules(rules_file=args.rules_file,
+                                    rule_type=args.rule_type,
+                                    diameters=args.diameters,
+                                    outdir=args.outdir,
+                                    outfile=args.outfile,
+                                    output_format=args.output_format)
     except ValueError as e:
         logging_error(str(e))
 
