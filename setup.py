@@ -3,10 +3,13 @@ from setuptools import setup
 
 _readme = 'README.md'
 
-with open(_readme, 'r') as f:
+with open('.env', 'r') as f:
     line = f.readline()
-    long_description = line+f.read()
-    _package = line.splitlines()[0].split()[1].lower()
+    if line.startswith('PACKAGE='):
+        _package = line.splitlines()[0].split('=')[1].lower()
+
+with open(_readme, 'r') as f:
+    long_description = f.read()
 
 required = []
 with open(_package+'/requirements.txt', 'r') as f:
