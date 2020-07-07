@@ -32,6 +32,7 @@ class Parser:
 
     def parse_rules(self,
                     rules_file='',
+                    input_format='csv',
                     rule_type='all',
                     diameters='2,4,6,8,10,12,14,16',
                     outdir='./out',
@@ -70,11 +71,11 @@ class Parser:
                                  list(map(int, diameters_list)),
                                  outfile_temp)
             else:
-                if rules_file.endswith('.tsv'):
+                if input_format == 'tsv':
                     _parseTSV_and_write(rules_file, rule_type,
                                         list(map(int, diameters_list)),
                                         outfile_temp)
-                elif rules_file.endswith('.csv'):
+                elif input_format == 'csv':
                     _parseCSV_and_write(rules_file, rule_type,
                                         list(map(int, diameters_list)),
                                         outfile_temp)
@@ -195,6 +196,11 @@ def _add_arguments(parser):
     parser.add_argument('-rf', '--rules-file',
                         type=str,
                         help="rules file to parse")
+    parser.add_argument('-if', '--input-format',
+                        type=str,
+                        choices=['csv', 'tsv'],
+                        default='csv',
+                        help='input file format (default: csv)')
     parser.add_argument('-rt', '--rule-type',
                         type=str,
                         choices=['all', 'retro', 'forward'],

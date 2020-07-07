@@ -1,3 +1,8 @@
+2.0.1 - Jul 08, 2020
+    - Add input-format argument
+    - Add tests for input-format argument
+    - Refactor tests
+
 2.0.0 - Jul 07, 2020
     - Use RetroRules to parse external rules files if none is provided
 
