@@ -1,5 +1,4 @@
 from setuptools import setup
-from shutil import copyfile
 
 
 _readme = 'README.md'
