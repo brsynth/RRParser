@@ -6,14 +6,10 @@ name: Publish
 on:
   push:
     branches: [ stable ]
-    # paths:
-    #   - 'rrparser/**'
-    #   - 'setup.py'
-    #   - 'README.md'
 
 jobs:
 
-  pypi:
+  PyPi:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -24,25 +20,25 @@ jobs:
     - name: Install dependencies
       run: |
         pip install setuptools wheel twine
-    - name: Build and publish
+    - name: Build
+      run: |
+        python setup.py sdist bdist_wheel
+    - name: Upload
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        PACKAGE: rrparser
       run: |
-        cp README* RELEASE* ${PACKAGE}
-        python setup.py sdist bdist_wheel
         twine upload dist/*
 
-  conda:
+  Conda:
     runs-on: ubuntu-latest
     container: docker://continuumio/anaconda3
     steps:
-    - name: Build and Publish
+    - name: Build
+      run: |
+        python bdist_conda
+    - name: Upload
       env:
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
-        PACKAGE: rrparser
       run: |
-        conda skeleton pypi ${PACKAGE}
-        conda config --set anaconda_upload yes
-        conda build --user brsynth --token ${CONDA_TOKEN} ${PACKAGE}
+        anaconda upload --user brsynth --token ${CONDA_TOKEN} /opt/conda/conda-bld/linux-64/*.tar.bz2
