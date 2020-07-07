@@ -2,7 +2,7 @@ from setuptools import setup
 from shutil import copyfile
 
 
-_readme = 'README.md'
+_readme = 'README.rst'
 
 with open(_readme, 'r') as f:
     line = f.readline()
