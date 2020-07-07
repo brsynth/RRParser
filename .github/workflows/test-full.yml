@@ -110,4 +110,4 @@ jobs:
 
     - name: Test ${{ matrix.argument }}
       run: |
-        pytest --verbose tests/src/test_${{ matrix.argument }}.py
+        pytest --verbose tests/test_${{ matrix.argument }}.py
