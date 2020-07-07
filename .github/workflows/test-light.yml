@@ -52,7 +52,8 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest --verbose tests/test_light.py
+        cd tests
+        pytest --verbose test_light.py
 
     - name: Test CLI call
       run: |
