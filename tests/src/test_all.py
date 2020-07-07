@@ -127,10 +127,11 @@ class Test_RR(TestCase):
         for diam in ['2-']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_retro_'+diam)
-                outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
-                                                     rule_type='retro',
-                                                     diameters=diam)
-                self.assertEqual(stat(outfile).st_size, 135)
+                self.assertRaises(ValueError,
+                                  self.rr_parser.parse_rules,
+                                  outdir=tempdir.name,
+                                  rule_type='retro',
+                                  diameters=diam)
                 tempdir.cleanup()
 
     def test_AllTypes_RandomDiam(self):

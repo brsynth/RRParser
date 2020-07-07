@@ -28,7 +28,7 @@ class Test_RR(TestCase):
         self.hash_d2 = 'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
 
     def test_SmallRulesFile_OneDiameter(self):
-        for diam in ['2']:
+        for diam in ['2,4,6']:
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_'+diam)
                 outfile = self.rr_parser.parse_rules(outdir=tempdir.name,

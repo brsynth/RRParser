@@ -29,9 +29,10 @@ class Parser:
             'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
         self._rules_path = ""
 
+
     def parse_rules(self,
                     rules_file='',
-                    rule_type='',
+                    rule_type='all',
                     diameters='2,4,6,8,10,12,14,16',
                     outdir='./out',
                     outfile=None,
@@ -39,6 +40,7 @@ class Parser:
 
         # Check args is here since the method is directly callable.
 
+        orig_rules_file = rules_file
         # If rules_file is set, it takes precedence on rule_type
         if not rules_file:
             if rule_type:
@@ -56,10 +58,28 @@ class Parser:
                         "at least one of --rules_file or --rule_type required")
 
         diameters_list = diameters.split(',')
+        for d in diameters_list:
+            if not d.isdigit():
+                raise ValueError(
+                        "--diameters takes only digit separated by comma")
 
         outfile_temp = NamedTemporaryFile().name
         try:
-            _parse_and_write(rules_file, diameters_list, outfile_temp)
+            if orig_rules_file == '':
+                _parse_and_write(rules_file,
+                                 list(map(int, diameters_list)),
+                                 outfile_temp)
+            else:
+                if rules_file.endswith('.tsv'):
+                    _parseTSV_and_write(rules_file, rule_type,
+                                        list(map(int, diameters_list)),
+                                        outfile_temp)
+                elif rules_file.endswith('.csv'):
+                    _parseCSV_and_write(rules_file, rule_type,
+                                        list(map(int, diameters_list)),
+                                        outfile_temp)
+                else:
+                    raise ValueError('Can only have input formats of TSV or CSV')
         except ValueError as e:
             raise ValueError(str(e))
 
@@ -102,8 +122,60 @@ def _parse_and_write(infile, diameters, outfile):
             o_csv.writerow(next(rf_csv))
             for row in rf_csv:
                 try:
-                    if row[4] in diameters:
+                    if int(row[4]) in diameters:
                         o_csv.writerow(row)
+                except ValueError:
+                    raise ValueError(
+                        'Cannot convert diameter to integer: '+str(row[4]))
+
+
+def _parseTSV_and_write(infile, rule_type, diameters, outfile):
+    with open(infile, 'r') as in_f:
+        with open(outfile, 'w') as out_f:
+            out_csv = csv.writer(out_f, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+            out_csv.writerow([
+                "Rule ID",
+                "Rule",
+                "EC number",
+                "Reaction order",
+                "Diameter",
+                "Score",
+                "Legacy ID",
+                "Reaction direction",
+                "Rule relative direction",
+                "Rule usage",
+                "Score normalized"])
+            for row in csv.DictReader(in_f, delimiter='\t'):
+                try:
+                    if int(row['Diameter']) in diameters:
+                        if rule_type=='all' or (rule_type=='retro' and (row['Rule_usage']=='both' or row['Rule_usage']=='retro')) or (rule_type=='forward' and (row['Rule_usage']=='both' or row['Rule_usage']=='forward')):
+                            out_csv.writerow([
+                                row['# Rule_ID'],
+                                row['Rule_SMARTS'],
+                                row['Reaction_EC_number'],
+                                row['Rule_order'],
+                                row['Diameter'],
+                                row['Score'],
+                                row['Legacy_ID'],
+                                row['Reaction_direction'],
+                                row['Rule_relative_direction'],
+                                row['Rule_usage'],
+                                row['Score_normalized']])
+                except ValueError:
+                    raise ValueError(
+                        'Cannot convert diameter to integer: '+str(row['Diameter']))
+
+def _parseCSV_and_write(infile, rule_type, diameters, outfile):
+    with open(infile, 'r') as rf:
+        with open(outfile, 'w') as o:
+            rf_csv = csv.reader(rf)
+            o_csv = csv.writer(o, delimiter=',', quotechar='"')
+            o_csv.writerow(next(rf_csv))
+            for row in rf_csv:
+                try:
+                    if int(row[4]) in diameters:
+                        if rule_type=='all' or (rule_type=='retro'   and (row[9]=='both' or row[9]=='retro')) or (rule_type=='forward' and (row[9]=='both' or row[9]=='forward')):
+                            o_csv.writerow(row)
                 except ValueError:
                     raise ValueError(
                         'Cannot convert diameter to integer: '+str(row[4]))
@@ -126,6 +198,7 @@ def _add_arguments(parser):
     parser.add_argument('-rt', '--rule-type',
                         type=str,
                         choices=['all', 'retro', 'forward'],
+                        default='all',
                         help="rules file to parse")
     parser.add_argument('--outdir',
                         type=str,
