@@ -1,3 +1,6 @@
+2.0.0 - Jul 07, 2020
+    - Use RetroRules to parse external rules files if none is provided
+
 1.1.8 - Jul 06, 2020
     - Final test
 
