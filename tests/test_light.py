@@ -32,11 +32,45 @@ class Test_RR(TestCase):
             with self.subTest(diam=diam):
                 tempdir = TemporaryDirectory(suffix='_'+diam)
                 outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
-                                                     rules_file='tests/data/rules.csv',
+                                                     rules_file='data/rules.csv',
                                                      diameters=diam)
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
                 tempdir.cleanup()
+
+
+    def test_GoodInputFormatCSV(self):
+        diam = '2'
+        tempdir = TemporaryDirectory(suffix='_'+diam)
+        outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
+                                             rules_file='data/rules.csv',
+                                             input_format='csv',
+                                             diameters=diam)
+        self.assertEqual(
+            sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+        tempdir.cleanup()
+
+    def test_BadInputFormatCSV_1(self):
+        diam = '2'
+        tempdir = TemporaryDirectory(suffix='_'+diam)
+        self.assertRaises(KeyError,
+                          self.rr_parser.parse_rules,
+                          outdir=tempdir.name,
+                          rules_file='data/rules.csv',
+                          input_format='tsv',
+                          diameters=diam)
+        tempdir.cleanup()
+
+    def test_BadInputFormatCSV_2(self):
+        diam = '2'
+        tempdir = TemporaryDirectory(suffix='_'+diam)
+        self.assertRaises(ValueError,
+                          self.rr_parser.parse_rules,
+                          outdir=tempdir.name,
+                          rules_file='data/rules.csv',
+                          input_format='other',
+                          diameters=diam)
+        tempdir.cleanup()
 
 
     # def test_SmallRulesFile_OneDiameter_WithFingerPrint(self):
@@ -44,7 +78,7 @@ class Test_RR(TestCase):
     #         with self.subTest(diam=diam):
     #             tempdir = mkdtemp(suffix='_'+diam)
     #             outfile = self.rr_parser.parse_rules(outdir=tempdir,
-    #                                                  rules_file='tests/data/rules.csv',
+    #                                                  rules_file='data/rules.csv',
     #                                                  diameters=diam)
     #             self.assertEqual(
     #                 sha256(Path(outfile).read_bytes()).hexdigest(),
