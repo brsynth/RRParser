@@ -130,7 +130,11 @@ class Test_RR(TestCase):
                 outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
                                                      rule_type='retro',
                                                      diameters=diam)
-                self.assertEqual(stat(outfile).st_size, 135)
+                self.assertRaises(ValueError,
+                                  self.rr_parser.parse_rules,
+                                  outdir=tempdir.name,
+                                  rule_type='retro',
+                                  diameters=diam)
                 tempdir.cleanup()
 
     def test_AllTypes_RandomDiam(self):

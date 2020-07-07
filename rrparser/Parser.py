@@ -58,6 +58,10 @@ class Parser:
                         "at least one of --rules_file or --rule_type required")
 
         diameters_list = diameters.split(',')
+        for d in diameters_list:
+            if not d.isdigit():
+                raise ValueError(
+                        "--diameters takes only digit separated by comma")
 
         outfile_temp = NamedTemporaryFile().name
         try:
