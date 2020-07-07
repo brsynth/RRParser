@@ -11,26 +11,26 @@ on:
 
 jobs:
 
-  # PyPi:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v2
-  #     with:
-  #       python-version: '3.x'
-  #   - name: Install dependencies
-  #     run: |
-  #       pip install setuptools wheel twine
-  #   - name: Build
-  #     run: |
-  #       python setup.py sdist bdist_wheel
-  #   - name: Upload
-  #     env:
-  #       TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-  #       TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-  #     run: |
-  #       twine upload dist/*
+  PyPi:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        pip install setuptools wheel twine
+    - name: Build
+      run: |
+        python setup.py sdist bdist_wheel
+    - name: Upload
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload dist/*
 
   Conda:
     runs-on: ubuntu-latest
@@ -44,4 +44,4 @@ jobs:
       env:
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
       run: |
-        anaconda upload --user brsynth --token ${CONDA_TOKEN} /opt/conda/conda-bld/linux-64/*.tar.bz2
+        anaconda --token ${CONDA_TOKEN} upload --user brsynth /opt/conda/conda-bld/linux-64/*.tar.bz2
