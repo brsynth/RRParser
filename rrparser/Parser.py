@@ -14,7 +14,7 @@ from shutil import copyfile
 from os import path as os_path
 from os import makedirs
 from os.path import dirname
-from .version import __version__
+# from .infos import __version__, __readme__
 
 def build_args_parser():
     parser = ArgumentParser('Python wrapper to fetch RetroRules')
@@ -143,6 +143,6 @@ def _add_arguments(parser):
                         choices=['csv', 'tar.gz'],
                         default='csv',
                         help='output file format (default: csv)')
-    parser.add_argument('--version', action='version',
-                        version='%(prog)s {version}'.format(version=__version__))
+    # parser.add_argument('--version', action='version',
+    #                     version='%(prog)s {version}'.format(version=__version__))
     return parser

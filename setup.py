@@ -1,18 +1,16 @@
 from setuptools import setup
 from shutil import copyfile
 
-_package = 'rrparser'
 
-_readme = 'README.md'
+_readme = 'README.rst'
 
-with open(_package+'/doc/'+_readme, 'r') as f:
-    long_description = f.read()
-    # line = f.readline()
-    # long_description = line+f.read()
-    # _package = line.splitlines()[0].split()[1].lower()
+with open(_readme, 'r') as f:
+    line = f.readline()
+    long_description = line+f.read()
+    _package = line.splitlines()[0].lower()
 
 required = []
-with open(_package+'/doc/requirements.txt', 'r') as f:
+with open(_package+'/requirements.txt', 'r') as f:
     for l in f:
         required += [l]
 
@@ -22,7 +20,7 @@ _release = 'RELEASE'
 # }
 
 # with open(extra_files['release'][1][0], 'r') as f:
-with open(_package+'/doc/'+_release, 'r') as f:
+with open(_release, 'r') as f:
     _version = f.readline().split()[0]
 
 setup(
@@ -38,7 +36,7 @@ setup(
     # package_dir={_package: _package},
     install_requires=required,
     test_suite='discover_tests',
-    package_data={_package: ['doc/*']},
+    # package_data={_package: ['doc/*']},
 #    include_package_data=True,
 #    data_files=[v for v in extra_files.values()],
     license='MIT',
