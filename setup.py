@@ -2,12 +2,12 @@ from setuptools import setup
 from shutil import copyfile
 
 
-_readme = 'README.rst'
+_readme = 'README.md'
 
 with open(_readme, 'r') as f:
     line = f.readline()
     long_description = line+f.read()
-    _package = line.splitlines()[0].lower()
+    _package = line.splitlines()[0].split()[1].lower()
 
 required = []
 with open(_package+'/requirements.txt', 'r') as f:
