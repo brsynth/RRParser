@@ -11,34 +11,36 @@ on:
 
 jobs:
 
-  PyPi:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        pip install setuptools wheel twine
-    - name: Build
-      run: |
-        python setup.py sdist bdist_wheel
-    - name: Upload
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        twine upload dist/*
+  # PyPi:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v2
+  #     with:
+  #       python-version: '3.x'
+  #   - name: Install dependencies
+  #     run: |
+  #       pip install setuptools wheel twine
+  #   - name: Build
+  #     run: |
+  #       python setup.py sdist bdist_wheel
+  #   - name: Upload
+  #     env:
+  #       TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+  #       TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+  #     run: |
+  #       twine upload dist/*
 
   Conda:
     runs-on: ubuntu-latest
-    container: docker://continuumio/anaconda3
+#    container: docker://continuumio/anaconda3
     steps:
+    - uses: actions/checkout@v2
+    - uses: fdiblen/anaconda-action@0.1.20
     - name: Build
       run: |
-        python bdist_conda
+        python setup.py bdist_conda
     - name: Upload
       env:
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
