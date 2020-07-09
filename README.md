@@ -1,6 +1,8 @@
 # RRParser
 
-![Test](https://github.com/brsynth/RRulesParser/workflows/Test/badge.svg) ![Publish](https://github.com/brsynth/RRulesParser/workflows/Publish/badge.svg)
+[![Anaconda-Server Badge](https://anaconda.org/brsynth/rrparser/badges/latest_release_date.svg)](https://anaconda.org/brsynth/rrparser) ![Test](https://github.com/brsynth/RRulesParser/workflows/Test/badge.svg)
+
+[![Anaconda-Server Badge](https://anaconda.org/brsynth/rrparser/badges/installer/conda.svg)](https://conda.anaconda.org/brsynth) [![Anaconda-Server Badge](https://anaconda.org/brsynth/rrparser/badges/version.svg)](https://anaconda.org/brsynth/rrparser)
 
 Reaction Rules Parser. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org).
 
