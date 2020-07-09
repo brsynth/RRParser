@@ -11,9 +11,8 @@ on:
       - '!master'
       - '!stable'
     paths:
-      - .github/workflows/test-light.yml
-      - 'rrparser'
-      - 'tests/src/**'
+      - '!RELEASE'
+      - '!LICENSE'
   pull_request:
     branches: [ master ]
 
