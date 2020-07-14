@@ -8,7 +8,6 @@ on:
   push:
     branches: [ master ]
     paths:
-      - .github/workflows/test-import.yml
       - 'RELEASE'
       - 'setup.py'
 
