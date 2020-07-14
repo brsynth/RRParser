@@ -13,8 +13,7 @@ with open(_readme, 'r') as f:
 
 required = []
 with open(_package+'/requirements.txt', 'r') as f:
-    for l in f:
-        required += [l]
+    required = [line[:-1] for line in f]
 
 _release = 'RELEASE'
 # extra_files={

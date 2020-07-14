@@ -8,10 +8,9 @@ on:
   push:
     branches: [ master ]
     paths:
-      - .github/workflows/test-full.yml
-      - 'rrparser/**.py'
-      - 'tests/**.py'
+      - '**'
       - '!RELEASE'
+      - '!LICENSE'
   pull_request:
     branches: [ master ]
 
@@ -82,14 +81,13 @@ jobs:
       run: |
         bandit -r .
 
-  Arguments:
+  Functional:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         python-version: [3.5, 3.6, 3.7, 3.8]
-        argument: [diameters, input-format, rule-type, misc]
 
     steps:
 
@@ -108,7 +106,7 @@ jobs:
         # virtual env (needed for importing custom module)
         pip install -e .
 
-    - name: Test ${{ matrix.argument }}
+    - name: Test
       run: |
         cd tests
-        pytest --verbose test_${{ matrix.argument }}.py
+        pytest --verbose
