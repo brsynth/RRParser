@@ -25,7 +25,7 @@ from tarfile import open as tf_open
 # Cette classe est un groupe de tests. Son nom DOIT commencer
 # par 'Test' et la classe DOIT hériter de unittest.TestCase.
 # 'Test_' prefix is mandatory
-class Test_RR(Test_RR):
+class Test_Misc(Test_RR):
 
     def setUp(self):
         self.diameters = ['2', '4', '6', '8', '10', '12', '14', '16']
