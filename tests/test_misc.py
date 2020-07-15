@@ -41,9 +41,7 @@ class Test_RR(Test_RR):
                                              rule_type='retro',
                                              diameters=diam)
         self.assertEqual(
-            sha256(Path(outfile).read_bytes()).hexdigest(),
-            'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
-                        )
+            sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
         tempdir.cleanup()
 
     def test_SmallRulesFile_OneDiameter(self):
@@ -54,13 +52,10 @@ class Test_RR(Test_RR):
                                                      rules_file='data/rules.csv',
                                                      diameters=diam)
                 self.assertEqual(
-                    sha256(Path(outfile).read_bytes()).hexdigest(),
-            'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
-                                )
+                    sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
                 tempdir.cleanup()
 
     def test_SmallRulesFile_OneDiameter_SpecifyOutfile(self):
-        hash = 'a6c2852a991e394bdbaf04791a90e803d4410a53f037165a7f08956edde63066'
         for format in ['csv', 'tar.gz']:
             with self.subTest(format=format):
                 diam = '2'
