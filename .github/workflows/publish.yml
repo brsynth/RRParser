@@ -37,11 +37,17 @@ jobs:
     container: docker://continuumio/anaconda3
     steps:
     - uses: actions/checkout@v2
-    - name: Build
+    - name: Set up Conda
+      run: |
+        conda config \
+          --add channels sbmlteam \
+          --add channels brsynth
+    - name: Build package
       run: |
         python setup.py bdist_conda
-    - name: Upload
+    - name: Upload package
       env:
+        CONDA_USERNAME: ${{ secrets.CONDA_USERNAME }}
         CONDA_TOKEN: ${{ secrets.CONDA_TOKEN }}
       run: |
-        anaconda --token ${CONDA_TOKEN} upload --user brsynth /opt/conda/conda-bld/linux-64/*.tar.bz2
+        anaconda --token ${CONDA_TOKEN} upload --user ${CONDA_USERNAME} /opt/conda/conda-bld/linux-64/*.tar.bz2
