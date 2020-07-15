@@ -1,7 +1,6 @@
 2.0.2 - Jul 14, 2020
     - remove download and extract functions (now in brs_utils)
 
-
 2.0.1 - Jul 08, 2020
     - Add input-format argument
     - Add tests for input-format argument
