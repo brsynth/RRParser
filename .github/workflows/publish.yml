@@ -48,13 +48,13 @@ jobs:
         sleep 30
     - name: Get module from PyPi
       run: |
-        conda skeleton pypi rrulesparser
+        conda skeleton pypi rrparser
     - name: Add channels
       run: |
         conda config --add channels sbmlteam
     - name: Build for Python ${{ matrix.python-version }}
       run: |
-        conda-build --python ${{ matrix.python-version }} rrulesparser
+        conda-build --python ${{ matrix.python-version }} rrparser
     - name: Upload package
       env:
         CONDA_USERNAME: ${{ secrets.CONDA_USERNAME }}
