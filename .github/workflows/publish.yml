@@ -51,6 +51,7 @@ jobs:
         conda skeleton pypi rrparser
     - name: Add channels
       run: |
+        conda config --add channels brsynth
         conda config --add channels sbmlteam
     - name: Build for Python ${{ matrix.python-version }}
       run: |
