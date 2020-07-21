@@ -33,18 +33,30 @@ jobs:
         twine upload dist/*
 
   Conda:
+
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7]
+
     container: docker://continuumio/anaconda3
+
+    container: docker://continuumio/anaconda3
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Conda
+    - name: Waiting for module availablity on PyPi...
       run: |
-        conda config \
-          --add channels sbmlteam \
-          --add channels brsynth
-    - name: Build package
+        sleep 30
+    - name: Get module from PyPi
       run: |
-        python setup.py bdist_conda
+        conda skeleton pypi rrulesparser
+    - name: Add channels
+      run: |
+        conda config --add channels sbmlteam
+    - name: Build for Python ${{ matrix.python-version }}
+      run: |
+        conda-build --python ${{ matrix.python-version }} rrulesparser
     - name: Upload package
       env:
         CONDA_USERNAME: ${{ secrets.CONDA_USERNAME }}

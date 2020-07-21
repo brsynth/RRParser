@@ -3,7 +3,9 @@ from setuptools import setup
 
 _readme = 'README.md'
 
-with open('.env', 'r') as f:
+_extras_path = 'extras'
+
+with open(_extras_path+'/.env', 'r') as f:
     line = f.readline()
     if line.startswith('PACKAGE='):
         _package = line.splitlines()[0].split('=')[1].lower()
@@ -12,7 +14,7 @@ with open(_readme, 'r') as f:
     long_description = f.read()
 
 required = []
-with open(_package+'/requirements.txt', 'r') as f:
+with open(_extras_path+'/requirements.txt', 'r') as f:
     required = [line[:-1] for line in f]
 
 _release = 'RELEASE'
@@ -34,12 +36,10 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/brsynth/RRulesParser',
     packages=[_package],
-    # package_dir={_package: _package},
+    package_dir={_package: _package},
+    include_package_data=True,
     install_requires=required,
     test_suite='discover_tests',
-    package_data={_package: ['requirements.txt']},
-#    include_package_data=True,
-#    data_files=[v for v in extra_files.values()],
     license='MIT',
     classifiers=[
         'Programming Language :: Python :: 3',
