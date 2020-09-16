@@ -13,7 +13,7 @@ from shutil import copyfile
 from os import path as os_path
 from os import makedirs
 from os.path import dirname
-from brs_utils import download_and_extract_gz
+from brs_utils import download_and_extract_tar_gz
 # from .infos import __version__, __readme__
 
 def build_args_parser():
@@ -53,7 +53,7 @@ class Parser:
                                           'retrorules_rr02_rp2_hs',
                                           'retrorules_rr02_rp2_flat_'+rule_type+'.csv')
                 if not os_path.exists(rules_file):
-                    download_and_extract_gz(self._retrorules_url, self._rules_path)
+                    download_and_extract_tar_gz(self._retrorules_url, self._rules_path)
             else:
                 raise ValueError(
                         "at least one of --rules_file or --rule_type required")
