@@ -1,6 +1,8 @@
+2.0.4 - Sep 16, 2020
+    - rename 'download_and_extract' function in 'brs_utils'
+
 2.0.3 - Jul 21, 2020
     - conda build for multiple versions of Python (3.5 -> 3.7)
-
 
 2.0.2 - Jul 14, 2020
     - remove download and extract functions (now in brs_utils)
