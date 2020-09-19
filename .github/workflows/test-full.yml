@@ -40,6 +40,10 @@ jobs:
         # virtual env (needed for importing custom module)
         pip install -e .
 
+    - name: Create package link folder
+      run: |
+        ln -sf src rrparser
+
     - name: Test CLI call
       run: |
         python -m rrparser --help
