@@ -36,9 +36,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Rename 'src' folder
+    - name: Create package link folder
       run: |
-        mv src rrparser
+        ln -sf src rrparser
 
     - name: Install dependencies
       run: |
