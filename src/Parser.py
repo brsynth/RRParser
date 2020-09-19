@@ -14,7 +14,7 @@ from os import path as os_path
 from os import makedirs
 from os.path import dirname
 from brs_utils import download_and_extract_tar_gz
-# from .infos import __version__, __readme__
+
 
 def build_args_parser():
     parser = ArgumentParser('Python wrapper to fetch RetroRules')
