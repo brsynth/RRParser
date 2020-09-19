@@ -12,7 +12,6 @@ from tempfile import NamedTemporaryFile
 from shutil import copyfile
 from os import path as os_path
 from os import makedirs
-from os.path import dirname
 from brs_utils import download_and_extract_tar_gz
 
 
