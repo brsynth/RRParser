@@ -40,10 +40,6 @@ jobs:
         # virtual env (needed for importing custom module)
         pip install -e .
 
-    - name: Create package link folder
-      run: |
-        ln -sf src rrparser
-
     - name: Test CLI call
       run: |
         python -m rrparser --help
@@ -65,10 +61,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
-    - name: Create package link folder
-      run: |
-        ln -sf src rrparser
 
     - name: Install dependencies
       run: |
@@ -113,10 +105,6 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         # virtual env (needed for importing custom module)
         pip install -e .
-
-    - name: Create package link folder
-      run: |
-        ln -sf src rrparser
 
     - name: Test
       run: |

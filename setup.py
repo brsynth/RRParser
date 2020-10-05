@@ -36,7 +36,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/brsynth/RRulesParser',
     packages=[_package],
-    package_dir={_package: 'src'},
+    package_dir={_package: 'rrparser'},
     include_package_data=True,
     install_requires=required,
     test_suite='discover_tests',

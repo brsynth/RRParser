@@ -36,10 +36,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Create package link folder
-      run: |
-        ln -sf src rrparser
-
     - name: Install dependencies
       run: |
         pip install flake8 pytest
