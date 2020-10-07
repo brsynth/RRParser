@@ -47,7 +47,7 @@ params = parser.parse_args()
 
 ### Run from CLI
 ```sh
-python -m rrparser.main \
+python -m rrparser \
   [--rules-file <filename>] \
   [--input-format {csv,tsv}] \
   [--rule-type {all,retro,forward}] \
