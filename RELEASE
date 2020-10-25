@@ -1,3 +1,7 @@
+2.0.6 - Oct 25, 2020
+    - refactor into pure conda package
+    - stop pip publishing
+
 2.0.5 - Sep 19, 2020
     - rename src folder
 

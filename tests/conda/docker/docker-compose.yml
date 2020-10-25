@@ -1,0 +1,37 @@
+version: '3.8'
+
+x-common:
+   &default
+    image: ${PACKAGE}-tests_conda
+    build:
+      context: ../../..
+      args:
+        HOME: ${HOMEDIR}
+        IMAGE: ${BASE_IMAGE}
+      dockerfile: tests/conda/docker/Dockerfile
+    volumes:
+      - $PWD/..:${HOMEDIR}:ro
+      - conda_build:${CONDA_BLD_PATH}
+
+services:
+
+  build:
+    <<: *default
+    command: "rm -rf ${CONDA_BLD_PATH}/*
+           && conda build --no-test \
+                -c brsynth \
+                -c conda-forge \
+                --output-folder ${CONDA_BLD_PATH} recipe"
+
+  test:
+    <<: *default
+    command: "conda build --test \
+                -c brsynth \
+                -c conda-forge \
+                ${CONDA_BLD_PATH}/*/brs_libs-*.tar.bz2"
+
+volumes:
+  input_cache:
+  cache:
+  conda_build:
+    name: ${PACKAGE}_conda_build

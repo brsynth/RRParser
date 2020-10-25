@@ -11,8 +11,8 @@ services:
         HOME: ${HOMEDIR}
         IMAGE: ${BASE_IMAGE}
       dockerfile: tests/pytest/docker/Dockerfile
-    # volumes:
-    #   - ../../../tests:${HOMEDIR}/tests
-    #   - ../../../${PACKAGE}:${HOMEDIR}/tests/${PACKAGE}:ro
-    entrypoint: pytest --verbose
-    command: test.py
+    command: _main.py
+
+volumes:
+  input_cache:
+  cache:

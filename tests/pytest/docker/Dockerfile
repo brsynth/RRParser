@@ -1,16 +1,18 @@
 ARG IMAGE
 FROM ${IMAGE}
 
+RUN conda update -n base -c defaults conda
+
+COPY tests/environment.yml        conda_env_run.yml
+COPY tests/pytest/environment.yml conda_env_test.yml
 ARG PKG
-COPY tests/pytest/requirements.txt requirements-test.txt
-COPY extras/requirements.txt requirements-src.txt
-# install requirements
-RUN python3 -m pip install --upgrade pip \
- && python3 -m pip install --no-cache-dir --upgrade -r requirements-test.txt \
- && python3 -m pip install --no-cache-dir --upgrade -r requirements-src.txt
+RUN conda env create -n test --file conda_env_run.yml \
+ && conda env update -n test --file conda_env_test.yml
 
 ARG HOME
 WORKDIR ${HOME}/tests
-
 ADD tests .
+
 ADD ${PKG} ${PKG}
+
+ENTRYPOINT ["conda", "run", "-n", "test"]

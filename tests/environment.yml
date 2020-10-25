@@ -1,0 +1,15 @@
+channels:
+  - brsynth
+  - conda-forge
+  - defaults
+dependencies:
+  - python >= 3.6
+  - brs_utils
+  - credisdict
+  - python-libsbml
+  - numpy
+  - pandas
+  - requests
+  - colored
+  - redis-py
+  - rdkit == 2020.03.6
