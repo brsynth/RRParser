@@ -19,10 +19,6 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 
 
 ## Install
-### From pip
-```sh
-[sudo] python -m pip install rrparser
-```
 ### From Conda
 ```sh
 [sudo] conda install -c brsynth rrparser
