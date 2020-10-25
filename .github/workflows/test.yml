@@ -1,0 +1,57 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Test suite
+
+on:
+
+  push:
+    branches: [ master ]
+    paths:
+      - 'rrparser/*'
+      - 'tests/*.py'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  Functional:
+
+    runs-on: ubuntu-latest
+
+    env:
+      ANACONDA_TOKEN: ${{secrets.ANACONDA_TOKEN}}
+      ANACONDA_USER: ${{secrets.ANACONDA_USER}}
+      ANACONDA_LABEL: main
+      CONDA_BLD_PATH: /tmp/conda-bld
+      PACKAGE: rrparser
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: conda-incubator/setup-miniconda@v1
+      with:
+        activate-environment: build_env
+        auto-update-conda: true
+        environment-file: recipe/conda_build_env.yaml
+        miniconda-version: "latest"
+        auto-activate-base: false
+
+    - name: Set up output folder
+      run: |
+        mkdir -p ${CONDA_BLD_PATH}
+
+    - name: Build conda package
+      shell: bash -l {0}
+      run: |
+        conda build --no-test \
+          -c brsynth \
+          -c conda-forge \
+          --output-folder ${CONDA_BLD_PATH} recipe
+
+    - name: Test conda package
+      shell: bash -l {0}
+      run: |
+        conda build --test \
+          -c brsynth \
+          -c conda-forge \
+          ${CONDA_BLD_PATH}/*/${PACKAGE}-*.tar.bz2
