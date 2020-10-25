@@ -15,6 +15,7 @@ else
   file=$@
 fi
 
+
 PACKAGE=$PACKAGE \
 HOMEDIR=$HOMEDIR \
 docker-compose \
