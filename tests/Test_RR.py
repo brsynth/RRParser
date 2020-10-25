@@ -6,7 +6,6 @@ Created on June 17 2020
 
 # Generic for test process
 from unittest import TestCase
-
 # Specific for tool
 from sys import path as sys_path
 from os  import path as os_path
