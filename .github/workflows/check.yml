@@ -28,7 +28,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: docker://continuumio/anaconda3
 
-    - name: Updating anaconda
+    - name: Updating anaconda environment
       run: conda update --all -y
 
     - name: Installing make
