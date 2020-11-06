@@ -44,10 +44,10 @@ conda-recipe-check:
 	@echo OK
 ### parse recipe
 conda-recipe-parse:
-	@python ${TEST_PATH}/parse_recipe.py > /dev/null
+	@python ../${TEST_PATH}/parse_recipe.py > /dev/null
 ### clean recipe extracted infos
 conda-recipe-clean:
-	@rm -f ${TEST_PATH}/test-environment.yml ${TEST_PATH}/test.sh
+	@rm -f ../${TEST_PATH}/test-environment.yml ${TEST_PATH}/test.sh
 ### clean build products
 conda-clean-build:
 	@rm -rf ${CONDA_BLD_PATH}/*
@@ -64,17 +64,17 @@ conda-build-only_python%:
 	@conda build --no-test $(CONDA_BUILD_ARGS) --python=$* --output-folder ${CONDA_BLD_PATH} ../../recipe > /dev/null
 	@echo OK
 conda-build-only: conda-install-pyyaml
-	@for pyver in `python ${TEST_PATH}/parse_recipe.py | grep python | awk '{print $$2}'` ; do \
+	@for pyver in `python ../${TEST_PATH}/parse_recipe.py | grep python | awk '{print $$2}'` ; do \
 		$(MAKE_CMD) -f conda-tools.mk conda-build-only_python$$pyver ; \
 	done
-	@rm -f ${TEST_PATH}/environment.yml
+	@rm -f ../${TEST_PATH}/environment.yml
 ### test only
 conda-test-only_python%: conda-add-channels
 	@echo -n "Testing conda package for python$*... "
 	@conda build --test $(CONDA_BUILD_ARGS) ${CONDA_BLD_PATH}/${PLATFORM}/${PACKAGE}-*py`echo $* | sed -e "s/\.//g"`*.tar.bz2 > /dev/null
 	@echo OK
 conda-test-only: conda-add-channels conda-install-pyyaml
-	@for pyver in `python ${TEST_PATH}/parse_recipe.py | grep python | awk '{print $$2}'` ; do \
+	@for pyver in `python ../${TEST_PATH}/parse_recipe.py | grep python | awk '{print $$2}'` ; do \
 		$(MAKE_CMD) -f conda-tools.mk conda-test-only_python$$pyver ;\
 	done
 	@rm -f ${TEST_PATH}/environment.yml
@@ -85,10 +85,10 @@ conda-build-test_python%:
 	@conda build $(CONDA_BUILD_ARGS) --python=$* --output-folder ${CONDA_BLD_PATH} ../../recipe > /dev/null
 	@echo OK
 conda-build-test: conda-install-pyyaml
-	@for pyver in `python ${TEST_PATH}/parse_recipe.py | grep python | awk '{print $$2}'` ; do \
+	@for pyver in `python ../${TEST_PATH}/parse_recipe.py | grep python | awk '{print $$2}'` ; do \
 		$(MAKE_CMD) -f conda-tools.mk conda-build-test_python$$pyver ;\
 	done
-	@rm -f ${TEST_PATH}/environment.yml
+	@rm -f ../${TEST_PATH}/environment.yml
 ### convert
 conda-convert:
 	@echo -n "Converting conda package from ${PLATFORM} to osx-64, linux-64 and win-64... "
