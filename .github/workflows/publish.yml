@@ -16,32 +16,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: conda-incubator/setup-miniconda@v1
-      with:
-        activate-environment: build_env
-        auto-update-conda: true
-        environment-file: recipe/conda_build_env.yaml
-        miniconda-version: "latest"
-        auto-activate-base: false
+    - uses: docker://continuumio/anaconda3
 
-    - name: Set up environment
+    - name: Update anaconda
+      run: conda update --all -y
+
+    - name: Install make
+      run: apt-get update && apt-get install -y make
+
+    - name: Building package
       run: |
         cd ci
-        source .env
-        mkdir -p ${CONDA_BLD_PATH}
+        make build
 
-    - name: Build conda package
-      shell: bash -l {0}
-      run: ./scripts/conda-build.sh
+    - name: Testing package
+      run: |
+        cd ci
+        make test
 
-    - name: Test conda package
-      shell: bash -l {0}
-      run: ./scripts/conda-test.sh
+    - name: Converting to other platforms
+      run: |
+        cd ci
+        make convert
 
-    - name: Convert to other platforms
-      shell: bash -l {0}
-      run: ./scripts/conda-convert.sh
-
-    - name: Upload to anaconda
-      shell: bash -l {0}
-      run: ./scripts/conda-publish.sh
+    - name: Uploading to anaconda
+      run: |
+        cd ci
+        make publish

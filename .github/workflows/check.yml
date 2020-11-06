@@ -7,22 +7,39 @@ on:
 
   push:
     branches: [ master, dev ]
-    paths:
-      - 'rrparser/*'
-      - 'tests/*.py'
+    paths-ignore:
+      - 'RELEASE*'
+      - 'README*'
+      - 'LICENSE*'
+      - 'recipe'
+      - 'docs'
+      - '.github'
+      - '!.github/workflows/check*'
   pull_request:
     branches: [ master ]
 
 jobs:
 
-  Check Full:
+  Check:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+    - uses: docker://continuumio/anaconda3
 
-    - name: Test
+    - name: Updating anaconda
+      run: conda update --all -y
+
+    - name: Installing make
+      run: apt-get update && apt-get install -y make
+
+    - name: Building package
       run: |
         cd ci
-        bash ./check-indocker.sh
+        make build
+
+    - name: Checking package
+      run: |
+        cd ci
+        make check
