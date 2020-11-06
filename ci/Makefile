@@ -10,7 +10,7 @@ include $(SELF_DIR)/.env
 help: ## Basic help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-.DEFAULT_GOAL := all
+.DEFAULT_GOAL := help
 
 # cli args
 ARGS = $(filter-out $@,$(MAKECMDGOALS))
