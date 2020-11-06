@@ -47,6 +47,7 @@ If `python` option is set then this stage is only performed for the version `<ve
 ### Publish
 The publishing stage of conda package can be performed by:
 ```bash
+source .secrets
 make publish [python=<ver>] [env=<conda_env_name>]
 ```
 Equivalent to `anaconda upload`.

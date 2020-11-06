@@ -1,6 +1,5 @@
 include ../../extras/.env
 include ../.env
-include ../.secrets
 
 PLATFORM = $(shell conda info | grep platform | awk '{print $$3}')
 
