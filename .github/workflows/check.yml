@@ -26,10 +26,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: docker://continuumio/anaconda3
+    - uses: docker://continuumio/miniconda3
 
-    - name: Updating anaconda environment
+    - name: Updating conda
       run: conda update --all -y
+
+    - name: Installing conda-build
+      run: conda install -y conda-build
 
     - name: Installing make
       run: conda install -y make
