@@ -3,15 +3,15 @@ from yaml   import YAMLError
 from os     import path      as os_path
 from shutil import copyfile
 
-# input files
-_env_file     = 'ci/pytest/_environment.yml'
-env_file      = 'ci/pytest/environment.yml'
-channels_file = 'ci/pytest/channels.txt'
-recipe_file   = 'recipe/meta.yaml'
-bld_cfg_file  = 'recipe/conda_build_config.yaml'
+current_folder = os_path.dirname(os_path.realpath(__file__))
 
+# input files
+channels_file = current_folder+'/../../recipe/conda_channels.txt'
+recipe_file   = current_folder+'/../../recipe/meta.yaml'
+bld_cfg_file  = current_folder+'/../../recipe/conda_build_config.yaml'
 # output files
-cmd_file    = 'ci/pytest/cmd.sh'
+env_file      = current_folder+'/test-environment.yml'
+test_file     = current_folder+'/test.sh'
 
 def parse_meta(filename):
 
@@ -25,6 +25,7 @@ def parse_meta(filename):
             line = f.readline()
 
     requirements = []
+    tests = {}
     try:
         try: requirements += yaml_safe_load(recipe)['requirements']['host']
         except TypeError: pass
@@ -32,11 +33,12 @@ def parse_meta(filename):
         except TypeError: pass
         try: requirements += yaml_safe_load(recipe)['test']['requires']
         except TypeError: pass
-        tests_cmd = yaml_safe_load(recipe)['test']['commands']
+        tests['commands']     = yaml_safe_load(recipe)['test']['commands']
+        tests['source_files'] = yaml_safe_load(recipe)['test']['source_files']
     except YAMLError as exc:
         print(exc)
 
-    return requirements, tests_cmd
+    return requirements, tests
 
 def parse_build_config(filename):
     with open(filename, 'r') as f:
@@ -58,19 +60,21 @@ def write_dependencies(filename, requirements):
         for req in requirements:
             f.write('  - '+req+'\n')
 
-def write_commands(filename, cmd):
+def write_tests(filename, tests):
     with open(filename, 'w') as f:
-        f.write(' ; '.join(tests_cmd))
+        f.write('cd .. ; ')
+        f.write(tests['commands'][0]+' ')
+        for source_files in tests['source_files']:
+            f.write(source_files)
 
 
-requirements, tests_cmd = parse_meta(recipe_file)
+requirements, tests = parse_meta(recipe_file)
 write_dependencies(env_file, requirements)
-write_commands(cmd_file, tests_cmd)
+write_tests(test_file, tests)
 
 bld_cfgs = parse_build_config(bld_cfg_file)
 for pkg in bld_cfgs:
     for ver in bld_cfgs[pkg]:
         env_file_cfg = env_file+'.'+pkg+str(ver)
-        dep = pkg+'='+str(ver)
+        dep = pkg+' '+str(ver)
         print(dep)
-        # write_dependencies(env_file_cfg, requirements+[dep])
