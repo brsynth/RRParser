@@ -8,10 +8,9 @@ This Continuous Integration toolkit provides tools to build and publish Conda pa
 
 Requirements can be provided by a docker container by running the following commands (at package root folder):
 ```bash
-docker run -it --rm -v $PWD:$PWD -w $PWD continuumio/anaconda3 bash
+docker run -it --rm -v $PWD:$PWD -w $PWD continuumio/miniconda3 bash
 conda update --all -y
-apt-get update
-apt-get install -y make
+conda install -y make
 cd ci
 ```
 
@@ -20,7 +19,7 @@ cd ci
 ### Build
 The building stage of conda package can be performed by:
 ```bash
-make build [python=<ver>]
+make conda-build [python=<ver>]
 ```
 Equivalent to `conda build --build-only`. Only run the build, without  any  post  processing  or  testing. For tests, please see section about Test stage.
 
@@ -29,7 +28,7 @@ If `python` option is set then this stage is only performed for the version `<ve
 ### Test
 The testing stage of conda package can be performed by:
 ```bash
-make test [python=<ver>] [env=<conda_env_name>]
+make conda-test [python=<ver>] [env=<conda_env_name>]
 ```
 Equivalent to `conda build --test`.
 
@@ -38,22 +37,26 @@ If `python` option is set then this stage is only performed for the version `<ve
 ### Convert
 The converting stage of conda package can be performed by:
 ```bash
-make convert [python=<ver>] [env=<conda_env_name>]
+make conda-convert [python=<ver>] [env=<conda_env_name>]
 ```
 Equivalent to `conda convert`, the conversion is performed for all plaforms (`linux-64`, `osx-64` and `win-64`).
 
 If `python` option is set then this stage is only performed for the version `<ver>` of Python. By default, the Python version will be the latest available within the building environment.
 
+
 ### Publish
+
+#### Requirements
+* anaconda-client
+
 The publishing stage of conda package can be performed by:
 ```bash
-source .secrets
-make publish [python=<ver>] [env=<conda_env_name>]
+make conda-publish [python=<ver>] [env=<conda_env_name>]
 ```
 Equivalent to `anaconda upload`.
 
 If `python` option is set then this stage is only performed for the version `<ver>` of Python. By default, the Python version will be the latest available within the building environment.
-Credentials have to be stored in `.secrets` file with the following syntax:
+Credentials have to be stored in `ci/.secrets` file with the following syntax:
 ```
 ANACONDA_USER=<username>
 ANACONDA_TOKEN=<token>
@@ -62,21 +65,14 @@ ANACONDA_TOKEN=<token>
 ## Development tools
 Conda workflow is heavy and long to perform. For development or debugging purposes, fast testing process is possible by:
 ```bash
-make f-test [env=<conda_env_name>]
+make test [env=<conda_env_name>] [<tests_folder_or_filename(s)>]
 ```
 Equivalent to `pytest`, this stage is achieved within a conda environment.
 
 If `env` option is set then this stage is performed in `<conda_env_name>` (default: `test`) conda environment.
 
-Requirements can be provided by a docker container. It could the same than Conda workflow uses (`continuumio/anaconda3`). Nevertheless, a lighter image can be used by running the following commands (at package root folder):
-```bash
-docker run -it --rm -v $PWD:$PWD -w $PWD continuumio/miniconda3 bash
-conda update --all -y
-apt-get update
-apt-get install -y make
-cd ci
-```
-
+## Workflows
+The user will find into `workflows/` folder, several workflows for different CI/CD platform. These worfklows have to be copied into the right folder. For instance, GitHub needs to find workflows into `.github/workflows` to trigger actions.
 
 ## Authors
 

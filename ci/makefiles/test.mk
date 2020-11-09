@@ -32,6 +32,6 @@ flake: ## Run flake over code and tests
 
 # TEST
 test: ## Test code with 'pytest'
-	@export PYTHONPATH=../..
-	@cd ../../tests
-	@python -m pytest -v $(ARGS)
+	@export PYTHONPATH=$$PWD/../.. ; \
+	cd ../../tests ; \
+	python -m pytest -v $(args)
