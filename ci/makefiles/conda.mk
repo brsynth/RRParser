@@ -179,9 +179,9 @@ ifneq ("$(wildcard $(MY_ENV_DIR))","") # check if the directory is there
 else
 		@$(ECHO) "Creating '$(env)' environment... "
 		@conda env create -n $(env) -f $($(*)_env_file) > /dev/null
-		@rm -f $(test_env_file)
 		@echo OK
 endif
+		@rm -f $(test_env_file)
 
 conda-run-env:
 ifneq ($(strip $(cmd)),)
