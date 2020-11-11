@@ -39,8 +39,6 @@ If `variants` option is set according to `--variants` `conda-build` option forma
 
 Also, `recipe/conda_build_config.yaml` file can be edited to target specific variant(s).
 
-
-
 ### Test
 The testing stage of conda package can be performed by:
 ```bash
@@ -59,9 +57,7 @@ Equivalent to `conda convert`, the conversion is performed for all plaforms (`li
 
 If `env` option is set, then the `conda convert` command will run inside `env` conda environment. By default, `env` is set to `<package_name>_build`.
 
-
 ### Publish
-
 The publishing stage of conda package can be performed by:
 ```bash
 make conda-publish [env=<conda_env_name>]
@@ -79,11 +75,16 @@ ANACONDA_TOKEN=<token>
 ## Development tools
 Conda workflow is heavy and long to perform. For development or debugging purposes, fast testing process is possible by:
 ```bash
-make test [env=<conda_env_name>] [PATH_1, PATH_2...]
+make test [env=<conda_env_name>] args=[PATH_1, PATH_2...]
 ```
 Equivalent to `pytest`, this stage is achieved within a conda environment. Then, `PATH_1, PATH2...` are paths to folders or filenames, just like in `pytest` command.
 
 If `env` option is set then this stage is performed in `<conda_env_name>` (default: `test`) conda environment.
+
+For environment automatic building, tests can be processed within conda environment:
+```bash
+make test-inconda [env=<conda_env_name>]  args=[PATH_1, PATH_2...]
+```
 
 ## Workflows
 The user will find into `workflows/` folder, several workflows for different CI/CD platform. These worfklows have to be copied into the right folder. For instance, GitHub needs to find workflows into `.github/workflows` to trigger actions.
