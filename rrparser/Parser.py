@@ -71,9 +71,13 @@ class Parser:
                                  outfile_temp)
             else:
                 if input_format == 'tsv':
-                    _parseTSV_and_write(rules_file, rule_type,
-                                        list(map(int, diameters_list)),
-                                        outfile_temp)
+                    try:
+                        _parseTSV_and_write(rules_file, rule_type,
+                                            list(map(int, diameters_list)),
+                                            outfile_temp)
+                    except KeyError as e:
+                        remove(outfile_temp)
+                        raise KeyError(str(e))
                 elif input_format == 'csv':
                     _parseCSV_and_write(rules_file, rule_type,
                                         list(map(int, diameters_list)),
@@ -166,6 +170,8 @@ def _parseTSV_and_write(infile, rule_type, diameters, outfile):
                 except ValueError:
                     raise ValueError(
                         'Cannot convert diameter to integer: '+str(row['Diameter']))
+                except KeyError as e:
+                    raise KeyError(str(e))
 
 def _parseCSV_and_write(infile, rule_type, diameters, outfile):
     with open(infile, 'r') as rf:
