@@ -28,7 +28,8 @@ test:
     - pytest
   commands:
     - python -m {{ name|lower }} --help
-    - pytest -v
+    - cd tests
+    - python -m pytest -v
 
 about:
   home: https://github.com/brsynth/{{ name|lower }}
