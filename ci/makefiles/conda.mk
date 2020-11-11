@@ -177,7 +177,7 @@ check-environment-%: check-conda test_env_file
 ifneq ("$(wildcard $(MY_ENV_DIR))","") # check if the directory is there
 		@$(ECHO) "Found '$(env)' environment in $(MY_ENV_DIR). Skipping installation.\n"
 else
-		@$(ECHO) "'$(env)' folder is missing in $(ENV_DIR). Creating '$(env)' environment... "
+		@$(ECHO) "Creating '$(env)' environment... "
 		@conda env create -n $(env) -f $($(*)_env_file) > /dev/null
 		@echo OK
 endif
