@@ -52,9 +52,9 @@ if __name__ == '__main__':
         else:
             args = sys_argv
         if any(arg in args for arg in ['commands', 'cmd']):
-            print(' ; '.join(tests['commands']), end=' ')
+            print(' && '.join(tests['commands']), end=' ')
         if any(arg in args for arg in ['sources', 'src']):
-            print(' '.join(tests['source_files']))
+            print(' '.join(['../'+e for e in tests['source_files']]))
         else:
             print()
 
