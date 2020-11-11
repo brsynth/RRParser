@@ -11,8 +11,8 @@ from Test_RR import Test_RR
 from rrparser import Parser
 
 # Specific for tests themselves
-from hashlib import sha256
-from pathlib import Path
+from hashlib  import sha256
+from pathlib  import Path
 from tempfile import TemporaryDirectory
 
 
@@ -31,8 +31,6 @@ class Test_RR_InputFormat(Test_RR):
                                              diameters=diam)
         self.assertEqual(
             sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
-        remove(outfile)
-        tempdir.cleanup()
 
     def test_BadInputFormatCSV_1(self):
         diam = '2'
@@ -43,7 +41,6 @@ class Test_RR_InputFormat(Test_RR):
                           rules_file='data/rules.csv',
                           input_format='tsv',
                           diameters=diam)
-        tempdir.cleanup()
 
     def test_BadInputFormatCSV_2(self):
         diam = '2'
@@ -54,7 +51,6 @@ class Test_RR_InputFormat(Test_RR):
                           rules_file='data/rules.csv',
                           input_format='other',
                           diameters=diam)
-        tempdir.cleanup()
 
 
     # def test_SmallRulesFile_OneDiameter_WithFingerPrint(self):

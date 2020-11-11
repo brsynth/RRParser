@@ -31,7 +31,6 @@ class Test_RR_RuleType(Test_RR):
                                             outdir=tempdir.name,
                                             rule_type=rule_type,
                                             diameters='2')
-                tempdir.cleanup()
 
     def test_EmptyRuleTypeArgument(self):
         for rule_type in ['']:
@@ -42,4 +41,3 @@ class Test_RR_RuleType(Test_RR):
                                             outdir=tempdir.name,
                                             rule_type=rule_type,
                                             diameters='2')
-                tempdir.cleanup()
