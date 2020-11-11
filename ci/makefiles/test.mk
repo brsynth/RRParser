@@ -13,7 +13,7 @@ help:
 .DEFAULT_GOAL := all
 
 MAKE_CMD = $(MAKE) -s --no-print-directory
-ECHO = echo -n ">>> "
+ECHO = echo -n ">>>"
 
 # # cli args
 # ARGS = $(filter-out $@,$(MAKECMDGOALS))
@@ -44,6 +44,8 @@ else
 endif
 
 test: ## Test code with 'pytest'
+	@$(ECHO) "Testing $(test_src)...\n"
 	@export PYTHONPATH=$$PWD/../.. ; \
 	cd ../.. ; \
-	$(test_cmd) -p no:cacheprovider $(test_src)
+	$(test_cmd) -p no:cacheprovider $(test_src) ; \
+	echo OK

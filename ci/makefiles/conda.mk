@@ -24,7 +24,7 @@ help-advanced: ## Advanced help.
 ARGS = $(filter-out $@,$(MAKECMDGOALS))
 CONDA_BUILD_ARGS = --quiet --numpy 1.11
 MAKE_CMD = $(MAKE) -s --no-print-directory
-ECHO = echo -n ">>> "
+ECHO = echo -n ">>>"
 
 clean: conda-clean-build
 
@@ -175,16 +175,17 @@ test_env_file: check-pyyaml
 	@python3 ../$(TEST_PATH)/parse_recipe.py req > $(test_env_file)
 check-environment-%: check-conda test_env_file
 ifneq ("$(wildcard $(MY_ENV_DIR))","") # check if the directory is there
-		@$(ECHO) "Found '$(env)' environment in $(MY_ENV_DIR). Skipping installation.\n"
+		@$(ECHO) "'$(env)' environment already exists.\n"
 else
 		@$(ECHO) "Creating '$(env)' environment... "
 		@conda env create -n $(env) -f $($(*)_env_file) > /dev/null
+		@rm -f $(test_env_file)
 		@echo OK
 endif
 
 conda-run-env:
 ifneq ($(strip $(cmd)),)
-	@conda run --name $(env) $(cmd) args="$(args)"
+	conda run --name $(env) $(cmd) args="$(args)"
 else
 	@conda run --name $(env) \
 		$(MAKE_CMD) -f conda.mk $(target) args=$(args)
