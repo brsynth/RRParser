@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 from tempfile import NamedTemporaryFile
 from shutil import copyfile
 from os import path as os_path
-from os import makedirs
+from os import makedirs, remove
 from brs_utils import download_and_extract_tar_gz
 
 
@@ -88,6 +88,7 @@ class Parser:
             outfile = os_path.basename(os_path.splitext(rules_file)[0]) + \
                       '_d' + '-'.join(diameters_list)
             outfile = _pkg_out(outfile_temp, outdir, outfile, output_format)
+            remove(outfile_temp)
             return outdir+'/'+outfile
         else:
             if output_format == 'tar.gz':
@@ -97,6 +98,7 @@ class Parser:
                     tf.add(outfile_temp, outfile_name+'.csv')
             else:
                 copyfile(outfile_temp, outfile)
+            remove(outfile_temp)
             return outfile
 
 
