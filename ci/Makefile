@@ -37,26 +37,11 @@ test: ## Test code with 'pytest', this is the fastest way to test the code
 ifneq ($(strip $(env)),)
 	$(eval env=${PACKAGE}_$*)
 endif
-	$(MAKE_CMD) -f conda.mk check-environment-$* env=$(env)
-	$(MAKE_CMD) -f conda.mk conda-run-env env=$(env) \
+	@$(MAKE_CMD) -f conda.mk check-environment-$* env=$(env)
+	@$(MAKE_CMD) -f conda.mk conda-run-env env=$(env) \
 																				 cmd="make -C .. $*" \
-																				 args="$(ARGS)"
+																				 args="$(args)"
 
-# check-inconda: ## Test conda package
-# ifneq ($(strip $(env)),)
-# 	$(eval env=${PACKAGE}_check)
-# endif
-# 	@$(MAKE_CMD) -f conda.mk check-environment-check env=$(env)
-# 	@$(MAKE_CMD) -f conda.mk conda-run-env env=$(env) cmd="make -C .. check"
-#
-# test-inconda: ## Test code with 'pytest' within a conda environment, this is the fastest way to test the code
-# ifneq ($(strip $(env)),)
-# 	$(eval env=${PACKAGE}_test)
-# endif
-# 		 @$(MAKE_CMD) -f conda.mk check-environment-test env=$(env)
-# 	   @$(MAKE_CMD) -f conda.mk conda-run-env env=$(env) \
-# 																					  cmd="make -C .. test" \
-# 																						args=$(ARGS)
 
 conda-all: conda-build conda-test conda-convert conda-publish ## (default) Perform all conda process (build, test, convert, publish)
 
