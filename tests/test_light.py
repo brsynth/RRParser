@@ -11,9 +11,10 @@ from unittest import TestCase
 from rrparser import Parser
 
 # Specific for tests themselves
-from hashlib import sha256
-from pathlib import Path
+from hashlib  import sha256
+from pathlib  import Path
 from tempfile import TemporaryDirectory
+from os       import remove
 
 
 
@@ -36,6 +37,7 @@ class Test_RR(TestCase):
                                                      diameters=diam)
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+                remove(outfile)
                 tempdir.cleanup()
 
 
@@ -48,6 +50,7 @@ class Test_RR(TestCase):
                                              diameters=diam)
         self.assertEqual(
             sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+        remove(outfile)
         tempdir.cleanup()
 
     def test_BadInputFormatCSV_1(self):
@@ -59,6 +62,7 @@ class Test_RR(TestCase):
                           rules_file='data/rules.csv',
                           input_format='tsv',
                           diameters=diam)
+        remove(outfile)
         tempdir.cleanup()
 
     def test_BadInputFormatCSV_2(self):
@@ -70,6 +74,7 @@ class Test_RR(TestCase):
                           rules_file='data/rules.csv',
                           input_format='other',
                           diameters=diam)
+        remove(outfile)
         tempdir.cleanup()
 
 

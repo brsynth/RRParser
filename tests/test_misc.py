@@ -8,18 +8,18 @@ Created on June 17 2020
 from Test_RR import Test_RR
 
 # Specific for tool
-from sys import path as sys_path
-from os import path as os_path
+from sys      import path as sys_path
+from os       import path as os_path
 from rrparser import Parser
 
 # Specific for tests themselves
-from os import stat
+from os        import stat, remove
 from itertools import combinations
-from random import sample, seed
-from hashlib import sha256
-from pathlib import Path
-from tempfile import TemporaryDirectory
-from tarfile import open as tf_open
+from random    import sample, seed
+from hashlib   import sha256
+from pathlib   import Path
+from tempfile  import TemporaryDirectory
+from tarfile   import open as tf_open
 
 
 # Cette classe est un groupe de tests. Son nom DOIT commencer
@@ -42,6 +42,7 @@ class Test_Misc(Test_RR):
                                              diameters=diam)
         self.assertEqual(
             sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+        remove(outfile)
         tempdir.cleanup()
 
     def test_SmallRulesFile_OneDiameter(self):
@@ -53,6 +54,7 @@ class Test_Misc(Test_RR):
                                                      diameters=diam)
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+                remove(outfile)
                 tempdir.cleanup()
 
     def test_SmallRulesFile_OneDiameter_SpecifyOutfile(self):
@@ -71,6 +73,7 @@ class Test_Misc(Test_RR):
                     outfile = tempdir.name+'/rules_d2.csv'
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+                remove(outfile)
                 tempdir.cleanup()
 
     def test_AllTypes_RandomDiam(self):
@@ -86,4 +89,5 @@ class Test_Misc(Test_RR):
                                                              rule_type=rule_type,
                                                              diameters=','.join(diam))
                         self.assertGreater(stat(outfile).st_size, 135)
+                        remove(outfile)
                         tempdir.cleanup()
