@@ -62,7 +62,6 @@ class Test_RR(TestCase):
                           rules_file='data/rules.csv',
                           input_format='tsv',
                           diameters=diam)
-        remove(outfile)
         tempdir.cleanup()
 
     def test_BadInputFormatCSV_2(self):
@@ -74,7 +73,6 @@ class Test_RR(TestCase):
                           rules_file='data/rules.csv',
                           input_format='other',
                           diameters=diam)
-        remove(outfile)
         tempdir.cleanup()
 
 

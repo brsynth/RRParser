@@ -31,6 +31,7 @@ class Test_RR_InputFormat(Test_RR):
                                              diameters=diam)
         self.assertEqual(
             sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+        remove(outfile)
         tempdir.cleanup()
 
     def test_BadInputFormatCSV_1(self):

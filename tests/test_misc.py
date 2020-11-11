@@ -70,6 +70,7 @@ class Test_Misc(Test_RR):
                     tar = tf_open(outfile)
                     tar.extractall(tempdir.name)
                     tar.close()
+                    remove(outfile)
                     outfile = tempdir.name+'/rules_d2.csv'
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
