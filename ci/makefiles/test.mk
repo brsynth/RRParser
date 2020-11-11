@@ -13,6 +13,7 @@ help:
 .DEFAULT_GOAL := all
 
 MAKE_CMD = $(MAKE) -s --no-print-directory
+ECHO = echo -n ">>> "
 
 # # cli args
 # ARGS = $(filter-out $@,$(MAKECMDGOALS))
@@ -22,7 +23,6 @@ all: check test ## Run check and test code
 
 # CHECK
 check: flake bandit ## Run flake and bandit over code and tests
-	@echo "Checking code..."
 bandit: ## Run bandit over code
 	@echo "=== BANDIT REPORT ==="
 	@bandit -r ../../${PACKAGE}
