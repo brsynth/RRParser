@@ -60,15 +60,15 @@ class Test_Misc(Test_RR):
             with self.subTest(format=format):
                 diam = '2'
                 tempdir = TemporaryDirectory(suffix='_'+diam)
-                outfile = self.rr_parser.parse_rules(outfile='./results.'+format,
+                outfile = self.rr_parser.parse_rules(outfile=tempdir.name+'/results.'+format,
                                                      rules_file='data/rules.csv',
                                                      diameters=diam,
                                                      output_format=format)
                 if format=='tar.gz':
                     tar = tf_open(outfile)
-                    tar.extractall()
+                    tar.extractall(tempdir.name)
                     tar.close()
-                    outfile = 'rules_d2.csv'
+                    outfile = tempdir.name+'/rules_d2.csv'
                 self.assertEqual(
                     sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
                 tempdir.cleanup()
