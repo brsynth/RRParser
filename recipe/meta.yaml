@@ -17,6 +17,7 @@ requirements:
     - python {{ python }}
   run:
     - python {{ python }}
+    - pandas
     - brs_utils
 
 test:
