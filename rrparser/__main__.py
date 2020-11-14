@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from logging  import error as logging_error
-from rrparser import Parser, build_args_parser
+from rrparser import build_args_parser, parse_rules
 
 
 def _cli():
@@ -9,15 +9,17 @@ def _cli():
     args  = parser.parse_args()
 
     try:
-        return Parser().parse_rules(rules_file=args.rules_file,
-                                    input_format=args.input_format,
-                                    rule_type=args.rule_type,
-                                    diameters=args.diameters,
-                                    outdir=args.outdir,
-                                    outfile=args.outfile,
-                                    output_format=args.output_format)
+        results = parse_rules(rules_file=args.rules_file,
+                              outfile=args.outfile,
+                              input_format=args.input_format,
+                              rule_type=args.rule_type,
+                              diameters=args.diameters,
+                              output_format=args.output_format)
+        if results:
+            print(results)
     except ValueError as e:
         logging_error(str(e))
+
 
 
 if __name__ == '__main__':
