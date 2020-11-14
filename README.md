@@ -44,14 +44,14 @@ params = parser.parse_args()
 ### Run from CLI
 ```sh
 python -m rrparser \
-  [--rules-file <filename>] \
+  rules_file <filename> \
   [--input-format {csv,tsv}] \
   [--rule-type {all,retro,forward}] \
-  --output <folder> \
+  [--outfile <filename>] \
   [--diameters {2,4,6,8,10,12,14,16}] \
-  --output-format {csv,tar.gz}
+  [--output-format {csv,tsv}]
 ```
-
+If `rules_files` is set to `retrorules`, RetroRules are fetched from `retrorules.org` and considered as input file.
 
 ## Authors
 
