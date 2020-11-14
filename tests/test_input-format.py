@@ -5,15 +5,15 @@ Created on June 17 2020
 """
 
 # Generic for test process
-from Test_RR import Test_RR
+from test_RR import Test_RR
 
 # Specific for tool
-from rrparser import Parser
+from rrparser import parse_rules
 
 # Specific for tests themselves
 from hashlib  import sha256
 from pathlib  import Path
-from tempfile import TemporaryDirectory
+from tempfile import NamedTemporaryFile
 
 
 
@@ -24,33 +24,37 @@ class Test_RR_InputFormat(Test_RR):
 
     def test_GoodInputFormatCSV(self):
         diam = '2'
-        tempdir = TemporaryDirectory(suffix='_'+diam)
-        outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
-                                             rules_file='data/rules.csv',
-                                             input_format='csv',
-                                             diameters=diam)
+        outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
+        parse_rules(rules_file='data/rules.csv',
+                    input_format='csv',
+                    rule_type='retro',
+                    diameters=diam,
+                    outfile=outfile.name)
         self.assertEqual(
-            sha256(Path(outfile).read_bytes()).hexdigest(), self.hash_d2)
+            sha256(Path(outfile.name).read_bytes()).hexdigest(), self.hash_d2)
+        outfile.close()
 
     def test_BadInputFormatCSV_1(self):
         diam = '2'
-        tempdir = TemporaryDirectory(suffix='_'+diam)
+        outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
         self.assertRaises(KeyError,
-                          self.rr_parser.parse_rules,
-                          outdir=tempdir.name,
+                          parse_rules,
                           rules_file='data/rules.csv',
                           input_format='tsv',
-                          diameters=diam)
+                          diameters=diam,
+                          outfile=outfile.name)
+        outfile.close()
 
     def test_BadInputFormatCSV_2(self):
         diam = '2'
-        tempdir = TemporaryDirectory(suffix='_'+diam)
+        outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
         self.assertRaises(ValueError,
-                          self.rr_parser.parse_rules,
-                          outdir=tempdir.name,
+                          parse_rules,
                           rules_file='data/rules.csv',
                           input_format='other',
-                          diameters=diam)
+                          diameters=diam,
+                          outfile=outfile.name)
+        outfile.close()
 
 
     # def test_SmallRulesFile_OneDiameter_WithFingerPrint(self):

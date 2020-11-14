@@ -5,15 +5,15 @@ Created on June 17 2020
 """
 
 # Generic for test process
-from Test_RR import Test_RR
+from test_RR import Test_RR
 
 # Specific for tool
-from rrparser import Parser
+from rrparser import parse_rules, fetch_retrorules
 
 # Specific for tests themselves
-from hashlib import sha256
-from pathlib import Path
-from tempfile import TemporaryDirectory
+from hashlib  import sha256
+from pathlib  import Path
+from tempfile import NamedTemporaryFile
 
 
 
@@ -25,12 +25,13 @@ class Test_RR_RuleType(Test_RR):
     def test_BadRuleTypeArgument(self):
         for rule_type in ['test', 'reto']:
             with self.subTest(rule_type=rule_type):
-                tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
+                outfile = NamedTemporaryFile(suffix='_'+rule_type+'_2', delete=True)
                 self.assertRaises(ValueError,
-                                  self.rr_parser.parse_rules,
-                                            outdir=tempdir.name,
-                                            rule_type=rule_type,
-                                            diameters='2')
+                                  parse_rules,
+                                  rules_file=fetch_retrorules(rule_type),
+                                  outfile=outfile.name,
+                                  rule_type=rule_type,
+                                  diameters='2')
 
     def test_EmptyRuleTypeArgument(self):
         for rule_type in ['']:
