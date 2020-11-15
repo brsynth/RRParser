@@ -86,6 +86,12 @@ For environment automatic building, tests can be processed within conda environm
 make test-inconda [env=<conda_env_name>]  args=[PATH_1, PATH_2...]
 ```
 
+To run the code in a debug process, it can be done with the following commands at the root of the repository:
+```bash
+conda activate PACKAGE_test
+python -m PACKAGE --help
+```
+
 ## Workflows
 The user will find into `workflows/` folder, several workflows for different CI/CD platform. These worfklows have to be copied into the right folder. For instance, GitHub needs to find workflows into `.github/workflows` to trigger actions.
 
