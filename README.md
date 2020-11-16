@@ -55,9 +55,9 @@ If `rules_files` is set to `retrorules`, RetroRules are fetched from `retrorules
 
 ## Authors
 
-* **Thomas Duigou**
+* **Joan Hérisson**
 * Melchior du Lac
-* Joan Hérisson
+* Thomas Duigou
 
 ## License
 
