@@ -88,8 +88,8 @@ make test-inconda [env=<conda_env_name>]  args=[PATH_1, PATH_2...]
 
 To run the code in a debug process, it can be done with the following commands at the root of the repository:
 ```bash
-conda activate PACKAGE_test
-python -m PACKAGE --help
+conda activate {PACKAGE}_test
+python -m {PACKAGE} --help
 ```
 
 ## Workflows
