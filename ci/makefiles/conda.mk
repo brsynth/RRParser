@@ -3,7 +3,6 @@ include ../.env
 
 tmpfile := $(shell mktemp -u)
 tmpdir  := $(shell dirname $(tmpfile))
-test_env_file := $(tmpdir)/$(shell mktemp -u XXXXXX-${PACKAGE}_test_env.yml)
 
 PLATFORM = $(shell conda info | grep platform | awk '{print $$3}')
 
@@ -169,11 +168,16 @@ ifeq (False,$(HAS_PYYAML))
 	@$(MAKE_CMD) -f conda.mk conda-install-pyyaml channel=conda-forge
 endif
 
-build_env_file = ../../recipe/conda_build_env.yaml
-check_env_file = ../test/check-environment.yml
+build_env_file := ../../recipe/conda_build_env.yaml
+check_env_file := ../test/check-environment.yml
+test_env_file  := $(tmpdir)/$(shell mktemp -u XXXXXX-${PACKAGE}_test_env.yml)
+build_env_file:
+	@
+check_env_file:
+	@
 test_env_file: check-pyyaml
 	@python3 ../$(TEST_PATH)/parse_recipe.py req > $(test_env_file)
-check-environment-%: check-conda test_env_file
+check-environment-%: check-conda %_env_file
 ifneq ("$(wildcard $(MY_ENV_DIR))","") # check if the directory is there
 		@$(ECHO) "'$(env)' environment already exists.\n"
 else

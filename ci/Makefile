@@ -9,7 +9,7 @@ include $(SELF_DIR)/../extras/.env
 .PHONY: help test
 
 help:
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
 
@@ -60,3 +60,6 @@ conda-publish: ## Publish conda package, if 'python=<version>' (default is all v
 
 conda-check-recipe: ## Check conda recipe
 	@$(MAKE_CMD) -f conda.mk conda-recipe-check
+
+conda-create-run_env: ## Make an conda environment to run program
+	@$(MAKE_CMD) -f conda.mk check-environment-test env=run
