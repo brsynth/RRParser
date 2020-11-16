@@ -13,7 +13,7 @@ Created on May 4 2020
 from argparse  import ArgumentParser
 
 def build_args_parser():
-    parser = ArgumentParser(prog='RetroPath2', description='Python wrapper to fetch RetroRules')
+    parser = ArgumentParser(prog='rrparser', description='Python wrapper to fetch RetroRules')
     parser = _add_arguments(parser)
     return parser
 
