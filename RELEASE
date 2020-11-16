@@ -1,6 +1,9 @@
+2.3.0 - Nov 11, 2020
+  - add '--compress' option to compress output file
+
 2.2.0 - Nov 11, 2020
   - add CI toolkit
-  - use only temporay files/folders in tests
+  - use only temporary files/folders in tests
 
 2.1.0 - Oct 25, 2020
     - refactor into pure conda package
