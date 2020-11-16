@@ -5,7 +5,7 @@ Created on June 17 2020
 """
 
 # Generic for test process
-from test_RR import Test_RR
+from test_light import Test_RR
 
 # Specific for tool
 from rrparser import parse_rules, fetch_retrorules
@@ -25,9 +25,9 @@ class Test_RR_Diameters(Test_RR):
     def test_BadDiametersArgument(self):
         for diam in ['3']:
             with self.subTest(diam=diam):
-                outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
+                outfile = NamedTemporaryFile(delete=True)
                 rule_type = 'retro'
-                parse_rules(rules_file=fetch_retrorules(rule_type),
+                parse_rules(rules_file=fetch_retrorules(),
                             rule_type=rule_type,
                             diameters=diam,
                             outfile=outfile.name)
@@ -38,7 +38,7 @@ class Test_RR_Diameters(Test_RR):
     def test_OneDiameter(self):
         for diam in ['2']:
             with self.subTest(diam=diam):
-                outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
+                outfile = NamedTemporaryFile(delete=True)
                 parse_rules(rules_file=fetch_retrorules(),
                             diameters=diam,
                             outfile=outfile.name)
@@ -51,7 +51,7 @@ class Test_RR_Diameters(Test_RR):
     def test_MiscDiametersArgument(self):
         for diam in ['2-']:
             with self.subTest(diam=diam):
-                outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
+                outfile = NamedTemporaryFile(delete=True)
                 self.assertRaises(ValueError,
                                   parse_rules,
                                   rules_file=fetch_retrorules(),

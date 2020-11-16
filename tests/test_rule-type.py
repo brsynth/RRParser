@@ -5,7 +5,7 @@ Created on June 17 2020
 """
 
 # Generic for test process
-from test_RR import Test_RR
+from test_light import Test_RR
 
 # Specific for tool
 from rrparser import parse_rules, fetch_retrorules
@@ -25,20 +25,21 @@ class Test_RR_RuleType(Test_RR):
     def test_BadRuleTypeArgument(self):
         for rule_type in ['test', 'reto']:
             with self.subTest(rule_type=rule_type):
-                outfile = NamedTemporaryFile(suffix='_'+rule_type+'_2', delete=True)
+                outfile = NamedTemporaryFile(delete=True)
                 self.assertRaises(ValueError,
                                   parse_rules,
-                                  rules_file=fetch_retrorules(rule_type),
+                                  rules_file=fetch_retrorules(),
                                   outfile=outfile.name,
                                   rule_type=rule_type,
                                   diameters='2')
 
-    def test_EmptyRuleTypeArgument(self):
-        for rule_type in ['']:
-            with self.subTest(rule_type=rule_type):
-                tempdir = TemporaryDirectory(suffix='_'+rule_type+'_2')
-                self.assertRaises(ValueError,
-                                  self.rr_parser.parse_rules,
-                                            outdir=tempdir.name,
-                                            rule_type=rule_type,
-                                            diameters='2')
+    # def test_EmptyRuleTypeArgument(self):
+    #     for rule_type in ['']:
+    #         with self.subTest(rule_type=rule_type):
+    #             outfile = NamedTemporaryFile(delete=True)
+    #             self.assertRaises(ValueError,
+    #                               parse_rules,
+    #                               rules_file=fetch_retrorules(),
+    #                               outfile=outfile.name,
+    #                               rule_type=rule_type,
+    #                               diameters='2')
