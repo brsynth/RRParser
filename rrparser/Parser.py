@@ -9,7 +9,7 @@ from os        import path     as os_path
 from brs_utils import download_and_extract_tar_gz
 from pandas    import read_csv
 from pandas.core.computation.ops import UndefinedVariableError
-from csv       import QUOTE_ALL
+from csv       import QUOTE_ALL, QUOTE_NONE
 
 
 RETRORULES_URL  = 'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
@@ -33,13 +33,22 @@ def parse_rules(rules_file,
     """
 
     # Check args is here since the method is directly callable.
-    diameters, sep = check_args(rules_file, rule_type, diameters, input_format)
+    diameters, sep, quoting = check_args(rule_type,
+                                         diameters,
+                                         input_format,
+                                         output_format)
+
+    # If 'rules_file' is set to RetroRules, then fetch RetroRules on Internet
     if rules_file == 'retrorules':
         rules_file = fetch_retrorules()
-    rf         = read_csv(rules_file)
-    results    = filter(rf, rule_type, diameters)
 
-    return results.to_csv(outfile, index=False, sep=sep, quoting=QUOTE_ALL)
+    # Read 'csv' as 'tsv' by specying separator
+    rf = read_csv(rules_file, sep=sep)
+
+    # Filter rules according to 'rule_type' and 'diameters'
+    results = filter(rf, rule_type, diameters)
+
+    return results.to_csv(outfile, index=False, sep=sep, quoting=quoting)
 
 
 def filter(df, rule_type, diameters):
@@ -75,16 +84,11 @@ def fetch_retrorules():
     return rules_file
 
 
-def check_args(rules_file, rule_type, diameters, input_format):
+def check_args(rule_type, diameters, input_format, output_format):
 
-    # Rules file
-    if not rules_file:
-        if rule_type:
-            if rule_type not in ['all', 'retro', 'forward']:
-                raise ValueError('Cannot detect \'rule_type\' input: '+str(rule_type))
-        else:
-            raise ValueError(
-                    "at least one of --rules_file or --rule_type required")
+    # Rule type
+    if not rule_type or rule_type not in ['all', 'retro', 'forward']:
+        raise ValueError('Cannot detect \'rule_type\' input: '+str(rule_type))
 
     # Diameter
     diameters = diameters.split(',')
@@ -94,14 +98,21 @@ def check_args(rules_file, rule_type, diameters, input_format):
                     "--diameters takes only digit separated by comma")
 
     # Input format
-    try:
-        if input_format == 'csv':
-            sep = ','
-        elif input_format == 'tsv':
-            sep = '\t'
-        else:
-            raise ValueError('Can only have \'csv\' or \'tsv\' input formats')
-    except ValueError as e:
-        raise ValueError(str(e))
+    if input_format == 'csv':
+        sep = ','
+    elif input_format == 'tsv':
+        sep = '\t'
+    else:
+        raise ValueError('Can only have \'csv\' or \'tsv\' input formats')
 
-    return list(map(int, diameters)), sep
+    # Output format
+    if output_format == 'csv':
+        quoting = QUOTE_NONE
+    elif output_format == 'tsv':
+        quoting = QUOTE_ALL
+    else:
+        raise ValueError('Can only have \'csv\' or \'tsv\' input formats')
+
+
+
+    return list(map(int, diameters)), sep, quoting
