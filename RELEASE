@@ -1,3 +1,6 @@
+2.3.1 - Nov 11, 2020
+  - fix program name given by '--help'
+
 2.3.0 - Nov 11, 2020
   - add '--compress' option to compress output file
 
