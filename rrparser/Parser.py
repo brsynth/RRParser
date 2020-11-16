@@ -24,8 +24,8 @@ def parse_rules(rules_file,
     """Parse a reaction rules file and extract sub-part according 'diameters' and 'rule_type' filters.
 
     Keyword arguments:
-    outfile -- filename where to write results (if not set results are returned as a string)
     rules_file -- reactions file (if not set RetroRules are considered)
+    outfile -- filename where to write results (if not set results are returned as a string)
     input_format -- input format of rules_file ['csv', 'tsv'] (default 'csv')
     rule_type -- type of reaction rules ['all', 'forward', 'retro'] (default 'all')
     diameters -- diameters to filter [2,4,6,8,10,12,14,16] (default)

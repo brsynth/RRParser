@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
-from logging  import error as logging_error
-from rrparser import build_args_parser, parse_rules
-
+from logging   import error as logging_error
+from rrparser  import build_args_parser, parse_rules
+from brs_utils import compress_tar_gz
+from re        import sub
 
 def _cli():
     parser = build_args_parser()
     args  = parser.parse_args()
+
+    if args.compress: # Check if 'outfile' is required as a tar.gz archive
+        # Remove '.tar.gz' file extension
+        args.outfile = sub('\.tar.gz$', '', args.outfile)
 
     try:
         results = parse_rules(rules_file=args.rules_file,
@@ -15,8 +20,11 @@ def _cli():
                               rule_type=args.rule_type,
                               diameters=args.diameters,
                               output_format=args.output_format)
+        # Print results if 'outfile' is empty
         if results:
             print(results)
+        elif args.compress: # Check if 'outfile' is required as a tar.gz archive
+            compress_tar_gz(args.outfile, delete=True)
     except ValueError as e:
         logging_error(str(e))
 

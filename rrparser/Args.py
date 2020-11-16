@@ -43,6 +43,9 @@ def _add_arguments(parser):
                         choices=['csv', 'tsv'],
                         default='csv',
                         help='output file format (default: csv)')
+    parser.add_argument('-c', '--compress',
+                        action='store_true',
+                        help='compress output file as a tar.gz archive')
     # parser.add_argument('--version', action='version',
     #                     version='%(prog)s {version}'.format(version=__version__))
     return parser
