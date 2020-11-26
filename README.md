@@ -7,15 +7,11 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 ## Input
 
 * **rules-file**: (string) Filename of reaction rules
+* **outfile**: (string) Filename containing the result of the parsing. If not set, result is printed out in the console. If ends with '.gz', it will be gzipped.
 * **input-format**: (string) Valid options: csv, tsv. Format of the input file
 * **rule-type**: (string) Valid options: retro, forward, all. Return the rules that are in reverse, forward or both direction
-* **outdir**: (string) Path where output files will be written
 * **diameters**: (integer list) Valid options: 2, 4, 6, 8, 10, 12, 14, 16. The diameter of the rules to return
 * **output-format**: (string) Valid options: csv, tar.gz. Format of the returned file
-
-## Ouput
-
-* **output**: (string): Path of the output file. Either a compressed tar.gz (containing a csv) or csv list of reaction rules that are in a RetroPath2.0 friendly format
 
 
 ## Install
@@ -28,9 +24,14 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 
 ### Function call from Python code
 ```python
-from rrparser import Parser
+from rrparser import parse_rules
 
-outfile = Parser().parse_rules(rule_type, outdir, diameters)
+outfile = parse_rules(<rules_file>,
+                      <outfile>,
+                      input_format=<'csv' | 'tsv'>,
+                      rule_type=<'all' | 'retro' | 'forward'>,
+                      diameters=<'2,4,6,8,10,12,14,16'>,
+                      output_format=<'csv' | 'tsv'>)
 ```
 
 If parameters from CLI have to be parsed, the function `build_args_parser` is available:
@@ -44,7 +45,7 @@ params = parser.parse_args()
 ### Run from CLI
 ```sh
 python -m rrparser \
-  rules_file <filename> \
+  rules-file <filename> \
   [--input-format {csv,tsv}] \
   [--rule-type {all,retro,forward}] \
   [--outfile <filename>] \

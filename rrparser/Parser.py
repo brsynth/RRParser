@@ -5,7 +5,7 @@ Created on May 4 2020
 
 """
 
-from os        import path     as os_path
+from os        import path as os_path
 from brs_utils import download_and_extract_tar_gz
 from pandas    import read_csv
 from pandas.core.computation.ops import UndefinedVariableError

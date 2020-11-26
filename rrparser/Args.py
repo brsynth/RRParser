@@ -5,25 +5,22 @@ Created on May 4 2020
 
 """
 
-# import csv
-# from tarfile import open as tf_open
-# from tempfile import NamedTemporaryFile
-# from shutil import copyfile
-# from os import makedirs, remove
 from argparse  import ArgumentParser
+
 
 def build_args_parser():
     parser = ArgumentParser(prog='rrparser', description='Python wrapper to fetch RetroRules')
     parser = _add_arguments(parser)
     return parser
 
+
 def _add_arguments(parser):
-    parser.add_argument('rules_file',
+    parser.add_argument('rules-file',
                         type=str,
                         help="rules file to parse. If set to 'retrorules', RetroRules are considered as input file, either locally or fetched over Internet.")
     parser.add_argument('-o', '--outfile',
                         type=str,
-                        help="file where results are written")
+                        help="file where results are written. If file ends with '.gz', it will be gzipped.")
     parser.add_argument('-if', '--input-format',
                         type=str,
                         choices=['csv', 'tsv'],
@@ -43,9 +40,9 @@ def _add_arguments(parser):
                         choices=['csv', 'tsv'],
                         default='csv',
                         help='output file format (default: csv)')
-    parser.add_argument('-c', '--compress',
-                        action='store_true',
-                        help='compress output file as a tar.gz archive')
+    # parser.add_argument('-c', '--compress',
+    #                     action='store_true',
+    #                     help='compress output file as a .gz archive')
     # parser.add_argument('--version', action='version',
     #                     version='%(prog)s {version}'.format(version=__version__))
     return parser
