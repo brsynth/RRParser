@@ -1,3 +1,6 @@
+2.3.4 - Nov 26, 2020
+  - restore 'rules_file' argument to avoid bugs
+
 2.3.3 - Nov 26, 2020
   - remove '--compress' option. If outfile is set and ends with '.gz', it will be gzipped
 
