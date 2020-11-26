@@ -15,7 +15,7 @@ def build_args_parser():
 
 
 def _add_arguments(parser):
-    parser.add_argument('rules-file',
+    parser.add_argument('rules_file', # must be '_' otherwise it will be touchy in 'args' Namespace
                         type=str,
                         help="rules file to parse. If set to 'retrorules', RetroRules are considered as input file, either locally or fetched over Internet.")
     parser.add_argument('-o', '--outfile',
