@@ -54,6 +54,18 @@ python -m rrparser \
 ```
 If `rules_files` is set to `retrorules`, RetroRules are fetched from `retrorules.org` and considered as input file.
 
+## Tests
+Test can be run with the following commands:
+
+### Natively
+```bash
+cd tests
+pytest -v
+```
+
+# CI/CD
+For further tests and development tools, a CI toolkit is provided in `ci` folder (see [ci/README.md](ci/README.md)).
+
 ## Authors
 
 * **Joan Hérisson**
