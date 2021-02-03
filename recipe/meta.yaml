@@ -19,6 +19,7 @@ requirements:
     - python {{ python }}
     - pandas
     - brs_utils
+    - colorlog
 
 test:
   source_files:

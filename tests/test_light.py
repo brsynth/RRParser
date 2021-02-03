@@ -22,10 +22,12 @@ from tempfile import NamedTemporaryFile
 # 'Test_' prefix is mandatory
 class Test_RR(TestCase):
 
+
     def setUp(self):
         self.diameters   = ['2', '4', '6', '8', '10', '12', '14', '16']
         self.hash_d2_csv = 'f0c895aebd9527ce29142a10ee41375b05ea91d02a7cc1042b88407bc6a60516'
         self.hash_d2_tsv = '0cc7db25f78edda00894158559cbca79ce67074167431592860fe14072608b78'
+
 
     def test_SmallRulesFile_OneDiameter(self):
         for diam in ['2,4,6']:
@@ -49,6 +51,7 @@ class Test_RR(TestCase):
         self.assertEqual(
             sha256(Path(outfile.name).read_bytes()).hexdigest(), self.hash_d2_csv)
         outfile.close()
+
 
     # def test_BadInputFormatCSV_1(self):
     #     diam = '2'

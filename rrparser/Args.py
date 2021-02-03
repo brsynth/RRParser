@@ -6,6 +6,7 @@ Created on May 4 2020
 """
 
 from argparse  import ArgumentParser
+from rrparser._version import __version__
 
 
 def build_args_parser():
@@ -54,6 +55,11 @@ def _add_arguments(parser):
 
     ## Program options
     #
+    parser.add_argument('--log', metavar='ARG',
+                        type=str, choices=['debug', 'info', 'warning', 'error', 'critical',
+                                           'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        default='def_info',
+                        help='Adds a console logger for the specified level (default: error)')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__),
                         help='show the version number and exit')
