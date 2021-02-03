@@ -15,9 +15,15 @@ def build_args_parser():
 
 
 def _add_arguments(parser):
+
+    ## Positional arguments
+    #
     parser.add_argument('rules_file', # must be '_' otherwise it will be touchy in 'args' Namespace
                         type=str,
                         help="rules file to parse. If set to 'retrorules', RetroRules are considered as input file, either locally or fetched over Internet.")
+
+    ## Optional arguments
+    #
     parser.add_argument('-o', '--outfile',
                         type=str,
                         help="file where results are written. If file ends with '.gz', it will be gzipped.")
@@ -45,4 +51,11 @@ def _add_arguments(parser):
     #                     help='compress output file as a .gz archive')
     # parser.add_argument('--version', action='version',
     #                     version='%(prog)s {version}'.format(version=__version__))
+
+    ## Program options
+    #
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {}'.format(__version__),
+                        help='show the version number and exit')
+
     return parser
