@@ -1,3 +1,7 @@
+2.3.5 - Feb 4, 2021
+  - add --version option
+  - add a colored logger
+
 2.3.4 - Nov 26, 2020
   - restore 'rules_file' argument to avoid bugs
 
