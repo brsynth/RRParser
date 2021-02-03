@@ -8,7 +8,10 @@ Created on June 17 2020
 from test_light import Test_RR
 
 # Specific for tool
-from rrparser import parse_rules, fetch_retrorules
+from rrparser.Parser import (
+    parse_rules,
+    fetch_retrorules
+)
 
 # Specific for tests themselves
 from hashlib  import sha256
