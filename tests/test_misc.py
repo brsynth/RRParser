@@ -16,8 +16,7 @@ from rrparser import parse_rules
 from os        import stat
 from itertools import combinations
 from random    import sample, seed
-from hashlib   import sha256
-from pathlib   import Path
+from io        import open as io_open
 from tempfile  import NamedTemporaryFile
 from tarfile   import open as tf_open
 
@@ -43,44 +42,54 @@ class Test_Misc(Test_RR):
             with self.subTest(format=format):
                 diam = '2'
                 outfile = NamedTemporaryFile(delete=True)
-                parse_rules(rules_file='data/rules.csv',
-                            outfile=outfile.name,
-                            diameters=diam,
-                            output_format=format)
-                self.assertEqual(
-                    sha256(Path(outfile.name).read_bytes()).hexdigest(), getattr(self, 'hash_d2_'+format))
+                parse_rules(
+                    rules_file    = 'data/rules.csv',
+                    outfile       = outfile.name,
+                    diameters     = diam,
+                    output_format = format
+                )
+                self.assertListEqual(
+                    list(
+                        io_open(
+                            outfile.name
+                        )
+                    ),
+                    list(
+                        io_open(
+                            getattr(
+                                self,
+                                'ref_d2_'+format
+                            )
+                        )
+                    )
+                )
                 outfile.close()
 
-                # tempdir = TemporaryDirectory(suffix='_'+diam)
-                # outfile = self.rr_parser.parse_rules(outfile=tempdir.name+'/results.'+format,
-                #                                      rules_file='data/rules.csv',
-                #                                      diameters=diam,
-                #                                      output_format=format)
-                # if format=='tar.gz':
-                #     tar = tf_open(outfile)
-                #     tar.extractall(tempdir.name)
-                #     tar.close()
-                #     outfile = tempdir.name+'/rules_d2.csv'
 
     def test_AllTypes_RandomDiam(self):
         for rule_type in ['all', 'retro', 'forward']:
             # for i in range(len(self.diameters)):
             i = 3
-            diams = list(combinations(self.diameters, i+1))
+            diams = list(
+                combinations(
+                    self.diameters,
+                    i+1
+                )
+            )
             seed(2)
             sub_diams = sample(diams, 1)
             for diam in sub_diams:
                 with self.subTest(rule_type=rule_type, diam=diam):
                     outfile = NamedTemporaryFile(delete=True)
-                    parse_rules(rules_file='retrorules',
-                                outfile=outfile.name,
-                                rule_type=rule_type,
-                                diameters=','.join(diam))
+                    parse_rules(
+                        rules_file = 'retrorules',
+                        outfile    = outfile.name,
+                        rule_type  = rule_type,
+                        diameters  = ','.join(diam)
+                    )
                     # Test if outfile has more than one single line (header)
-                    self.assertGreater(len(outfile.readlines()), 1)
+                    self.assertGreater(
+                        len(outfile.readlines()),
+                        1
+                    )
                     outfile.close()
-
-                        # tempdir = TemporaryDirectory(suffix='_'+rule_type+'_'+'-'.join(diam))
-                        # outfile = self.rr_parser.parse_rules(outdir=tempdir.name,
-                        #                                      rule_type=rule_type,
-                        #                                      diameters=','.join(diam))

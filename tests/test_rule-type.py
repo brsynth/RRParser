@@ -8,10 +8,7 @@ Created on June 17 2020
 from test_light import Test_RR
 
 # Specific for tool
-from rrparser.Parser import (
-    parse_rules,
-    fetch_retrorules
-)
+from rrparser.Parser import parse_rules
 
 # Specific for tests themselves
 from hashlib  import sha256
@@ -29,12 +26,14 @@ class Test_RR_RuleType(Test_RR):
         for rule_type in ['test', 'reto']:
             with self.subTest(rule_type=rule_type):
                 outfile = NamedTemporaryFile(delete=True)
-                self.assertRaises(ValueError,
-                                  parse_rules,
-                                  rules_file=fetch_retrorules(),
-                                  outfile=outfile.name,
-                                  rule_type=rule_type,
-                                  diameters='2')
+                self.assertRaises(
+                    ValueError,
+                    parse_rules,
+                        rules_file = 'retrorules',
+                        outfile    = outfile.name,
+                        rule_type  = rule_type,
+                        diameters  = '2'
+                )
 
     # def test_EmptyRuleTypeArgument(self):
     #     for rule_type in ['']:

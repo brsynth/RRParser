@@ -11,8 +11,7 @@ from unittest import TestCase
 from rrparser import parse_rules
 
 # Specific for tests themselves
-from hashlib  import sha256
-from pathlib  import Path
+from io import open as io_open
 from tempfile import NamedTemporaryFile
 
 
@@ -23,54 +22,67 @@ from tempfile import NamedTemporaryFile
 class Test_RR(TestCase):
 
 
-    def setUp(self):
-        self.diameters   = ['2', '4', '6', '8', '10', '12', '14', '16']
-        self.hash_d2_csv = 'f0c895aebd9527ce29142a10ee41375b05ea91d02a7cc1042b88407bc6a60516'
-        self.hash_d2_tsv = '0cc7db25f78edda00894158559cbca79ce67074167431592860fe14072608b78'
+    diameters   = ['2', '4', '6', '8', '10', '12', '14', '16']
+    rules_file  = 'data/rules.csv'
+    ref_d2_csv  = 'data/out_d2.csv'
+    ref_d2_tsv  = 'data/out_d2.tsv'
 
-
-    def test_SmallRulesFile_OneDiameter(self):
-        for diam in ['2,4,6']:
-            with self.subTest(diam=diam):
-                outfile = NamedTemporaryFile(delete=True)
-                parse_rules(rules_file='data/rules.csv',
-                            diameters=diam,
-                            outfile=outfile.name)
-                self.assertEqual(
-                    sha256(Path(outfile.name).read_bytes()).hexdigest(), self.hash_d2_csv)
-                outfile.close()
+    # def test_SmallRulesFile_OneDiameter(self):
+    #     for diam in ['2,4,6']:
+    #         with self.subTest(diam=diam):
+    #             outfile = NamedTemporaryFile(delete=True)
+    #             parse_rules(
+    #                 rules_file='data/rules.csv',
+    #                 diameters=diam,
+    #                 outfile=outfile.name
+    #             )
+    #             self.assertEqual(
+    #                 sha256(
+    #                     Path(outfile.name).read_bytes()
+    #                 ).hexdigest(),
+    #                 self.hash_d2_csv
+    #             )
+    #             outfile.close()
 
 
     def test_GoodInputFormatCSV(self):
         diam = '2'
         outfile = NamedTemporaryFile(delete=True)
-        parse_rules(rules_file='data/rules.csv',
-                    input_format='csv',
-                    diameters=diam,
-                    outfile=outfile.name)
-        self.assertEqual(
-            sha256(Path(outfile.name).read_bytes()).hexdigest(), self.hash_d2_csv)
+        parse_rules(
+            rules_file   = self.rules_file,
+            input_format = 'csv',
+            diameters    = diam,
+            outfile      = outfile.name
+        )
+        self.assertListEqual(
+            list(io_open(outfile.name)),
+            list(io_open(self.ref_d2_csv))
+        )
         outfile.close()
 
 
-    # def test_BadInputFormatCSV_1(self):
-    #     diam = '2'
-    #     outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
-    #     self.assertRaises(KeyError,
-    #                       parse_rules,
-    #                       rules_file='data/rules.csv',
-    #                       input_format='tsv',
-    #                       diameters=diam,
-    #                       outfile=outfile.name)
-    #     outfile.close()
-    #
+    def test_BadInputFormatCSV_1(self):
+        diam = '2'
+        outfile = NamedTemporaryFile(suffix='_'+diam, delete=True)
+        self.assertRaises(
+            KeyError,
+            parse_rules,
+                rules_file   = self.rules_file,
+                input_format = 'tsv',
+                diameters    = diam,
+                outfile      = outfile.name)
+        outfile.close()
+    
+
     def test_BadInputFormatCSV_2(self):
         diam = '2'
         outfile = NamedTemporaryFile(delete=True)
-        self.assertRaises(ValueError,
-                          parse_rules,
-                          rules_file='data/rules.csv',
-                          input_format='other',
-                          diameters=diam,
-                          outfile=outfile.name)
+        self.assertRaises(
+            ValueError,
+            parse_rules,
+                rules_file   = self.rules_file,
+                input_format = 'other',
+                diameters    = diam,
+                outfile      = outfile.name
+        )
         outfile.close()

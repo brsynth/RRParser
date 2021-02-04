@@ -22,28 +22,33 @@ from tempfile import NamedTemporaryFile
 # 'Test_' prefix is mandatory
 class Test_RR_InputFormat(Test_RR):
 
-    def test_GoodInputFormatCSV(self):
-        diam = '2'
-        outfile = NamedTemporaryFile(delete=True)
-        parse_rules(rules_file='data/rules.csv',
-                    input_format='csv',
-                    rule_type='retro',
-                    diameters=diam,
-                    outfile=outfile.name)
-        self.assertEqual(
-            sha256(Path(outfile.name).read_bytes()).hexdigest(), self.hash_d2_csv)
-        outfile.close()
+
+    # def test_GoodInputFormatCSV(self):
+    #     diam = '2'
+    #     outfile = NamedTemporaryFile(delete=True)
+    #     parse_rules(rules_file='data/rules.csv',
+    #                 input_format='csv',
+    #                 rule_type='retro',
+    #                 diameters=diam,
+    #                 outfile=outfile.name)
+    #     self.assertEqual(
+    #         sha256(Path(outfile.name).read_bytes()).hexdigest(), self.hash_d2_csv)
+    #     outfile.close()
+
 
     def test_BadInputFormatCSV_1(self):
         diam = '2'
         outfile = NamedTemporaryFile(delete=True)
-        self.assertRaises(KeyError,
-                          parse_rules,
-                          rules_file='data/rules.csv',
-                          input_format='tsv',
-                          diameters=diam,
-                          outfile=outfile.name)
+        self.assertRaises(
+            KeyError,
+            parse_rules,
+                rules_file='data/rules.csv',
+                input_format='tsv',
+                diameters=diam,
+                outfile=outfile.name
+        )
         outfile.close()
+
 
     def test_BadInputFormatCSV_2(self):
         diam = '2'
