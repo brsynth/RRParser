@@ -5,27 +5,24 @@ Created on June 17 2020
 """
 
 # Generic for test process
-from unittest import TestCase
+from test_main import Test_RR
 
 # Specific for tool
-from rrparser import parse_rules
+from rrparser import (
+    parse_rules,
+    __path__ as pkg_path
+)
 
 # Specific for tests themselves
 from io import open as io_open
 from tempfile import NamedTemporaryFile
 
 
-
 # Cette classe est un groupe de tests. Son nom DOIT commencer
 # par 'Test' et la classe DOIT hériter de unittest.TestCase.
 # 'Test_' prefix is mandatory
-class Test_RR(TestCase):
+class Test_RR_Light(Test_RR):
 
-
-    diameters   = ['2', '4', '6', '8', '10', '12', '14', '16']
-    rules_file  = 'data/rules.csv'
-    ref_d2_csv  = 'data/out_d2.csv'
-    ref_d2_tsv  = 'data/out_d2.tsv'
 
     # def test_SmallRulesFile_OneDiameter(self):
     #     for diam in ['2,4,6']:

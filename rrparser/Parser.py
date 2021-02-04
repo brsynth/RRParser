@@ -5,17 +5,37 @@ Created on May 4 2020
 
 """
 
-from os        import path as os_path
-from brs_utils import download_and_extract_tar_gz
-from pandas    import read_csv, DataFrame
-from pandas.core.computation.ops import UndefinedVariableError
-from csv       import QUOTE_ALL, QUOTE_NONE
-from typing    import Dict, List, Tuple
-from logging   import Logger, getLogger
+from os import (
+    path as os_path
+)
+from brs_utils import (
+    download_and_extract_tar_gz
+)
+from pandas import (
+    read_csv,
+    DataFrame
+)
+from pandas.core.computation.ops import (
+    UndefinedVariableError
+)
+from csv import (
+    QUOTE_ALL,
+    QUOTE_NONE
+)
+from typing import (
+    Dict,
+    List,
+    Tuple
+)
+from logging import (
+    Logger,
+    getLogger
+)
 
 
 RETRORULES_URL  = 'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
 RETRORULES_PATH = os_path.dirname(os_path.abspath( __file__ ))
+
 
 def parse_rules(
     rules_file:       str,
@@ -66,16 +86,20 @@ def parse_rules(
 
     logger.debug('Reading values...')
     # Read 'csv' as 'tsv' by specying separator
-    rf = read_csv(rules_file, sep=sep)
+    rf = read_csv(
+        rules_file,
+                    sep = sep,
+        float_precision = 'round_trip'
+    )
 
     # Filter rules according to 'rule_type' and 'diameters'
     results = filter(rf, rule_type, diameters)
 
     return results.to_csv(
         outfile,
-        index=False,
-        sep=sep,
-        quoting=quoting
+          index = False,
+            sep = sep,
+        quoting = quoting
     )
 
 

@@ -5,7 +5,7 @@ Created on June 17 2020
 """
 
 # Generic for test process
-from test_light import Test_RR
+from test_main import Test_RR
 
 # Specific for tool
 from rrparser.Parser import parse_rules
@@ -14,7 +14,6 @@ from rrparser.Parser import parse_rules
 from hashlib  import sha256
 from pathlib  import Path
 from tempfile import NamedTemporaryFile
-
 
 
 # Cette classe est un groupe de tests. Son nom DOIT commencer

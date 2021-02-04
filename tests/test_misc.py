@@ -5,7 +5,7 @@ Created on June 17 2020
 """
 
 # Generic for test process
-from test_light import Test_RR
+from test_main import Test_RR
 
 # Specific for tool
 from sys      import path as sys_path
