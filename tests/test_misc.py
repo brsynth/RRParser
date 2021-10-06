@@ -10,6 +10,7 @@ from test_main import Test_RR
 # Specific for tool
 from sys      import path as sys_path
 from os       import path as os_path
+from os       import unlink
 from rrparser import parse_rules
 
 # Specific for tests themselves
@@ -41,7 +42,7 @@ class Test_Misc(Test_RR):
         for format in ['csv', 'tsv']:
             with self.subTest(format=format):
                 diam = '2'
-                outfile = NamedTemporaryFile(delete=True)
+                outfile = NamedTemporaryFile(delete=False)
                 parse_rules(
                     rules_file    = 'data/rules.csv',
                     outfile       = outfile.name,
@@ -64,6 +65,7 @@ class Test_Misc(Test_RR):
                     )
                 )
                 outfile.close()
+                unlink(outfile.name)
 
 
     def test_AllTypes_RandomDiam(self):
@@ -80,7 +82,7 @@ class Test_Misc(Test_RR):
             sub_diams = sample(diams, 1)
             for diam in sub_diams:
                 with self.subTest(rule_type=rule_type, diam=diam):
-                    outfile = NamedTemporaryFile(delete=True)
+                    outfile = NamedTemporaryFile(delete=False)
                     parse_rules(
                         rules_file = 'retrorules',
                         outfile    = outfile.name,
@@ -93,3 +95,4 @@ class Test_Misc(Test_RR):
                         1
                     )
                     outfile.close()
+                    unlink(outfile.name)

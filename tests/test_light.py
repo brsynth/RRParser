@@ -3,6 +3,7 @@ Created on June 17 2020
 
 @author: Joan Hérisson
 """
+from os import unlink
 
 # Generic for test process
 from test_main import Test_RR
@@ -44,7 +45,7 @@ class Test_RR_Light(Test_RR):
 
     def test_GoodInputFormatCSV(self):
         diam = '2'
-        outfile = NamedTemporaryFile(delete=True)
+        outfile = NamedTemporaryFile(delete=False)
         parse_rules(
             rules_file   = self.rules_file,
             input_format = 'csv',
@@ -56,6 +57,7 @@ class Test_RR_Light(Test_RR):
             list(io_open(self.ref_d2_csv))
         )
         outfile.close()
+        unlink(outfile.name)
 
 
     def test_BadInputFormatCSV_1(self):
