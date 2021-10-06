@@ -4,6 +4,8 @@ Created on June 17 2020
 @author: Joan Hérisson
 """
 
+from os import unlink
+
 # Generic for test process
 from test_main import Test_RR
 
@@ -25,7 +27,7 @@ class Test_RR_Diameters(Test_RR):
     def test_BadDiametersArgument(self):
         for diam in ['3']:
             with self.subTest(diam=diam):
-                outfile = NamedTemporaryFile(delete=True)
+                outfile = NamedTemporaryFile(delete=False)
                 parse_rules(
                     rules_file=self.rules_file,
                     rule_type='retro',
@@ -35,11 +37,12 @@ class Test_RR_Diameters(Test_RR):
                 # Test if outfile has one single line (header)
                 self.assertEqual(len(outfile.readlines()), 1)
                 outfile.close()
+                unlink(outfile.name)
 
     def test_OneDiameter(self):
         for diam in ['2']:
             with self.subTest(diam=diam):
-                outfile = NamedTemporaryFile(delete=True)
+                outfile = NamedTemporaryFile(delete=False)
                 parse_rules(
                     rules_file=self.rules_file,
                     diameters=diam,
@@ -50,6 +53,7 @@ class Test_RR_Diameters(Test_RR):
                     list(io_open(self.ref_d2_csv))
                 )
                 outfile.close()
+                unlink(outfile.name)
 
     def test_MiscDiametersArgument(self):
         for diam in ['2-']:
