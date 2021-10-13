@@ -5,7 +5,6 @@ Created on June 23 2020
 
 """
 
-
 # from .infos import __version__
 from rrparser.Parser   import parse_rules
 from rrparser.Args     import build_args_parser
