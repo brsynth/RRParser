@@ -14,12 +14,10 @@ from os       import unlink
 from rrparser import parse_rules
 
 # Specific for tests themselves
-from os        import stat
 from itertools import combinations
 from random    import sample, seed
 from io        import open as io_open
 from tempfile  import NamedTemporaryFile
-from tarfile   import open as tf_open
 
 
 # Cette classe est un groupe de tests. Son nom DOIT commencer
@@ -44,7 +42,7 @@ class Test_Misc(Test_RR):
                 diam = '2'
                 outfile = NamedTemporaryFile(delete=False)
                 parse_rules(
-                    rules_file    = 'data/rules.csv',
+                    rules_file    = self.rules_file,
                     outfile       = outfile.name,
                     diameters     = diam,
                     output_format = format

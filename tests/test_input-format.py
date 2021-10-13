@@ -42,7 +42,7 @@ class Test_RR_InputFormat(Test_RR):
         self.assertRaises(
             KeyError,
             parse_rules,
-                rules_file='data/rules.csv',
+                rules_file=self.rules_file,
                 input_format='tsv',
                 diameters=diam,
                 outfile=outfile.name
@@ -55,7 +55,7 @@ class Test_RR_InputFormat(Test_RR):
         outfile = NamedTemporaryFile(delete=True)
         self.assertRaises(ValueError,
                           parse_rules,
-                          rules_file='data/rules.csv',
+                          rules_file=self.rules_file,
                           input_format='other',
                           diameters=diam,
                           outfile=outfile.name)
