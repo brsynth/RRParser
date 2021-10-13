@@ -1,0 +1,8 @@
+name: rrparser-dev
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - brs_utils
+  - pandas
+  - colorlog

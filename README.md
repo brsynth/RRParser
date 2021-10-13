@@ -1,8 +1,11 @@
-# RRParser
+# rrparser
+Reaction Rules Parser
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-rrparser-green.svg)](https://anaconda.org/conda-forge/rrparser) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/rrparser.svg)](https://anaconda.org/conda-forge/rrparser) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/rrparser.svg)](https://anaconda.org/conda-forge/rrparser) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/rrparser.svg)](https://anaconda.org/conda-forge/rrparser) |
 
-[![Anaconda-Server Badge](https://anaconda.org/brsynth/rrparser/badges/latest_release_date.svg)](https://anaconda.org/brsynth/rrparser) ![Test](https://github.com/brsynth/RRulesParser/workflows/Test/badge.svg) [![Anaconda-Server Badge](https://anaconda.org/brsynth/rrparser/badges/version.svg)](https://anaconda.org/brsynth/rrparser)
-
-Reaction Rules Parser. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org).
+## Description
+*Reaction Rules Parser*. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org).
 
 ## Input
 
@@ -17,7 +20,7 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 ## Install
 ### From Conda
 ```sh
-[sudo] conda install -c brsynth rrparser
+[sudo] conda install -c conda-forge rrparser
 ```
 
 ## Use
@@ -26,12 +29,14 @@ Reaction Rules Parser. If no input reaction files is provided, retrieves the rea
 ```python
 from rrparser import parse_rules
 
-outfile = parse_rules(<rules_file>,
-                      <outfile>,
-                      input_format=<'csv' | 'tsv'>,
-                      rule_type=<'all' | 'retro' | 'forward'>,
-                      diameters=<'2,4,6,8,10,12,14,16'>,
-                      output_format=<'csv' | 'tsv'>)
+outfile = parse_rules(
+  <rules_file>,
+  <outfile>,
+  input_format=<'csv' | 'tsv'>,
+  rule_type=<'all' | 'retro' | 'forward'>,
+  diameters=<'2,4,6,8,10,12,14,16'>,
+  output_format=<'csv' | 'tsv'>
+)
 ```
 
 If parameters from CLI have to be parsed, the function `build_args_parser` is available:
@@ -59,8 +64,7 @@ Test can be run with the following commands:
 
 ### Natively
 ```bash
-cd tests
-pytest -v
+python -m pytest -v
 ```
 
 # CI/CD
