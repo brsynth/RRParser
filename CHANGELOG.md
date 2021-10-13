@@ -1,8 +1,16 @@
 # Changelog
 
+## [2.4.4](https://github.com/brsynth/rrparser/tree/2.4.4) (2021-10-13)
+
+[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.2...2.4.4)
+
 ## [2.4.2](https://github.com/brsynth/rrparser/tree/2.4.2) (2021-10-13)
 
-[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.1...2.4.2)
+[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.3...2.4.2)
+
+## [2.4.3](https://github.com/brsynth/rrparser/tree/2.4.3) (2021-10-13)
+
+[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.1...2.4.3)
 
 ## [2.4.1](https://github.com/brsynth/rrparser/tree/2.4.1) (2021-10-06)
 
