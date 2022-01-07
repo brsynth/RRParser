@@ -33,7 +33,7 @@ from logging import (
 )
 
 
-RETRORULES_URL  = 'https://retrorules.org/dl/preparsed/rr02/rp2/hs'
+RETRORULES_URL  = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
 RETRORULES_PATH = os_path.dirname(os_path.abspath( __file__ ))
 
 
