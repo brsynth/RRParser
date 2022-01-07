@@ -1,4 +1,4 @@
-name: rrparser-dev
+name: rrparser
 channels:
   - conda-forge
 dependencies:
