@@ -36,7 +36,6 @@ from logging import (
 RETRORULES_URL  = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
 RETRORULES_PATH = os_path.dirname(os_path.abspath( __file__ ))
 
-
 def parse_rules(
     rules_file:       str,
     outfile:          str,
