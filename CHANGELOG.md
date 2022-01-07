@@ -1,32 +1,36 @@
 # Changelog
 
-## [2.4.5](https://github.com/brsynth/rrparser/tree/2.4.5) (2021-10-13)
+## [2.4.6](https://github.com/brsynth/RRParser/tree/2.4.6) (2022-01-07)
 
-[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.4...2.4.5)
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.4.5...2.4.6)
 
-## [2.4.4](https://github.com/brsynth/rrparser/tree/2.4.4) (2021-10-13)
+## [2.4.5](https://github.com/brsynth/RRParser/tree/2.4.5) (2021-10-13)
 
-[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.2...2.4.4)
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.4.4...2.4.5)
 
-## [2.4.2](https://github.com/brsynth/rrparser/tree/2.4.2) (2021-10-13)
+## [2.4.4](https://github.com/brsynth/RRParser/tree/2.4.4) (2021-10-13)
 
-[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.3...2.4.2)
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.4.2...2.4.4)
 
-## [2.4.3](https://github.com/brsynth/rrparser/tree/2.4.3) (2021-10-13)
+## [2.4.2](https://github.com/brsynth/RRParser/tree/2.4.2) (2021-10-13)
 
-[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.1...2.4.3)
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.4.3...2.4.2)
 
-## [2.4.1](https://github.com/brsynth/rrparser/tree/2.4.1) (2021-10-06)
+## [2.4.3](https://github.com/brsynth/RRParser/tree/2.4.3) (2021-10-13)
 
-[Full Changelog](https://github.com/brsynth/rrparser/compare/2.4.0...2.4.1)
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.4.1...2.4.3)
+
+## [2.4.1](https://github.com/brsynth/RRParser/tree/2.4.1) (2021-10-06)
+
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.4.0...2.4.1)
 
 **Merged pull requests:**
 
 - fix\(rrparser\): fix tmp files for permission error in windows [\#1](https://github.com/brsynth/RRParser/pull/1) ([kenza12](https://github.com/kenza12))
 
-## [2.4.0](https://github.com/brsynth/rrparser/tree/2.4.0) (2021-03-10)
+## [2.4.0](https://github.com/brsynth/RRParser/tree/2.4.0) (2021-03-10)
 
-[Full Changelog](https://github.com/brsynth/rrparser/compare/c217bdf8f0510959f33d77db9817c4f4c7cda815...2.4.0)
+[Full Changelog](https://github.com/brsynth/RRParser/compare/c217bdf8f0510959f33d77db9817c4f4c7cda815...2.4.0)
 
 
 
