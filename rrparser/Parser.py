@@ -32,14 +32,19 @@ from logging import (
     getLogger
 )
 
+from .Args import (
+    DEFAULT_RULES_FILE,
+    DEFAULT_RULES_DIR
+)
+
 
 RETRORULES_URL  = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
-RETRORULES_PATH = os_path.dirname(os_path.abspath( __file__ ))
 
 
 def parse_rules(
-    rules_file:       str,
     outfile:          str,
+    rules_file:       str = DEFAULT_RULES_FILE,
+    rules_dir:        str = DEFAULT_RULES_DIR,
     input_format:     str = 'csv',
     rule_type:        str = 'all',
     diameters:        str = '2,4,6,8,10,12,14,16',
@@ -82,7 +87,7 @@ def parse_rules(
 
     # If 'rules_file' is set to RetroRules, then fetch RetroRules on Internet
     if rules_file == 'retrorules':
-        rules_file = fetch_retrorules()
+        rules_file = fetch_retrorules(rules_dir)
 
     logger.debug('Reading values...')
     # Read 'csv' as 'tsv' by specying separator
@@ -146,8 +151,9 @@ def filter(
 
 
 def fetch_retrorules(
+    rules_dir: str = DEFAULT_RULES_DIR,
     logger: Logger = getLogger(__name__)
-    ) -> str:
+) -> str:
     """
     Fetch RetroRules over Internet if not already on disk.
 
@@ -162,13 +168,13 @@ def fetch_retrorules(
         Path to downoaded filename.
     """
     filename = 'retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv'
-    rules_file = os_path.join(RETRORULES_PATH, filename)
+    rules_file = os_path.join(rules_dir, filename)
 
     if not os_path.exists(rules_file):
         logger.info('Downloading retrorules file...')
         download_and_extract_tar_gz(
             RETRORULES_URL,
-            RETRORULES_PATH,
+            rules_dir,
             filename
         )
 

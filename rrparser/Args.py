@@ -6,8 +6,14 @@ Created on May 4 2020
 """
 
 from argparse  import ArgumentParser
+from os import path as os_path
 from rrparser._version import __version__
 
+__PACKAGE_FOLDER = os_path.dirname(
+    os_path.realpath(__file__)
+)
+DEFAULT_RULES_DIR = __PACKAGE_FOLDER
+DEFAULT_RULES_FILE = 'retrorules'
 
 def build_args_parser():
     parser = ArgumentParser(prog='rrparser', description='Python wrapper to fetch RetroRules')
@@ -19,9 +25,12 @@ def _add_arguments(parser):
 
     ## Positional arguments
     #
-    parser.add_argument('rules_file', # must be '_' otherwise it will be touchy in 'args' Namespace
-                        type=str,
-                        help="rules file to parse. If set to 'retrorules', RetroRules are considered as input file, either locally or fetched over Internet.")
+    parser.add_argument(
+        '--rules_file', # must be '_' otherwise it will be touchy in 'args' Namespace
+        type=str,
+        default=DEFAULT_RULES_FILE,
+        help="rules file to parse. If set to 'retrorules', RetroRules are considered as input file, either locally or fetched over Internet."
+    )
 
     ## Optional arguments
     #
@@ -63,5 +72,10 @@ def _add_arguments(parser):
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__),
                         help='show the version number and exit')
+    parser.add_argument(
+        '--rules-dir',
+        default=__PACKAGE_FOLDER,
+        help=('Path to the rules directory (default in package directory).')
+    )
 
     return parser
