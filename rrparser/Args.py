@@ -75,7 +75,7 @@ def _add_arguments(parser):
     parser.add_argument(
         '--rules-dir',
         default=__PACKAGE_FOLDER,
-        help=('Path to the rules directory (default in package directory).')
+        help='Path to the rules directory (default in package directory).'
     )
 
     return parser

@@ -23,9 +23,9 @@ from csv import (
     QUOTE_NONE
 )
 from typing import (
-    Dict,
     List,
-    Tuple
+    Tuple,
+    Literal
 )
 from logging import (
     Logger,
@@ -38,7 +38,7 @@ from .Args import (
 )
 
 
-RETRORULES_URL  = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
+RETRORULES_URL = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
 
 
 def parse_rules(
@@ -50,7 +50,7 @@ def parse_rules(
     diameters:        str = '2,4,6,8,10,12,14,16',
     output_format:    str = 'csv',
     logger:        Logger = getLogger(__name__)
-    ) -> None or str:
+) -> None or str:
     """
     Parse a reaction rules file and extract sub-part according 'diameters' and 'rule_type' filters.
 
@@ -58,6 +58,8 @@ def parse_rules(
     ----------
     rules_file: str
         Reactions file (if not set RetroRules are considered)
+    rules_dir: str
+        Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
     outfile: str
         Filename where to write results (if not set results are returned as a string)
     input_format: str
@@ -93,8 +95,8 @@ def parse_rules(
     # Read 'csv' as 'tsv' by specying separator
     rf = read_csv(
         rules_file,
-                    sep = sep,
-        float_precision = 'round_trip'
+        sep=sep,
+        float_precision='round_trip'
     )
 
     # Filter rules according to 'rule_type' and 'diameters'
@@ -102,9 +104,9 @@ def parse_rules(
 
     return results.to_csv(
         outfile,
-          index = False,
-            sep = sep,
-        quoting = quoting
+        index=False,
+        sep=sep,
+        quoting=quoting
     )
 
 
@@ -135,15 +137,14 @@ def filter(
     """
     logger.debug(
         'Args: {df}, {rt}, {dia}'.format(
-            df = df,
-            rt = rule_type,
-            dia = diameters
+            df=df,
+            rt=rule_type,
+            dia=diameters
         )
     )
     query = 'Diameter == @diameters'
     if rule_type!='all':
         query += ' & `Rule usage` == @rule_usage_filter'
-    rule_usage_filter = ['both', rule_type]
     try:
         return df.query(query)
     except UndefinedVariableError as e:
@@ -159,6 +160,8 @@ def fetch_retrorules(
 
     Parameters
     ----------
+    rules_dir: str
+        Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
     logger : Logger
         The logger object.
 
@@ -187,7 +190,7 @@ def check_args(
     input_format: str,
     output_format: str,
     logger: Logger = getLogger(__name__)
-    ) -> Tuple[List[int], str, str]:
+) -> Tuple[List[int], str, Literal]:
     """
     Check arguments are well-formed and format them.
 
@@ -213,10 +216,10 @@ def check_args(
     """
     logger.debug(
         'Args: {rt}, {dia}, {i_f}, {o_f}'.format(
-            rt = rule_type,
-            dia = diameters,
-            i_f = input_format,
-            o_f = output_format
+            rt=rule_type,
+            dia=diameters,
+            i_f=input_format,
+            o_f=output_format
         )
     )
 

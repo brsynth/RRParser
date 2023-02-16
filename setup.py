@@ -27,8 +27,8 @@ def get_version():
             'CHANGELOG.md'
         ),
         'r'
-    ) as f:
-        lines = f.readlines()
+    ) as f1:
+        lines = f1.readlines()
     for line in lines:
         if line.startswith('##'):
             from re import search
