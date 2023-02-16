@@ -2,14 +2,14 @@ from setuptools import setup
 from os import path as os_path
 
 
-## INFOS ##
-package     = 'rrparser'
-descr       = 'Reaction Rules Parser'
-url         = 'https://github.com/brsynth/rrparser'
-authors     = 'Joan Hérisson, Melchior du Lac, Thomas Duigou'
+# INFOS
+package = 'rrparser'
+descr = 'Reaction Rules Parser'
+url = 'https://github.com/brsynth/rrparser'
+authors = 'Joan Hérisson, Melchior du Lac, Thomas Duigou'
 corr_author = 'joan.herisson@univ-evry.fr'
 
-## LONG DESCRIPTION
+# LONG DESCRIPTION
 with open(
     os_path.join(
         os_path.dirname(os_path.realpath(__file__)),
@@ -20,6 +20,7 @@ with open(
 ) as f:
     long_description = f.read()
 
+# VERSION
 def get_version():
     with open(
         os_path.join(
@@ -32,29 +33,30 @@ def get_version():
     for line in lines:
         if line.startswith('##'):
             from re import search
-            m = search("\[(.+)\]", line)
+            m = search("\[(.+)]", line)
             if m:
                 return m.group(1)
 
+
 setup(
-    name                          = package,
-    version                       = get_version(),
-    author                        = authors,
-    author_email                  = corr_author,
-    description                   = descr,
-    long_description              = long_description,
-    long_description_content_type = 'text/markdown',
-    url                           = url,
-    packages                      = [package],
-    package_dir                   = {package: package},
-    include_package_data          = True,
-    test_suite                    = 'pytest',
-    license                       = 'MIT',
-    classifiers                   = [
+    name=package,
+    version=get_version(),
+    author=authors,
+    author_email=corr_author,
+    description=descr,
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url=url,
+    packages=[package],
+    package_dir={package: package},
+    include_package_data=True,
+    test_suite='pytest',
+    license='MIT',
+    classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    python_requires               = '>=3.7',
+    python_requires='>=3.7'
 )
 

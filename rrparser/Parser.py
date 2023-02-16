@@ -100,7 +100,7 @@ def parse_rules(
     )
 
     # Filter rules according to 'rule_type' and 'diameters'
-    results = filter(rf, rule_type, diameters)
+    results = filter_(rf, rule_type, diameters)
 
     return results.to_csv(
         outfile,
@@ -110,12 +110,12 @@ def parse_rules(
     )
 
 
-def filter(
+def filter_(
     df: DataFrame,
     rule_type: str,
     diameters: List[int],
     logger: Logger = getLogger(__name__)
-    ) -> List[int]:
+) -> List[int]:
     """
     Filter a pandas dataframe with 'Diameters' and 'Rule usage' criteria.
 
@@ -143,7 +143,7 @@ def filter(
         )
     )
     query = 'Diameter == @diameters'
-    if rule_type!='all':
+    if rule_type != 'all':
         query += ' & `Rule usage` == @rule_usage_filter'
     try:
         return df.query(query)
