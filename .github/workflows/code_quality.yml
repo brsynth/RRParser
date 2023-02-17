@@ -11,6 +11,8 @@ on:
       - main
       - master
       - 'releases/*'
+    paths:
+      - '**.py'
 
 jobs:
   qodana:
