@@ -118,7 +118,8 @@ jobs:
           TAG: ${{ steps.tag_version.outputs.new_tag }}
         run: |
           folder=`dirname $(find . -name _version.py)`
-          echo "__version__ = \"$TAG\"" > $folder/_version.py
+          echo "\"\"\"version information\"\"\"" > $folder/_version.py
+          echo "__version__ = \"$TAG\"" >> $folder/_version.py
       - name: Commit files
         run: |
           git config --local user.email "$GITHUB_EMAIL"
