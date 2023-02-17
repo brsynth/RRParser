@@ -4,11 +4,7 @@
 rrparser command line interface.
 
 """
-from logging import error as logging_error
 from rrparser import build_args_parser, parse_rules
-from tempfile import gettempdir, NamedTemporaryFile
-from os import path as os_path
-from shutil import copyfile
 from colorlog import ColoredFormatter
 from logging import (
     Logger,
