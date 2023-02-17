@@ -5,11 +5,15 @@ on:
     branches:
       - main
       - master
+      - stable
+      - dev
       - 'releases/*'
   push:
     branches:
       - main
       - master
+      - stable
+      - dev
       - 'releases/*'
     paths:
       - '**.py'
