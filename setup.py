@@ -1,3 +1,4 @@
+"""Setup script for conda package"""
 from setuptools import setup
 from os import path as os_path
 
@@ -22,6 +23,7 @@ with open(
 
 # VERSION
 def get_version():
+    """Get version from CHANGELOG.md"""
     with open(
         os_path.join(
             os_path.dirname(os_path.realpath(__file__)),

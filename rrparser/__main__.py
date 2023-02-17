@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+rrparser command line interface.
+
+"""
 from logging import error as logging_error
 from rrparser import build_args_parser, parse_rules
 from tempfile import gettempdir, NamedTemporaryFile
@@ -16,6 +20,10 @@ from rrparser._version import __version__
 
 
 def entry_point():
+    """
+    Entry point for the rrparser command line interface.
+    
+    """
     parser = build_args_parser()
     args  = parser.parse_args()
 

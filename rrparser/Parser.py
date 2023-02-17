@@ -190,7 +190,7 @@ def check_args(
     input_format: str,
     output_format: str,
     logger: Logger = getLogger(__name__)
-) -> Tuple[List[int], str, Literal]:
+) -> Tuple[List[int], str, str]:
     """
     Check arguments are well-formed and format them.
 

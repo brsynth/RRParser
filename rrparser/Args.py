@@ -17,6 +17,15 @@ DEFAULT_RULES_FILE = 'retrorules'
 
 
 def build_args_parser():
+    """
+    Build the argument parser for the rrparser command line interface.
+
+    Returns
+    -------
+    parser: ArgumentParser
+        Argument parser for the rrparser command line interface.
+
+    """
     parser = ArgumentParser(prog='rrparser', description='Python wrapper to fetch RetroRules')
     parser = _add_arguments(parser)
     return parser
