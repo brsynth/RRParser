@@ -4,5 +4,5 @@ channels:
 dependencies:
   - python
   - brs_utils
-  - pandas
+  - pandas >=1.5.3
   - colorlog
