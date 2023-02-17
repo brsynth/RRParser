@@ -15,7 +15,7 @@ from pandas import (
     read_csv,
     DataFrame
 )
-from pandas.core.computation.ops import (
+from pandas.errors import (
     UndefinedVariableError
 )
 from csv import (
