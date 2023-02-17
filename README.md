@@ -4,7 +4,7 @@ Reaction Rules Parser
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-rrparser-green.svg)](https://anaconda.org/conda-forge/rrparser) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/rrparser.svg)](https://anaconda.org/conda-forge/rrparser) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/rrparser.svg)](https://anaconda.org/conda-forge/rrparser) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/rrparser.svg)](https://anaconda.org/conda-forge/rrparser) | 
 
-[![Qodana](https://github.com/brsynth/RRParser/actions/workflows/code_quality.yml/badge.svg)](https://github.com/brsynth/RRParser/actions/workflows/code_quality.yml)
+[![Qodana](https://github.com/brsynth/RRParser/actions/workflows/code_quality.yml/badge.svg)](https://github.com/brsynth/RRParser/actions/workflows/code_quality.yml) [![Tests](https://github.com/brsynth/RRParser/actions/workflows/test.yml/badge.svg)](https://github.com/brsynth/RRParser/actions/workflows/test.yml)
 
 ## Description
 *Reaction Rules Parser*. If no input reaction files is provided, retrieves the reaction rules from [RetroRules](https://retrorules.org).
