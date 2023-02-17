@@ -145,6 +145,8 @@ def filter_(
     query = 'Diameter == @diameters'
     if rule_type != 'all':
         query += ' & `Rule usage` == @rule_usage_filter'
+    # Used in 'e' in case of exception raised
+    rule_usage_filter = ['both', rule_type]
     try:
         return df.query(query)
     except UndefinedVariableError as e:
