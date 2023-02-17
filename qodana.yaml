@@ -5,3 +5,8 @@ include:
   - name: CheckModuleLicenses
   - name: CheckThirdPartySoftwareList
   - name: IncorrectProjectDependenciesConfiguration
+  - name: CheckDependencyLicenses
+  - name: PyMissingTypeHintsInspection
+  - name: PyPackageRequirementsInspection
+  - name: PyMissingOrEmptyDocstringInspection
+  - name: PyClassicStyleClassInspection
