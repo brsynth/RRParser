@@ -2,7 +2,7 @@ name: rrparser
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python >=3.6
   - brs_utils
   - pandas >=1.5.3
   - colorlog
