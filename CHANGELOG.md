@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.2](https://github.com/brsynth/RRParser/tree/2.5.2) (2023-03-17)
+
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.5.1...2.5.2)
+
 ## [2.5.1](https://github.com/brsynth/RRParser/tree/2.5.1) (2023-02-17)
 
 [Full Changelog](https://github.com/brsynth/RRParser/compare/2.5.0...2.5.1)
