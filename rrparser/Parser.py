@@ -15,9 +15,6 @@ from pandas import (
     read_csv,
     DataFrame
 )
-# from pandas.errors import (
-#     UndefinedVariableError
-# )
 from csv import (
     QUOTE_ALL,
     QUOTE_NONE
@@ -147,10 +144,10 @@ def filter_(
         query += ' & `Rule usage` == @rule_usage_filter'
     # Used in 'e' in case of exception raised
     rule_usage_filter = ['both', rule_type]
-    # try:
-    return df.query(query)
-    # except UndefinedVariableError as e:
-    #     raise KeyError(e)
+    try:
+        return df.query(query)
+    except Exception as e:
+        raise KeyError(e)
 
 
 def fetch_retrorules(

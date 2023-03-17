@@ -69,7 +69,8 @@ class Test_RR_Light(Test_RR):
                 rules_file   = self.rules_file,
                 input_format = 'tsv',
                 diameters    = diam,
-                outfile      = outfile.name)
+                outfile      = outfile.name
+        )
         outfile.close()
     
 
