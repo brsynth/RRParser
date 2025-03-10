@@ -16,8 +16,8 @@ jobs:
     - name: Install flake8
       run: pip install flake8
     - name: Run flake8
-      run: flake8 icfree --count --select=E9,F63,F7,F82 --show-source --statistics
+      run: flake8 rrparser --count --select=E9,F63,F7,F82 --show-source --statistics
     - name: Run flake8 on all files
-      run: flake8 icfree --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      run: flake8 rrparser --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       # This step ensures the workflow fails if flake8 finds errors in the critical rules defined above,
       # but it reports warnings for other issues.
