@@ -38,6 +38,31 @@ from .Args import (
 RETRORULES_URL = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
 
 
+def read_ecx(
+    ecx_file: str,
+    logger: Logger = getLogger(__name__)
+) -> List[str]:
+    """
+    Read EC numbers from a file.
+
+    Parameters
+    ----------
+    ecx_file: str
+        File containing EC numbers
+    logger : Logger
+        The logger object.
+
+    Returns
+    -------
+    ecx: List[str]
+        List of EC numbers.
+    """
+    logger.debug('Reading EC numbers from file...')
+    with open(ecx_file, 'r') as f:
+        ecx = f.read().split(',')
+    return ecx
+
+
 def parse_rules(
     outfile:          str,
     rules_file:       str = DEFAULT_RULES_FILE,
@@ -45,8 +70,9 @@ def parse_rules(
     input_format:     str = 'csv',
     rule_type:        str = 'all',
     diameters:        str = '2,4,6,8,10,12,14,16',
+    ecx:    List[str] = [],
     output_format:    str = 'csv',
-    logger:        Logger = getLogger(__name__)
+    logger:           Logger = getLogger(__name__)
 ) -> None or str:
     """
     Parse a reaction rules file and extract sub-part according 'diameters' and 'rule_type' filters.
@@ -65,6 +91,8 @@ def parse_rules(
         Type of reaction rules ['all', 'forward', 'retro'] (default 'all')
     diameters: str
         Diameters to filter [2,4,6,8,10,12,14,16] (default)
+    ecx: List[str]
+        List of EC numbers to remove from rules
     output_format: str
         Format of file results are written into
     logger : Logger
@@ -97,8 +125,9 @@ def parse_rules(
     )
 
     # Filter rules according to 'rule_type' and 'diameters'
-    results = filter_(rf, rule_type, diameters)
+    results = filter_(rf, rule_type, diameters, ecx, logger=logger)
 
+    logger.info('Writing results...')
     return results.to_csv(
         outfile,
         index=False,
@@ -111,6 +140,7 @@ def filter_(
     df: DataFrame,
     rule_type: str,
     diameters: List[int],
+    ecx: List[str] = [],
     logger: Logger = getLogger(__name__)
 ) -> List[int]:
     """
@@ -124,6 +154,8 @@ def filter_(
         Type of reaction rules ['all', 'forward', 'retro']
     diameters: List[int]
         Diameters to filter
+    ecx: List[str]
+        List of EC numbers to filter
     logger : Logger
         The logger object.
 
@@ -136,9 +168,28 @@ def filter_(
         'Args: {df}, {rt}, {dia}'.format(
             df=df,
             rt=rule_type,
-            dia=diameters
+            dia=diameters,
+            ecx=ecx
         )
     )
+
+    # Remove rules that contains EC numbers in 'ecx'
+    if ecx:
+        logger.info('Filtering out rules that contain at least one EC number starting by a pattern contained in: {ecx}'.format(ecx=ecx))
+        # Consider EC numbers as list (separator: ';')
+        ec_numbers = df['EC number'].apply(lambda x: x.split(';'))
+        # Remove rules that contain at least one EC number that starts with one in 'ecx',
+        # e.g. rule with EC numbers = ['1.1.1.1', '2.2.2.2'] will be removed if 'ecx' contains '1.1'
+        rules_idx = []
+        for i, ec in enumerate(ec_numbers):
+            for _ecx in ecx:
+                if any([ec.startswith(_ecx) for ec in ec]):
+                    rules_idx.append(i)
+                    logger.debug('Tagging rule {i} with EC numbers {ec} because \'{ecx}\' appear in the exclusion filter'.format(i=i, ec=ec, ecx=_ecx))
+                    break
+        logger.info('Removing {n} rules...'.format(n=len(rules_idx)))
+        df = df.drop(rules_idx)
+
     query = 'Diameter == @diameters'
     if rule_type != 'all':
         query += ' & `Rule usage` == @rule_usage_filter'

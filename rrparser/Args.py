@@ -62,6 +62,9 @@ def _add_arguments(parser):
                         help='diameter of the sphere including the atoms around " \
                             + "the reacting center (default is including all values: 2,4,6,8,10,12,14,16)." \
                             + " The higher is the diameter, the more specific are the rules')
+    parser.add_argument('-ecx', '--ecx',
+                        type=str,
+                        help='file containing EC numbers to filter out')
     parser.add_argument('-of', '--output-format',
                         type=str,
                         choices=['csv', 'tsv'],
