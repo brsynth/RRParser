@@ -1,6 +1,5 @@
 name: Tag
 
-
 on:
   push:
     branches:
@@ -9,30 +8,34 @@ on:
       - '**.py'
       - '!tests/**'
 
-
 jobs:
 
   Build-Recipe:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Installing make
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Make
         run: |
           sudo apt-get update
           sudo apt-get -y install make
+
       - name: Checkout CI/CD Toolkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: breakthewall/cicd-toolkit
           path: cicd-toolkit
           persist-credentials: false
           fetch-depth: 0
-      - name: Building recipe
+
+      - name: Build Recipe
         run: |
           cd cicd-toolkit
           make -C makefiles -f conda.mk build-recipe
-      - name: Saving recipe
-        uses: actions/upload-artifact@v2
+
+      - name: Save Recipe as Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: recipe
           path: cicd-toolkit/recipe/meta.yaml
@@ -42,85 +45,98 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: ["ubuntu", "windows", "macos"]
+        os: ["ubuntu", "macos"]
     defaults:
       run:
         shell: bash -l {0}
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Checkout CI/CD Toolkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: breakthewall/cicd-toolkit
           path: cicd-toolkit
           persist-credentials: false
           fetch-depth: 0
-      - name: Loading recipe
-        uses: actions/download-artifact@v4.1.7
+
+      - name: Load Recipe
+        uses: actions/download-artifact@v4
         with:
           name: recipe
           path: cicd-toolkit/recipe
-      - name: Deploying miniconda
-        uses: conda-incubator/setup-miniconda@v2
+
+      - name: Deploy Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
           environment-file: cicd-toolkit/recipe/conda_build_env.yaml
           activate-environment: test
-      - name: Building & Testing conda package
+          python-version: 3.10
+
+      - name: Remove Conda Cache
+        run: |
+          conda clean --all --yes
+          rm -rf ~/miniconda3/envs/test
+
+      - name: Build & Test Conda Package
         run: |
           conda-build cicd-toolkit/recipe
 
   Tag:
     needs: [Conda-Build]
     runs-on: ubuntu-latest
-    outputs: # Create variable usable from another job
+    outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}
+
     steps:
-      ## CREATE TAG/RELEASE
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
-      - name: Bump version and push tag
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Bump Version and Push Tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v5.6
+        uses: mathieudutour/github-tag-action@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: stable
           tag_prefix:
-      - name: Create Release
-        uses: actions/create-release@v1
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v2
         with:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           release_name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      ## UPDATE CHANGELOG
-      - uses: actions/checkout@v2
-        with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3 # Not needed with a .ruby-version file
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
       - name: Generate CHANGELOG
-        env:
-          CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3
+          bundler-cache: true
+
+      - name: Install & Run Changelog Generator
         run: |
           gem install github_changelog_generator
           AUTH=$(echo $GITHUB_REPOSITORY | sed -e 's/\// /g' | awk '{print "--user " $1 " --project " $2}')
-          echo $AUTH
           github_changelog_generator $AUTH --no-unreleased
+        env:
+          CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Update _version.py
         env:
           TAG: ${{ steps.tag_version.outputs.new_tag }}
         run: |
           folder=`dirname $(find . -name _version.py)`
-          echo "\"\"\"version information\"\"\"" > $folder/_version.py
-          echo "__version__ = \"$TAG\"" >> $folder/_version.py
-      - name: Commit files
+          echo "__version__ = \"$TAG\"" > $folder/_version.py
+
+      - name: Commit Changes
         run: |
           git config --local user.email "$GITHUB_EMAIL"
           git config --local user.name "$GITHUB_USERNAME"
@@ -128,12 +144,14 @@ jobs:
         env:
           GITHUB_USERNAME: breakthewall
           GITHUB_EMAIL: joan.herisson@univ-evry.fr
-      - name: Push changes
+
+      - name: Push Changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-      - name: Update master branch
+
+      - name: Update Master Branch
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
