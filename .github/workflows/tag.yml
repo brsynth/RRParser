@@ -50,42 +50,54 @@ jobs:
       run:
         shell: bash -l {0}
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Checkout CI/CD Toolkit
-        uses: actions/checkout@v4
-        with:
-          repository: breakthewall/cicd-toolkit
-          path: cicd-toolkit
-          persist-credentials: false
-          fetch-depth: 0
-
-      - name: Load Recipe
-        uses: actions/download-artifact@v4
-        with:
-          name: recipe
-          path: cicd-toolkit/recipe
-
-      - name: Deploy Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniconda-version: "latest"
-          activate-environment: test
-          environment-file: cicd-toolkit/recipe/conda_build_env.yaml
-          python-version: 3.9
-          auto-activate-base: false
-
-      # - name: Remove Conda Cache
-      #   run: |
-      #     conda clean --all --yes
-      #     rm -rf ~/miniconda3/envs/test
-
-      - name: Build & Test Conda Package
-        run: |
-          python --version
-          conda-build cicd-toolkit/recipe
+        steps:
+          - name: Checkout Repository
+            uses: actions/checkout@v4
+    
+          - name: Checkout CI/CD Toolkit
+            uses: actions/checkout@v4
+            with:
+              repository: breakthewall/cicd-toolkit
+              path: cicd-toolkit
+              persist-credentials: false
+              fetch-depth: 0
+    
+          - name: Load Recipe
+            uses: actions/download-artifact@v4
+            with:
+              name: recipe
+              path: cicd-toolkit/recipe
+    
+          - name: Set up Miniconda
+            uses: conda-incubator/setup-miniconda@v3
+            with:
+              activate-environment: test-env
+              environment-file: cicd-toolkit/recipe/conda_build_env.yaml
+              python-version: 3.9
+              auto-update-conda: true
+              miniforge-variant: Mambaforge
+              miniforge-version: latest
+    
+          - name: Install Dependencies
+            shell: bash -l {0}
+            run: |
+              mamba install -y conda-build conda-verify
+    
+          - name: Build Conda Package
+            shell: bash -l {0}
+            run: |
+              conda-build cicd-toolkit/recipe
+    
+          - name: Verify Build
+            shell: bash -l {0}
+            run: |
+              conda-verify $(conda-build cicd-toolkit/recipe --output)
+    
+          # - name: Upload Built Package as Artifact
+          #   uses: actions/upload-artifact@v4
+          #   with:
+          #     name: built-conda-package
+          #     path: ${{ github.workspace }}/build_artifacts/**/*
 
   Tag:
     needs: [Conda-Build]
