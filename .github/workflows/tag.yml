@@ -69,17 +69,18 @@ jobs:
           path: cicd-toolkit/recipe
 
       - name: Deploy Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
-          environment-file: cicd-toolkit/recipe/conda_build_env.yaml
           activate-environment: test
-          python-version: 3.10
+          environment-file: cicd-toolkit/recipe/conda_build_env.yaml
+#          python-version: 3.10
+          auto-activate-base: false
 
-      - name: Remove Conda Cache
-        run: |
-          conda clean --all --yes
-          rm -rf ~/miniconda3/envs/test
+      # - name: Remove Conda Cache
+      #   run: |
+      #     conda clean --all --yes
+      #     rm -rf ~/miniconda3/envs/test
 
       - name: Build & Test Conda Package
         run: |
