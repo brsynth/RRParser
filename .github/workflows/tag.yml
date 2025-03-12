@@ -69,7 +69,7 @@ jobs:
           path: cicd-toolkit/recipe
 
       - name: Deploy Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
           environment-file: cicd-toolkit/recipe/conda_build_env.yaml
