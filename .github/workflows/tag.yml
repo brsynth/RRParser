@@ -66,6 +66,7 @@ jobs:
           miniconda-version: "latest"
           environment-file: cicd-toolkit/recipe/conda_build_env.yaml
           activate-environment: test
+          python-version: 3.10
       - name: Building & Testing conda package
         run: |
           conda-build cicd-toolkit/recipe
