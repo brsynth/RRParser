@@ -5,7 +5,7 @@ Created on June 23 2020
 
 """
 
-from rrparser.Parser import parse_rules
+from rrparser.Parser import parse_rules, read_ecnumbers
 from rrparser.Args import build_args_parser
 from rrparser._version import __version__
 

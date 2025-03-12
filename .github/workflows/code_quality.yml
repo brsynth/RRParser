@@ -22,10 +22,15 @@ jobs:
   qodana:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Qodana
+        uses: JetBrains/qodana-action@v2024.3
         with:
-          fetch-depth: 0
-      - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2022.3.4
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+          results-dir: qodana-results
+          cache-dir: qodana-cache
+          use-caches: true
+          upload-result: true  # Uploads the results as an artifact
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-mode: true

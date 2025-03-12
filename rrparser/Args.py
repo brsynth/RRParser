@@ -68,6 +68,15 @@ def _add_arguments(parser):
                         default='csv',
                         help='output file format (default: csv)')
 
+    # Options --ecx and --ec are mutually exclusive
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-ecx', '--ecx',
+                       type=str,
+                       help='file containing EC numbers to filter out')
+    group.add_argument('-ec', '--ec',
+                       type=str,
+                       help='file containing EC numbers to filter in')
+
     # Program options
     parser.add_argument('--log', metavar='ARG',
                         type=str, choices=['debug', 'info', 'warning', 'error', 'critical',

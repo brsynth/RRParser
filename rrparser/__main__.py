@@ -4,7 +4,11 @@
 rrparser command line interface.
 
 """
-from rrparser import build_args_parser, parse_rules
+from rrparser import (
+    build_args_parser,
+    parse_rules,
+    read_ecnumbers
+)
 from colorlog import ColoredFormatter
 from logging import (
     Logger,
@@ -34,6 +38,15 @@ def entry_point():
     )
     logger.debug(args)
 
+    # Read 'ecx' from file
+    # EC numbers are separated by a comma
+    ecx = []
+    if args.ecx:
+        ecx = read_ecnumbers(args.ecx, logger)
+    ec = []
+    if args.ec:
+        ec = read_ecnumbers(args.ec, logger)
+
     try:
         results = parse_rules(
             rules_file=args.rules_file,
@@ -42,6 +55,8 @@ def entry_point():
             input_format=args.input_format,
             rule_type=args.rule_type,
             diameters=args.diameters,
+            ecx=ecx,
+            ec=ec,
             output_format=args.output_format,
             logger=logger
         )

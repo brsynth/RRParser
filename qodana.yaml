@@ -1,12 +1,2 @@
 version: "1.0"
-profile:
-  name: qodana.starter
-include:
-  - name: CheckModuleLicenses
-  - name: CheckThirdPartySoftwareList
-  - name: IncorrectProjectDependenciesConfiguration
-  - name: CheckDependencyLicenses
-  - name: PyMissingTypeHintsInspection
-  - name: PyPackageRequirementsInspection
-  - name: PyMissingOrEmptyDocstringInspection
-  - name: PyClassicStyleClassInspection
+linter: jetbrains/qodana-python-community:2024.3
