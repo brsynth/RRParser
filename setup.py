@@ -35,7 +35,7 @@ def get_version():
     for line in lines:
         if line.startswith('##'):
             from re import search
-            m = search("\[(.+)]", line)
+            m = search(r"\[(.+)]", line)
             if m:
                 return m.group(1)
 
