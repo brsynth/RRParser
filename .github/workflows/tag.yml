@@ -84,7 +84,7 @@ jobs:
 
       - name: Build & Test Conda Package
         run: |
-          pip install --upgrade pip setuptools wheel
+          python --version
           conda-build cicd-toolkit/recipe
 
   Tag:
