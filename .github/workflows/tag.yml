@@ -73,7 +73,7 @@ jobs:
         with:
           activate-environment: test-env
           environment-file: cicd-toolkit/recipe/conda_build_env.yaml
-          python-version: 3.9
+#          python-version: 3.9
           auto-update-conda: true
           # miniforge-variant: Mambaforge
           miniforge-version: latest
