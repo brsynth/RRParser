@@ -88,6 +88,8 @@ jobs:
         run: |
           ls -lah cicd-toolkit/recipe
           cat cicd-toolkit/recipe/meta.yaml
+          pip --version
+          pip list
           conda-build cicd-toolkit/recipe
 
       - name: Verify Build
