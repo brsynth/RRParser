@@ -8,7 +8,7 @@ Created on June 17 2020
 from test_main import Test_RR
 
 # Specific for tool
-from rrparser.Parser import filter_, read_ecx
+from rrparser.Parser import filter_, read_ecnumbers
 
 # Specific for tests themselves
 from pandas import read_csv, DataFrame
@@ -60,7 +60,7 @@ class Test_RR_Filters(Test_RR):
                 self.assertTrue(df.equals(df_expected))
     
     def test_filter_by_ecx(self):
-        ecx = read_ecx(path.join(self.here, 'data', 'ecx.csv'))
+        ecx = read_ecnumbers(path.join(self.here, 'data', 'ec.csv'))
         df_expected = read_csv(
             path.join(self.here, 'data', 'rules_ecx.csv')
         )

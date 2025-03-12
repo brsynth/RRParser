@@ -38,8 +38,8 @@ from .Args import (
 RETRORULES_URL = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
 
 
-def read_ecx(
-    ecx_file: str,
+def read_ecnumbers(
+    ec_file: str,
     logger: Logger = getLogger(__name__)
 ) -> List[str]:
     """
@@ -47,7 +47,7 @@ def read_ecx(
 
     Parameters
     ----------
-    ecx_file: str
+    ec_file: str
         File containing EC numbers
     logger : Logger
         The logger object.
@@ -58,9 +58,9 @@ def read_ecx(
         List of EC numbers.
     """
     logger.debug('Reading EC numbers from file...')
-    with open(ecx_file, 'r') as f:
-        ecx = f.read().split(',')
-    return ecx
+    with open(ec_file, 'r') as f:
+        ec = f.read().split(',')
+        return ec
 
 
 def parse_rules(
@@ -70,7 +70,8 @@ def parse_rules(
     input_format:     str = 'csv',
     rule_type:        str = 'all',
     diameters:        str = '2,4,6,8,10,12,14,16',
-    ecx:    List[str] = [],
+    ecx:              List[str] = [],
+    ec:               List[str] = [],
     output_format:    str = 'csv',
     logger:           Logger = getLogger(__name__)
 ) -> None or str:
@@ -93,6 +94,8 @@ def parse_rules(
         Diameters to filter [2,4,6,8,10,12,14,16] (default)
     ecx: List[str]
         List of EC numbers to remove from rules
+    ec: List[str]
+        List of EC numbers to only keep in rules
     output_format: str
         Format of file results are written into
     logger : Logger
@@ -125,7 +128,7 @@ def parse_rules(
     )
 
     # Filter rules according to 'rule_type' and 'diameters'
-    results = filter_(rf, rule_type, diameters, ecx, logger=logger)
+    results = filter_(rf, rule_type, diameters, ecx, ec, logger=logger)
 
     logger.info('Writing results...')
     return results.to_csv(
@@ -141,6 +144,7 @@ def filter_(
     rule_type: str,
     diameters: List[int],
     ecx: List[str] = [],
+    ec: List[str] = [],
     logger: Logger = getLogger(__name__)
 ) -> List[int]:
     """
@@ -155,7 +159,9 @@ def filter_(
     diameters: List[int]
         Diameters to filter
     ecx: List[str]
-        List of EC numbers to filter
+        List of EC numbers to filter out from rules
+    ec: List[str]
+        List of EC numbers to only keep in rules
     logger : Logger
         The logger object.
 
@@ -173,32 +179,76 @@ def filter_(
         )
     )
 
-    # Remove rules that contains EC numbers in 'ecx'
-    if ecx:
-        logger.info('Filtering out rules that contain at least one EC number starting by a pattern contained in: {ecx}'.format(ecx=ecx))
-        # Consider EC numbers as list (separator: ';')
-        ec_numbers = df['EC number'].apply(lambda x: x.split(';'))
-        # Remove rules that contain at least one EC number that starts with one in 'ecx',
-        # e.g. rule with EC numbers = ['1.1.1.1', '2.2.2.2'] will be removed if 'ecx' contains '1.1'
-        rules_idx = []
-        for i, ec in enumerate(ec_numbers):
-            for _ecx in ecx:
-                if any([ec.startswith(_ecx) for ec in ec]):
-                    rules_idx.append(i)
-                    logger.debug('Tagging rule {i} with EC numbers {ec} because \'{ecx}\' appear in the exclusion filter'.format(i=i, ec=ec, ecx=_ecx))
-                    break
-        logger.info('Removing {n} rules...'.format(n=len(rules_idx)))
-        df = df.drop(rules_idx)
+    ec_filter = ecx if ecx else ec
+    filter = 'in' if ec else 'not in'
+    logger.info('Filtering rules:')
+    logger.info(f' -> EC numbers ({filter}): {ec_filter}')
+    logger.info(f' -> Diameters: {diameters}')
+    logger.info(f' -> Rule types: {rule_type}')
 
-    query = 'Diameter == @diameters'
+    # Identify rules that contain at least one EC number starting by a pattern contained in 'ecx'
+    rules_idx = filter_rules_by_ec(df, ec_filter, logger)
+
+    # Build the filtering query
+    query = f"index {filter} @rules_idx"
+    query += ' & Diameter == @diameters'
     if rule_type != 'all':
         query += ' & `Rule usage` == @rule_usage_filter'
+    logger.debug(f'Query: {query}')
     # Used in 'e' in case of exception raised
     rule_usage_filter = ['both', rule_type]
     try:
-        return df.query(query)
+        _df = df.query(query)
+        logger.info('')
+        logger.info(f'=> {len(_df)} rules found')
+        logger.info('')
+        return _df
     except Exception as e:
         raise KeyError(e)
+
+
+def filter_rules_by_ec(
+    df: DataFrame,
+    ec_filter: List[str],
+    logger: Logger = getLogger(__name__)
+) -> List[int]:
+    """
+    Filter out rules that contain at least one EC number that starts with one in 'ecx'.
+
+    Parameters
+    ----------
+    df: DataFrame
+        Pandas dataframe
+    ec: List[str]
+        List of EC numbers to filter
+    logger : Logger
+        The logger object.
+    """
+    # Consider EC numbers as list (separator: ';')
+    ec_numbers = df['EC number'].str.split(';')
+
+    # Find indices of rows where any EC number starts with one in 'ec_filter'
+    def filter_ec_numbers(ec_list, ec_filter):
+        return any(any(ec.startswith(ec_f) for ec_f in ec_filter) for ec in ec_list)
+
+    # Apply filtering function and get indices
+    rules_idx = df[ec_numbers.apply(lambda x: filter_ec_numbers(x, ec_filter))].index.tolist()
+
+    # Debug log
+    if logger.level == 10:
+        for i in rules_idx:
+            logger.debug(f"Tagging rule {i} with EC numbers {df.at[i, 'EC number']} because an EC number appears in the exclusion filter")
+
+    # # Remove rules that contain at least one EC number that starts with one in 'ecx',
+    # # e.g. rule with EC numbers = ['1.1.1.1', '2.2.2.2'] will be removed if 'ecx' contains '1.1'
+    # rules_idx = []
+    # for i, ec in enumerate(ec_numbers):
+    #     for ec_filter_elt in ec_filter:
+    #         if any([ec.startswith(ec_filter_elt) for ec in ec]):
+    #             rules_idx.append(i)
+    #             logger.debug('Tagging rule {i} with EC numbers {ec} because \'{ec_f_elt}\' appear in the exclusion filter'.format(i=i, ec=ec, ec_f_elt=ec_filter_elt))
+    #             break
+    return rules_idx
 
 
 def fetch_retrorules(
