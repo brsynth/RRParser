@@ -10,92 +10,92 @@ on:
 
 jobs:
 
-  Build-Recipe:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+#   Build-Recipe:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
 
-      - name: Install Make
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install make
+#       - name: Install Make
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get -y install make
 
-      - name: Checkout CI/CD Toolkit
-        uses: actions/checkout@v4
-        with:
-          repository: breakthewall/cicd-toolkit
-          path: cicd-toolkit
-          persist-credentials: false
-          fetch-depth: 0
+#       - name: Checkout CI/CD Toolkit
+#         uses: actions/checkout@v4
+#         with:
+#           repository: breakthewall/cicd-toolkit
+#           path: cicd-toolkit
+#           persist-credentials: false
+#           fetch-depth: 0
 
-      - name: Build Recipe
-        run: |
-          cd cicd-toolkit
-          make -C makefiles -f conda.mk build-recipe
+#       - name: Build Recipe
+#         run: |
+#           cd cicd-toolkit
+#           make -C makefiles -f conda.mk build-recipe
 
-      - name: Save Recipe as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: recipe
-          path: cicd-toolkit/recipe/meta.yaml
+#       - name: Save Recipe as Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: recipe
+#           path: cicd-toolkit/recipe/meta.yaml
 
-  Conda-Build:
-    needs: [Build-Recipe]
-    runs-on: ${{ matrix.os }}-latest
-    strategy:
-      matrix:
-        os: ["ubuntu", "macos"]
-    defaults:
-      run:
-        shell: bash -l {0}
+#   Conda-Build:
+#     needs: [Build-Recipe]
+#     runs-on: ${{ matrix.os }}-latest
+#     strategy:
+#       matrix:
+#         os: ["ubuntu", "macos"]
+#     defaults:
+#       run:
+#         shell: bash -l {0}
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
 
-      - name: Checkout CI/CD Toolkit
-        uses: actions/checkout@v4
-        with:
-          repository: breakthewall/cicd-toolkit
-          path: cicd-toolkit
-          persist-credentials: false
-          fetch-depth: 0
+#       - name: Checkout CI/CD Toolkit
+#         uses: actions/checkout@v4
+#         with:
+#           repository: breakthewall/cicd-toolkit
+#           path: cicd-toolkit
+#           persist-credentials: false
+#           fetch-depth: 0
 
-      - name: Load Recipe
-        uses: actions/download-artifact@v4
-        with:
-          name: recipe
-          path: cicd-toolkit/recipe
+#       - name: Load Recipe
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: recipe
+#           path: cicd-toolkit/recipe
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: test-env
-          environment-file: cicd-toolkit/recipe/conda_build_env.yaml
-#          python-version: 3.9
-          auto-update-conda: true
-          # miniforge-variant: Mambaforge
-          miniforge-version: latest
+#       - name: Set up Miniconda
+#         uses: conda-incubator/setup-miniconda@v3
+#         with:
+#           activate-environment: test-env
+#           environment-file: cicd-toolkit/recipe/conda_build_env.yaml
+# #          python-version: 3.9
+#           auto-update-conda: true
+#           # miniforge-variant: Mambaforge
+#           miniforge-version: latest
 
-      - name: Install Dependencies
-        shell: bash -l {0}
-        run: |
-          mamba install -y conda-build conda-verify
+#       - name: Install Dependencies
+#         shell: bash -l {0}
+#         run: |
+#           mamba install -y conda-build conda-verify
 
-      - name: Build Conda Package
-        shell: bash -l {0}
-        run: |
-          ls -lah cicd-toolkit/recipe
-          cat cicd-toolkit/recipe/meta.yaml
-          pip --version
-          pip list
-          conda-build cicd-toolkit/recipe
+#       - name: Build Conda Package
+#         shell: bash -l {0}
+#         run: |
+#           ls -lah cicd-toolkit/recipe
+#           cat cicd-toolkit/recipe/meta.yaml
+#           pip --version
+#           pip list
+#           conda-build cicd-toolkit/recipe
 
-      - name: Verify Build
-        shell: bash -l {0}
-        run: |
-          conda-verify $(conda-build cicd-toolkit/recipe --output)
+#       - name: Verify Build
+#         shell: bash -l {0}
+#         run: |
+#           conda-verify $(conda-build cicd-toolkit/recipe --output)
 
       # - name: Upload Built Package as Artifact
       #   uses: actions/upload-artifact@v4
@@ -104,7 +104,7 @@ jobs:
       #     path: ${{ github.workspace }}/build_artifacts/**/*
 
   Tag:
-    needs: [Conda-Build]
+    # needs: [Conda-Build]
     runs-on: ubuntu-latest
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}
