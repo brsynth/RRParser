@@ -65,7 +65,7 @@ def read_ecnumbers(
 def parse_rules(
     outfile:          str,
     rules_file:       str = DEFAULT_RULES_FILE,
-    rules_scores_file: str = None,
+    scores_file:      str = None,
     rules_dir:        str = DEFAULT_RULES_DIR,
     input_format:     str = 'csv',
     rule_type:        str = 'all',
@@ -82,7 +82,7 @@ def parse_rules(
     ----------
     rules_file: str
         Reactions file (if not set RetroRules are considered)
-    rules_scores_file: str
+    scores_file: str
         Reactions scores file (if not set RetroRules are considered)
     rules_dir: str
         Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
@@ -133,10 +133,10 @@ def parse_rules(
     results = filter_(rf, rule_type, diameters, ecx, ec, logger=logger)
 
     # If 'rules_scores_file' is set, then read it and merge with 'results'
-    if rules_scores_file:
+    if scores_file:
         logger.debug('Reading scores values...')
         rsf = read_csv(
-            rules_scores_file,
+            scores_file,
             sep=sep,
             float_precision='round_trip'
         )

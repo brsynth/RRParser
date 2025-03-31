@@ -79,7 +79,7 @@ def _add_arguments(parser):
 
     # Option to customize rules score with a dedicated file (CSV or TSV)
     # where each line is the rule name and its score
-    parser.add_argument('-rs', '--rules-scores',
+    parser.add_argument('-s', '--scores',
                         type=str,
                         help='CSV or TSV file containing rules names and scores')
 
