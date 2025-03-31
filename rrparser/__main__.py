@@ -50,6 +50,7 @@ def entry_point():
     try:
         results = parse_rules(
             rules_file=args.rules_file,
+            rules_scores_file=args.rules_scores,
             rules_dir=args.rules_dir,
             outfile=args.outfile,
             input_format=args.input_format,

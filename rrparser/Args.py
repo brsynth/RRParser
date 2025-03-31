@@ -77,6 +77,12 @@ def _add_arguments(parser):
                        type=str,
                        help='file containing EC numbers to filter in')
 
+    # Option to customize rules score with a dedicated file (CSV or TSV)
+    # where each line is the rule name and its score
+    parser.add_argument('-rs', '--rules-scores',
+                        type=str,
+                        help='CSV or TSV file containing rules names and scores')
+
     # Program options
     parser.add_argument('--log', metavar='ARG',
                         type=str, choices=['debug', 'info', 'warning', 'error', 'critical',

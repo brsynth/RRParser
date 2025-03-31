@@ -65,6 +65,7 @@ def read_ecnumbers(
 def parse_rules(
     outfile:          str,
     rules_file:       str = DEFAULT_RULES_FILE,
+    rules_scores_file: str = None,
     rules_dir:        str = DEFAULT_RULES_DIR,
     input_format:     str = 'csv',
     rule_type:        str = 'all',
@@ -81,6 +82,8 @@ def parse_rules(
     ----------
     rules_file: str
         Reactions file (if not set RetroRules are considered)
+    rules_scores_file: str
+        Reactions scores file (if not set RetroRules are considered)
     rules_dir: str
         Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
     outfile: str
@@ -129,6 +132,16 @@ def parse_rules(
     # Filter rules according to 'rule_type' and 'diameters'
     results = filter_(rf, rule_type, diameters, ecx, ec, logger=logger)
 
+    # If 'rules_scores_file' is set, then read it and merge with 'results'
+    if rules_scores_file:
+        logger.debug('Reading scores values...')
+        rsf = read_csv(
+            rules_scores_file,
+            sep=sep,
+            float_precision='round_trip'
+        )
+        results = replace_scores(results, rsf, logger=logger)
+
     logger.info('Writing results...')
     return results.to_csv(
         outfile,
@@ -136,6 +149,44 @@ def parse_rules(
         sep=sep,
         quoting=quoting
     )
+
+
+def replace_scores(results, scores, logger: Logger = getLogger(__name__)):
+    """
+    Replace scores in 'results' with those in 'rules_scores_file'.
+
+    Parameters
+    ----------
+    results: DataFrame
+        DataFrame containing the results
+
+    scores: DataFrame
+        DataFrame containing the Rule IDs and the scores to replace
+
+    logger : Logger
+        The logger object.
+    """
+    # Replace scores in results with those in 'rules_scores_file' for the same rules
+    logger.debug('Merging scores with rules...')
+    # Create a mapping from df2
+    score_map = scores.set_index('Rule ID')['Score']
+    # Update the Score in df1 if Rule ID is in df2
+    results = results.copy()
+    # warning if Rule ID has been found
+    # in scores but not in results
+    missing_rules = set(scores['Rule ID']) - set(results['Rule ID'])
+    if missing_rules:
+        logger.warning(
+            f"Rule IDs {missing_rules} found in scores file but not in results. "
+            "Its score will not be used."
+        )
+    # Update the Score in results DataFrame
+    # using the mapping from scores
+    results['Score'] = results['Rule ID'].map(score_map).fillna(results['Score'])
+    results.loc[:, 'Score'] = results['Rule ID'].map(score_map).fillna(results['Score'])
+    # # Optional: convert Score back to the original dtype if needed
+    # results['Score'] = results['Score'].astype(float)
+    return results
 
 
 def filter_(
