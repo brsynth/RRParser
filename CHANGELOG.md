@@ -1,8 +1,16 @@
 # Changelog
 
+## [2.7.0](https://github.com/brsynth/RRParser/tree/2.7.0) (2025-03-31)
+
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.6.0...2.7.0)
+
 ## [2.6.0](https://github.com/brsynth/RRParser/tree/2.6.0) (2025-03-13)
 
 [Full Changelog](https://github.com/brsynth/RRParser/compare/2.5.2...2.6.0)
+
+**Merged pull requests:**
+
+- build\(deps\): bump actions/download-artifact from 2 to 4.1.7 in /.github/workflows [\#2](https://github.com/brsynth/RRParser/pull/2) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [2.5.2](https://github.com/brsynth/RRParser/tree/2.5.2) (2023-03-17)
 
