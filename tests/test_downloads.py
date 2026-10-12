@@ -10,7 +10,7 @@ import pandas as pd
 import pytest
 
 from rrparser import build_args_parser, list_retrorules, parse_rules
-from rrparser.Downloads import fetch_dataset, RR02_FILE, RR02_URL
+from rrparser.Downloads import fetch_dataset, RR02_FILE, RR02_URL, RR02_CACHE_FILE
 from rrparser.Args import DEFAULT_RULES_DIR
 
 
@@ -85,13 +85,15 @@ def test_rr02_download_cache_and_parsing():
             member = tarfile.TarInfo(name)
             member.size = len(data)
             tar.addfile(member, BytesIO(data))
+    original_archive = archive.getvalue()
     archive.seek(0)
     with TemporaryDirectory() as directory:
         with patch('rrparser.Downloads.urlopen', return_value=archive) as download:
             filename = fetch_dataset(directory, 'rr02')
             download.assert_called_once_with(RR02_URL, timeout=30)
-        assert filename == str(Path(directory) / RR02_FILE)
-        assert Path(filename).read_bytes() == rules
+        assert filename == str(Path(directory) / RR02_CACHE_FILE)
+        assert not (Path(directory) / RR02_FILE).parent.exists()
+        assert Path(filename).read_bytes() == original_archive
         with patch('rrparser.Downloads.urlopen', side_effect=AssertionError('Network used')):
             output = parse_rules(None, rules_dir=directory, release='rr02', rule_type='retro', diameters='2')
         parsed = pd.read_csv(StringIO(output))
@@ -99,8 +101,18 @@ def test_rr02_download_cache_and_parsing():
         assert set(parsed['Rule usage']) <= {'retro', 'both'}
         assert set(parsed['Diameter']) == {2}
         assert list(Path(directory).rglob('*.txt')) == []
+        assert list(Path(directory).rglob('*.csv')) == []
+        assert Path(filename).read_bytes() == original_archive
         with pytest.raises(ValueError, match='only available for metanetx'):
             fetch_dataset(directory, 'rr02', 'rhea')
+
+
+def test_rr02_failed_download_leaves_no_cache():
+    with TemporaryDirectory() as directory:
+        with patch('rrparser.Downloads.urlopen', side_effect=URLError('offline')):
+            with pytest.raises(ValueError, match='Cannot download'):
+                fetch_dataset(directory, 'rr02')
+        assert not list(Path(directory).iterdir())
 
 
 def test_rr02_missing_csv():
@@ -111,7 +123,7 @@ def test_rr02_missing_csv():
     with TemporaryDirectory() as directory:
         with patch('rrparser.Downloads.urlopen', return_value=archive):
             with pytest.raises(ValueError, match='does not contain'):
-                fetch_dataset(directory, 'rr02')
+                parse_rules(None, rules_dir=directory, release='rr02')
         assert not list(Path(directory).rglob('*.csv'))
         assert not list(Path(directory).rglob('*.part'))
 

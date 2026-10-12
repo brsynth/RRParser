@@ -75,8 +75,11 @@ An invalid or unavailable release reports the error and lists available
 release/dataset choices (when the download page is reachable).
 The list also includes `rr02` / `metanetx`, using the historical
 [Zenodo archive](https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz)
-for RetroPath 2.0 with explicit hydrogens. `--release rr02` reuses the old cache
-path when present and supports the original retro/forward filters.
+for RetroPath 2.0 with explicit hydrogens. `--release rr02` preserves the original
+`retrorules_rr02_rp2_hs.tar.gz` alongside the newer cached archives and supports
+the original retro/forward filters. Its CSV is read directly inside the archive,
+without extracting a source file to disk. If only an old decompressed CSV cache
+exists, the original archive is downloaded once and then reused.
 The default is `--release 3.1.0 --dataset metanetx`; explicit `--release latest` selects only
 the newer template releases.
 Downloaded CSV archives are cached separately by version and dataset. `latest`

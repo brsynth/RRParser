@@ -5,8 +5,9 @@ Created on May 4 2020
 
 """
 
-from .Downloads import fetch_dataset
+from .Downloads import fetch_dataset, RR02_FILE
 from re import fullmatch
+from tarfile import open as open_tar
 from pandas import (
     read_csv,
     DataFrame
@@ -134,12 +135,17 @@ def parse_rules(
 
     logger.debug('Reading values...')
     # Read 'csv' as 'tsv' by specying separator
-    rf = read_csv(
-        rules_file,
-        sep=sep,
-        dtype={'RADII': str},
-        float_precision='round_trip'
-    )
+    read_options = {'sep': sep, 'dtype': {'RADII': str}, 'float_precision': 'round_trip'}
+    if str(rules_file).endswith('.tar.gz'):
+        with open_tar(rules_file, mode='r:gz') as archive:
+            member = next((item for item in archive
+                           if item.name in (RR02_FILE, './' + RR02_FILE) and item.isfile()), None)
+            if member is None:
+                raise ValueError('RetroRules rr02 archive does not contain {}'.format(RR02_FILE))
+            with archive.extractfile(member) as source:
+                rf = read_csv(source, **read_options)
+    else:
+        rf = read_csv(rules_file, **read_options)
 
     # Filter rules according to 'rule_type' and 'diameters'
     templates = 'TEMPLATE_ID' in rf.columns
