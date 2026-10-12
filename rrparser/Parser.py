@@ -5,12 +5,7 @@ Created on May 4 2020
 
 """
 
-from os import (
-    path as os_path
-)
-from brs_utils import (
-    download_and_extract_tar_gz
-)
+from .Downloads import fetch_dataset
 from pandas import (
     read_csv,
     DataFrame
@@ -21,8 +16,7 @@ from csv import (
 )
 from typing import (
     List,
-    Tuple,
-    Literal
+    Tuple
 )
 from logging import (
     Logger,
@@ -30,11 +24,10 @@ from logging import (
 )
 from .Args import (
     DEFAULT_RULES_FILE,
-    DEFAULT_RULES_DIR
+    DEFAULT_RULES_DIR,
+    DEFAULT_RELEASE,
+    DEFAULT_DIAMETERS
 )
-
-
-RETRORULES_URL = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
 
 
 def read_ecnumbers(
@@ -69,11 +62,14 @@ def parse_rules(
     rules_dir:        str = DEFAULT_RULES_DIR,
     input_format:     str = 'csv',
     rule_type:        str = 'all',
-    diameters:        str = '2,4,6,8,10,12,14,16',
+    diameters:        str = DEFAULT_DIAMETERS,
     ecx:              List[str] = [],
     ec:               List[str] = [],
     output_format:    str = 'csv',
-    logger:           Logger = getLogger(__name__)
+    logger:           Logger = getLogger(__name__),
+    release:          str = DEFAULT_RELEASE,
+    dataset:          str = 'metanetx',
+    radii:            str = None
 ) -> None or str:
     """
     Parse a reaction rules file and extract sub-part according 'diameters' and 'rule_type' filters.
@@ -85,7 +81,7 @@ def parse_rules(
     scores_file: str
         Reactions scores file (if not set RetroRules are considered)
     rules_dir: str
-        Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
+        Source archive cache (default: cache directory inside the rrparser package).
     outfile: str
         Filename where to write results (if not set results are returned as a string)
     input_format: str
@@ -93,7 +89,7 @@ def parse_rules(
     rule_type: str
         Type of reaction rules ['all', 'forward', 'retro'] (default 'all')
     diameters: str
-        Diameters to filter [2,4,6,8,10,12,14,16] (default)
+        Diameters to filter (default: all even values from 0 to 20).
     ecx: List[str]
         List of EC numbers to remove from rules
     ec: List[str]
@@ -102,6 +98,12 @@ def parse_rules(
         Format of file results are written into
     logger : Logger
         The logger object.
+    release: str
+        RetroRules version (default 3.1.0), rr02, or latest.
+    dataset: str
+        Dataset discovered on retrorules.org (default metanetx).
+    radii: str
+        Comma-separated radii 0–10, as an alternative to diameters.
 
     Returns
     -------
@@ -110,6 +112,13 @@ def parse_rules(
     """
 
     # Check args is here since the method is directly callable.
+    if radii is not None:
+        if diameters != DEFAULT_DIAMETERS:
+            raise ValueError('Use either radii or diameters')
+        values = radii.split(',')
+        if any(not value.isdigit() or int(value) > 10 for value in values):
+            raise ValueError('Radii must be integers from 0 to 10, separated by commas')
+        diameters = ','.join(str(2 * int(value)) for value in values)
     diameters, sep, quoting = check_args(
         rule_type,
         diameters,
@@ -119,17 +128,23 @@ def parse_rules(
 
     # If 'rules_file' is set to RetroRules, then fetch RetroRules on Internet
     if rules_file == 'retrorules':
-        rules_file = fetch_retrorules(rules_dir)
+        rules_file = fetch_retrorules(rules_dir, logger, release, dataset)
+        sep = ','
 
     logger.debug('Reading values...')
     # Read 'csv' as 'tsv' by specying separator
     rf = read_csv(
         rules_file,
         sep=sep,
+        dtype={'RADII': str},
         float_precision='round_trip'
     )
 
     # Filter rules according to 'rule_type' and 'diameters'
+    templates = 'TEMPLATE_ID' in rf.columns
+    if templates:
+        rf = rf.rename(columns={'TEMPLATE_ID': 'Rule ID', 'TEMPLATE': 'Rule',
+                                'ECS': 'EC number', 'SCORE': 'Score'})
     results = filter_(rf, rule_type, diameters, ecx, ec, logger=logger)
 
     # If 'rules_scores_file' is set, then read it and merge with 'results'
@@ -146,8 +161,8 @@ def parse_rules(
     return results.to_csv(
         outfile,
         index=False,
-        sep=sep,
-        quoting=quoting
+        sep=(',' if output_format == 'csv' else '\t') if templates else sep,
+        **({} if templates else {'quoting': quoting})
     )
 
 
@@ -241,7 +256,18 @@ def filter_(
 
     # Build the filtering query
     query = f"index {filter} @rules_idx"
-    query += ' & Diameter == @diameters'
+    if 'RADII' in df.columns:
+        if any(diameter % 2 or diameter > 20 for diameter in diameters):
+            raise ValueError('Template diameters must be even values from 0 to 20 (radii 0 to 10)')
+        if rule_type != 'all':
+            raise ValueError('RetroRules templates have no retro/forward annotation; use --rule-type all')
+        radii = {diameter // 2 for diameter in diameters}
+        radius_idx = df[df['RADII'].fillna('').astype(str).apply(
+            lambda values: any(int(radius) in radii for radius in values.split(';') if radius)
+        )].index
+        query += ' & index in @radius_idx'
+    else:
+        query += ' & Diameter == @diameters'
     if rule_type != 'all':
         query += ' & `Rule usage` == @rule_usage_filter'
     logger.debug(f'Query: {query}')
@@ -275,7 +301,7 @@ def filter_rules_by_ec(
         The logger object.
     """
     # Consider EC numbers as list (separator: ';')
-    ec_numbers = df['EC number'].str.split(';')
+    ec_numbers = df['EC number'].fillna('').str.split(';')
 
     # Find indices of rows where any EC number starts with one in 'ec_filter'
     def filter_ec_numbers(ec_list, ec_filter):
@@ -303,7 +329,9 @@ def filter_rules_by_ec(
 
 def fetch_retrorules(
     rules_dir: str = DEFAULT_RULES_DIR,
-    logger: Logger = getLogger(__name__)
+    logger: Logger = getLogger(__name__),
+    release: str = DEFAULT_RELEASE,
+    dataset: str = 'metanetx'
 ) -> str:
     """
     Fetch RetroRules over Internet if not already on disk.
@@ -311,7 +339,7 @@ def fetch_retrorules(
     Parameters
     ----------
     rules_dir: str
-        Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
+        Directory where to cache RetroRules source files.
     logger : Logger
         The logger object.
 
@@ -320,18 +348,7 @@ def fetch_retrorules(
     filename: str
         Path to downoaded filename.
     """
-    filename = 'retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv'
-    rules_file = os_path.join(rules_dir, filename)
-
-    if not os_path.exists(rules_file):
-        logger.info('Downloading retrorules file...')
-        download_and_extract_tar_gz(
-            RETRORULES_URL,
-            rules_dir,
-            filename
-        )
-
-    return rules_file
+    return fetch_dataset(rules_dir, release, dataset)
 
 
 def check_args(
@@ -349,7 +366,7 @@ def check_args(
     rule_type: str
         Type of reaction rules ['all', 'forward', 'retro'] (default 'all')
     diameters: str
-        Diameters to filter [2,4,6,8,10,12,14,16] (default)
+        Diameters to filter (default: all even values from 0 to 20).
     input_format: str
         Input format of rules_file ['csv', 'tsv'] (default 'csv')
     output_format: str

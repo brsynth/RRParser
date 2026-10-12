@@ -9,11 +9,12 @@ from argparse import ArgumentParser
 from os import path as os_path
 from rrparser._version import __version__
 
-__PACKAGE_FOLDER = os_path.dirname(
-    os_path.realpath(__file__)
+DEFAULT_RULES_DIR = os_path.join(
+    os_path.dirname(os_path.realpath(__file__)), 'cache'
 )
-DEFAULT_RULES_DIR = __PACKAGE_FOLDER
 DEFAULT_RULES_FILE = 'retrorules'
+DEFAULT_RELEASE = '3.1.0'
+DEFAULT_DIAMETERS = '0,2,4,6,8,10,12,14,16,18,20'
 
 
 def build_args_parser():
@@ -43,6 +44,12 @@ def _add_arguments(parser):
     )
 
     # Optional arguments
+    parser.add_argument('--list-releases', action='store_true',
+                        help='List releases and datasets available on retrorules.org, then exit')
+    parser.add_argument('--release', default=DEFAULT_RELEASE,
+                        help='RetroRules version, latest or rr02 (default: 3.1.0)')
+    parser.add_argument('--dataset', default='metanetx',
+                        help='RetroRules dataset (default: metanetx; see --list-releases)')
     parser.add_argument('-o', '--outfile',
                         type=str,
                         help="file where results are written. If file ends with '.gz', it will be gzipped.")
@@ -56,12 +63,14 @@ def _add_arguments(parser):
                         choices=['all', 'retro', 'forward'],
                         default='all',
                         help="rule usage to filter from rules file")
-    parser.add_argument('-d', '--diameters',
+    sizes = parser.add_mutually_exclusive_group()
+    sizes.add_argument('-d', '--diameters',
                         type=str,
-                        default='2,4,6,8,10,12,14,16',
-                        help='diameter of the sphere including the atoms around " \
-                            + "the reacting center (default is including all values: 2,4,6,8,10,12,14,16)." \
-                            + " The higher is the diameter, the more specific are the rules')
+                        default=DEFAULT_DIAMETERS,
+                        help='Comma-separated diameters (default: all even values from 0 to 20). '
+                             'For templates, diameter = 2 * radius; rr02 provides diameters 2 to 16')
+    sizes.add_argument('--radii', type=str,
+                       help='Comma-separated radii from 0 to 10 (alternative to --diameters)')
     parser.add_argument('-of', '--output-format',
                         type=str,
                         choices=['csv', 'tsv'],
@@ -93,9 +102,9 @@ def _add_arguments(parser):
                         version='%(prog)s {}'.format(__version__),
                         help='show the version number and exit')
     parser.add_argument(
-        '--rules-dir',
-        default=__PACKAGE_FOLDER,
-        help='Path to the rules directory (default in package directory).'
+        '--rules-dir', '--cache-dir',
+        default=DEFAULT_RULES_DIR,
+        help='Source archive cache (default: %(default)s). Extracted rules are written to --outfile.'
     )
 
     return parser

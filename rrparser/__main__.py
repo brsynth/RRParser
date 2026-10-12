@@ -17,6 +17,7 @@ from logging import (
 )
 
 from rrparser._version import __version__
+from rrparser.Downloads import list_retrorules
 
 
 def entry_point():
@@ -37,6 +38,14 @@ def entry_point():
         )
     )
     logger.debug(args)
+
+    if args.list_releases:
+        try:
+            for release, dataset in list_retrorules():
+                print('{}\t{}'.format(release, dataset))
+        except ValueError as exc:
+            parser.exit(1, '{}\n'.format(exc))
+        return
 
     # Read 'ecx' from file
     # EC numbers are separated by a comma
@@ -59,7 +68,10 @@ def entry_point():
             ecx=ecx,
             ec=ec,
             output_format=args.output_format,
-            logger=logger
+            logger=logger,
+            release=args.release,
+            dataset=args.dataset,
+            radii=args.radii
         )
 
         # Print results if 'outfile' is empty
@@ -67,7 +79,7 @@ def entry_point():
             logger.info(results)
 
     except ValueError as e:
-        logger.error(str(e))
+        parser.exit(1, '{}\n'.format(e))
 
 
 def create_logger(
