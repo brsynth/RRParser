@@ -6,6 +6,7 @@ Created on May 4 2020
 """
 
 from .Downloads import fetch_dataset
+from re import fullmatch
 from pandas import (
     read_csv,
     DataFrame
@@ -351,6 +352,29 @@ def fetch_retrorules(
     return fetch_dataset(rules_dir, release, dataset)
 
 
+def parse_diameters(expression: str) -> List[int]:
+    """Expand lists, inclusive ranges and upper bounds into diameters."""
+    diameters = set()
+    for term in expression.split(','):
+        term = term.strip()
+        interval = fullmatch(r'(\d+)\s*-\s*(\d+)', term)
+        upper_bound = fullmatch(r'<(=?)\s*(\d+)', term)
+        if term.isdigit():
+            diameters.add(int(term))
+        elif interval:
+            lower, upper = map(int, interval.groups())
+            if lower > upper:
+                raise ValueError('Diameter range must have its lower bound first')
+            diameters.update(d for d in range(0, 21, 2) if lower <= d <= upper)
+        elif upper_bound:
+            inclusive, upper = upper_bound.groups()
+            limit = int(upper) + bool(inclusive)
+            diameters.update(d for d in range(0, 21, 2) if d < limit)
+        else:
+            raise ValueError('Invalid --diameters: use a list (0,2,4), range (0-8), <8 or <=8')
+    return sorted(diameters)
+
+
 def check_args(
     rule_type: str,
     diameters: str,
@@ -395,11 +419,7 @@ def check_args(
         raise ValueError('Cannot detect \'rule_type\' input: '+str(rule_type))
 
     # Diameter
-    diameters = diameters.split(',')
-    for d in diameters:
-        if not d.isdigit():
-            raise ValueError(
-                    "--diameters takes only digit separated by comma")
+    diameters = parse_diameters(diameters)
 
     # Input format
     if input_format == 'csv':
@@ -417,4 +437,4 @@ def check_args(
     else:
         raise ValueError('Can only have \'csv\' or \'tsv\' input formats')
 
-    return list(map(int, diameters)), sep, quoting
+    return diameters, sep, quoting

@@ -97,6 +97,11 @@ once per template. Radii 0–10 correspond to even diameters 0–20, all include
 by default. Odd diameters and values above 20 are rejected for templates.
 Use `--radii 0,1,2` instead of `--diameters 0,2,4`; these CLI options are
 mutually exclusive. Python calls also accept `radii='0,1,2'`.
+`--diameters` also accepts inclusive ranges and upper bounds, selecting even
+diameters within 0–20: `0-8` selects 0,2,4,6,8; `<8` selects 0,2,4,6;
+`<=8` selects 0,2,4,6,8. Terms can be combined, e.g. `0-8,20`.
+Quote comparisons in the shell: `--diameters '<=8'`.
+The same expressions work in Python with `diameters='<=8'`.
 For rr02, the extended default includes all available diameters (2–16).
 `RADII` retains all source radii, separated by semicolons.
 EC filtering and custom scores remain available. New templates require
