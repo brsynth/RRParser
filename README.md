@@ -159,26 +159,26 @@ choices = list_retrorules()
 
 # Write an extraction. Returns None when outfile is provided.
 parse_rules(
-    outfile='rules.csv',
-    release='3.1.0',
-    dataset='rhea',
-    diameters='<=8',
+    outfile="rules.csv",
+    release="3.1.0",
+    dataset="rhea",
+    diameters="<=8",
 )
 
 # Return CSV text instead of writing a file.
 csv_text = parse_rules(
     outfile=None,
-    dataset='rhea',
-    radii='0,1,2',
+    dataset="rhea",
+    radii="0,1,2",
 )
 
 # Parse a local file with EC filtering and replacement scores.
 parse_rules(
-    outfile='filtered.csv',
-    rules_file='input.csv',
-    diameters='2,4',
-    ec=['1.1'],
-    scores_file='scores.csv',
+    outfile="filtered.csv",
+    rules_file="input.csv",
+    diameters="2,4",
+    ec=["1.1"],
+    scores_file="scores.csv",
 )
 ```
 
@@ -195,7 +195,7 @@ The CLI argument parser is also available:
 from rrparser import build_args_parser
 
 parser = build_args_parser()
-params = parser.parse_args(['--dataset', 'rhea', '--diameters', '<=8'])
+params = parser.parse_args(["--dataset", "rhea", "--diameters", "<=8"])
 ```
 
 ## Output compatibility
