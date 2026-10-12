@@ -353,12 +353,12 @@ def fetch_retrorules(
 
 
 def parse_diameters(expression: str) -> List[int]:
-    """Expand lists, inclusive ranges and upper bounds into diameters."""
+    """Expand lists, inclusive ranges and comparisons into diameters."""
     diameters = set()
     for term in expression.split(','):
         term = term.strip()
         interval = fullmatch(r'(\d+)\s*-\s*(\d+)', term)
-        upper_bound = fullmatch(r'<(=?)\s*(\d+)', term)
+        comparison = fullmatch(r'([<>])(=?)\s*(\d+)', term)
         if term.isdigit():
             diameters.add(int(term))
         elif interval:
@@ -366,12 +366,14 @@ def parse_diameters(expression: str) -> List[int]:
             if lower > upper:
                 raise ValueError('Diameter range must have its lower bound first')
             diameters.update(d for d in range(0, 21, 2) if lower <= d <= upper)
-        elif upper_bound:
-            inclusive, upper = upper_bound.groups()
-            limit = int(upper) + bool(inclusive)
-            diameters.update(d for d in range(0, 21, 2) if d < limit)
+        elif comparison:
+            operator, inclusive, bound = comparison.groups()
+            bound = int(bound)
+            diameters.update(d for d in range(0, 21, 2)
+                             if (d < bound if operator == '<' else d > bound)
+                             or (inclusive and d == bound))
         else:
-            raise ValueError('Invalid --diameters: use a list (0,2,4), range (0-8), <8 or <=8')
+            raise ValueError('Invalid --diameters: use a list (0,2,4), range (0-8), <8, <=8, >8 or >=8')
     return sorted(diameters)
 
 

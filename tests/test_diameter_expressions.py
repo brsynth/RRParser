@@ -13,6 +13,14 @@ from rrparser.Parser import parse_diameters
     ('0-8', [0, 2, 4, 6, 8]),
     ('<8', [0, 2, 4, 6]),
     ('<=8', [0, 2, 4, 6, 8]),
+    ('>8', [10, 12, 14, 16, 18, 20]),
+    ('>=8', [8, 10, 12, 14, 16, 18, 20]),
+    ('>20', []),
+    ('>=20', [20]),
+    ('>=0', list(range(0, 21, 2))),
+    ('>9', [10, 12, 14, 16, 18, 20]),
+    ('>= 18', [18, 20]),
+    ('<4,>=18', [0, 2, 18, 20]),
     ('0-8,20,8', [0, 2, 4, 6, 8, 20]),
     ('1-9', [2, 4, 6, 8]),
     (' 0 - 8 ', [0, 2, 4, 6, 8]),
@@ -38,7 +46,7 @@ def test_expressions(expression, expected, tmp_path):
     ]
 
 
-@pytest.mark.parametrize('expression', ['', '8-0', '2-', '<=x', '>8', '0,,2', '-2'])
+@pytest.mark.parametrize('expression', ['', '8-0', '2-', '<=x', '>=x', '>>8', '0,,2', '-2'])
 def test_invalid_expressions(expression):
     with pytest.raises(ValueError):
         parse_diameters(expression)
@@ -46,6 +54,7 @@ def test_invalid_expressions(expression):
 
 @pytest.mark.parametrize('expression,enumeration', [
     ('0-8', '0,2,4,6,8'), ('<8', '0,2,4,6'), ('<=8', '0,2,4,6,8'),
+    ('>8', '10,12,14,16,18,20'), ('>=8', '8,10,12,14,16,18,20'),
 ])
 def test_legacy_rules(expression, enumeration):
     rules = str(Path(__file__).parent / 'data/rules.csv')

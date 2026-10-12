@@ -67,8 +67,8 @@ def _add_arguments(parser):
     sizes.add_argument('-d', '--diameters',
                         type=str,
                         default=DEFAULT_DIAMETERS,
-                        help='Diameters: list (0,2,4), inclusive range (0-8), "<8" or "<=8". '
-                             'Ranges and upper bounds select even values from 0 to 20 (default: all). '
+                        help='Diameters: list (0,2,4), inclusive range (0-8), "<8", "<=8", ">8" or ">=8". '
+                             'Ranges and comparisons select even values from 0 to 20 (default: all). '
                              'For templates, diameter = 2 * radius; rr02 provides diameters 2 to 16')
     sizes.add_argument('--radii', type=str,
                        help='Comma-separated radii from 0 to 10 (alternative to --diameters)')

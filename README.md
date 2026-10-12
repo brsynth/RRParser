@@ -71,6 +71,8 @@ python -m rrparser --release rr02 --rules-dir ./rules --rule-type retro -o rules
 ```
 
 Versions and datasets are discovered from https://retrorules.org/download.
+An invalid or unavailable release reports the error and lists available
+release/dataset choices (when the download page is reachable).
 The list also includes `rr02` / `metanetx`, using the historical
 [Zenodo archive](https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz)
 for RetroPath 2.0 with explicit hydrogens. `--release rr02` reuses the old cache
@@ -97,9 +99,10 @@ once per template. Radii 0–10 correspond to even diameters 0–20, all include
 by default. Odd diameters and values above 20 are rejected for templates.
 Use `--radii 0,1,2` instead of `--diameters 0,2,4`; these CLI options are
 mutually exclusive. Python calls also accept `radii='0,1,2'`.
-`--diameters` also accepts inclusive ranges and upper bounds, selecting even
+`--diameters` also accepts inclusive ranges and comparisons, selecting even
 diameters within 0–20: `0-8` selects 0,2,4,6,8; `<8` selects 0,2,4,6;
-`<=8` selects 0,2,4,6,8. Terms can be combined, e.g. `0-8,20`.
+`<=8` selects 0,2,4,6,8; `>8` selects 10,12,14,16,18,20;
+`>=8` selects 8,10,12,14,16,18,20. Terms can be combined, e.g. `0-8,20`.
 Quote comparisons in the shell: `--diameters '<=8'`.
 The same expressions work in Python with `diameters='<=8'`.
 For rr02, the extended default includes all available diameters (2–16).

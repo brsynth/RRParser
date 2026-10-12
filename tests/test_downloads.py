@@ -52,6 +52,31 @@ def test_failed_download_does_not_pollute_cache():
         assert not list(Path(directory).iterdir())
 
 
+@pytest.mark.parametrize('release', ['9.0', 'rr03', '3.x', ''])
+def test_wrong_release_shows_available_choices(release):
+    with TemporaryDirectory() as directory:
+        with patch('rrparser.Downloads.urlopen', return_value=BytesIO(PAGE)) as request:
+            with pytest.raises(ValueError) as error:
+                fetch_dataset(directory, release, 'rhea')
+        message = str(error.value)
+        assert repr(release) in message or '{} / rhea'.format(release) in message
+        assert 'Available releases and datasets:' in message
+        assert '3.1.0\trhea' in message
+        assert '3.0\trhea' in message
+        assert 'rr02\tmetanetx' in message
+        request.assert_called_once()
+        assert not list(Path(directory).iterdir())
+
+
+def test_wrong_release_offline_preserves_error():
+    with TemporaryDirectory() as directory:
+        with patch('rrparser.Downloads.urlopen', side_effect=URLError('offline')):
+            with pytest.raises(ValueError) as error:
+                fetch_dataset(directory, 'rr03')
+        assert "Invalid release 'rr03'" in str(error.value)
+        assert 'Available releases could not be retrieved' in str(error.value)
+
+
 def test_rr02_download_cache_and_parsing():
     rules = (Path(__file__).parent / 'data/rules.csv').read_bytes()
     archive = BytesIO()
