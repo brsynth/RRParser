@@ -225,18 +225,10 @@ Run all tests:
 python -m pytest -v
 ```
 
-The historical `AllTypes_RandomDiam` integration test uses the default source
-and assumes retro/forward annotations. It has not been adapted to the new
-template default and may also require a full download. To exclude this legacy
-integration test:
-
-```sh
-python -m pytest -q -k 'not AllTypes_RandomDiam'
-```
-
-Other download tests use small in-memory archives and mocked network responses.
-They cover discovery, version errors, cache reuse, original rr02 archive
-preservation, extraction, diameter/radius filtering, and score replacement.
+Tests use local fixtures, small in-memory archives, and mocked network
+responses; no live download is required. They cover discovery, version errors,
+cache reuse, original rr02 archive preservation, extraction, diameter/radius
+filtering, score replacement, and rr02 retro/forward filters.
 CI workflows are available in [`.github/workflows`](.github/workflows).
 
 ## Authors
