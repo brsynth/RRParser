@@ -1,5 +1,6 @@
 # Specific
 retrorules*
+rrparser/cache/
 
 # Generic
 __pycache__

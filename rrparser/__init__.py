@@ -5,8 +5,15 @@ Created on June 23 2020
 
 """
 
-from rrparser.Parser import parse_rules, read_ecnumbers
-from rrparser.Args import build_args_parser
 from rrparser._version import __version__
+from rrparser.Args import build_args_parser
+from rrparser.Downloads import list_retrorules
+from rrparser.Parser import parse_rules, read_ecnumbers
 
-__all__ = ["parse_rules", "build_args_parser"]
+__all__ = [
+    "__version__",
+    "build_args_parser",
+    "list_retrorules",
+    "parse_rules",
+    "read_ecnumbers",
+]

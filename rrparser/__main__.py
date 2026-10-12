@@ -1,42 +1,38 @@
-#!/usr/bin/env python
-
 """
 rrparser command line interface.
 
 """
-from rrparser import (
-    build_args_parser,
-    parse_rules,
-    read_ecnumbers
-)
-from colorlog import ColoredFormatter
-from logging import (
-    Logger,
-    getLogger,
-    StreamHandler
-)
 
+from logging import Logger, StreamHandler, getLogger
+
+from colorlog import ColoredFormatter
+
+from rrparser import build_args_parser, parse_rules, read_ecnumbers
 from rrparser._version import __version__
+from rrparser.Downloads import list_retrorules
 
 
 def entry_point():
     """
     Entry point for the rrparser command line interface.
-    
+
     """
     parser = build_args_parser()
-    args  = parser.parse_args()
+    args = parser.parse_args()
 
     # Create logger
     logger = create_logger(parser.prog, args.log)
 
-    logger.info(
-        '\n{prog} {version}\n'.format(
-            prog=logger.name,
-            version=__version__
-        )
-    )
+    logger.info(f"\n{logger.name} {__version__}\n")
     logger.debug(args)
+
+    if args.list_releases:
+        try:
+            for release, dataset in list_retrorules():
+                print(f"{release}\t{dataset}")
+        except ValueError as exc:
+            parser.exit(1, f"{exc}\n")
+        return
 
     # Read 'ecx' from file
     # EC numbers are separated by a comma
@@ -59,7 +55,10 @@ def entry_point():
             ecx=ecx,
             ec=ec,
             output_format=args.output_format,
-            logger=logger
+            logger=logger,
+            release=args.release,
+            dataset=args.dataset,
+            radii=args.radii,
         )
 
         # Print results if 'outfile' is empty
@@ -67,13 +66,10 @@ def entry_point():
             logger.info(results)
 
     except ValueError as e:
-        logger.error(str(e))
+        parser.exit(1, f"{e}\n")
 
 
-def create_logger(
-    name: str = __name__,
-    log_level: str = 'def_info'
-) -> Logger:
+def create_logger(name: str = __name__, log_level: str = "def_info") -> Logger:
     """
     Create a logger with name and log_level.
 
@@ -90,19 +86,20 @@ def create_logger(
     Logger
         The logger object.
 
-    """    
+    """
     logger = getLogger(name)
     handler = StreamHandler()
 
-    if log_level.startswith('def_'):
-        log_format = '%(log_color)s%(message)s%(reset)s'
+    if log_level.startswith("def_"):
+        log_format = "%(log_color)s%(message)s%(reset)s"
         log_level = log_level[4:]
     else:
-        log_format = \
-            '%(log_color)s%(levelname)-8s' \
-            + ' | %(asctime)s.%(msecs)03d %(module)s' \
-            + ' - %(funcName)s(): %(message)s%(reset)s'
- 
+        log_format = (
+            "%(log_color)s%(levelname)-8s"
+            + " | %(asctime)s.%(msecs)03d %(module)s"
+            + " - %(funcName)s(): %(message)s%(reset)s"
+        )
+
     formatter = ColoredFormatter(log_format)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -111,5 +108,5 @@ def create_logger(
     return logger
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     entry_point()
