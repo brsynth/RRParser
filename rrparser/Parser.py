@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from csv import QUOTE_ALL, QUOTE_NONE
 from logging import Logger, getLogger
-from re import fullmatch
+from re import fullmatch, split
 from tarfile import open as open_tar
 
-from pandas import DataFrame, read_csv
+from pandas import DataFrame, concat, read_csv
 
 from .Args import (
     DEFAULT_DIAMETERS,
@@ -21,7 +21,7 @@ from .Args import (
     DEFAULT_RULES_DIR,
     DEFAULT_RULES_FILE,
 )
-from .Downloads import RR02_FILE, fetch_dataset
+from .Downloads import RR02_FILE, fetch_dataset, fetch_datasets
 
 LOGGER = getLogger(__name__)
 
@@ -46,6 +46,84 @@ def read_ecnumbers(ec_file: str, logger: Logger = LOGGER) -> list[str]:
     with open(ec_file, "r") as f:
         ec = f.read().split(",")
         return ec
+
+
+def _read_rules(rules_file, **read_options):
+    if str(rules_file).endswith(".tar.gz"):
+        with open_tar(rules_file, mode="r:gz") as archive:
+            member = next(
+                (
+                    item
+                    for item in archive
+                    if item.name in (RR02_FILE, "./" + RR02_FILE) and item.isfile()
+                ),
+                None,
+            )
+            if member is None:
+                raise ValueError(
+                    f"RetroRules rr02 archive does not contain {RR02_FILE}"
+                )
+            with archive.extractfile(member) as source:
+                return read_csv(source, **read_options)
+    else:
+        return read_csv(rules_file, **read_options)
+
+
+def _merge_templates(frames):
+    """Union shared template annotations and retain the best source score."""
+    templates = concat(frames, ignore_index=True)
+    duplicate = templates.duplicated("TEMPLATE_ID", keep=False)
+    if not duplicate.any():
+        return templates
+    groups = templates[duplicate].groupby("TEMPLATE_ID", sort=False)
+    if (groups["TEMPLATE"].nunique() > 1).any():
+        raise ValueError("Conflicting SMARTS for the same template ID across datasets")
+
+    def union(values):
+        return ";".join(
+            sorted(
+                {
+                    item
+                    for value in values.dropna().astype(str)
+                    for item in split(r"[;,]", value)
+                    if item
+                }
+            )
+        )
+
+    aggregations = {
+        column: "first" for column in templates.columns if column != "TEMPLATE_ID"
+    }
+    for column in ("REACTIONS", "ECS", "DATASETS", "RADII"):
+        if column in aggregations:
+            aggregations[column] = union
+    aggregations["SCORE"] = "max"
+    if "VALID" in aggregations:
+        aggregations["VALID"] = "all"
+    merged = groups.agg(aggregations).reset_index()
+    for column in ("REACTIONS", "ECS"):
+        if column + "_COUNT" in merged.columns:
+            merged[column + "_COUNT"] = merged[column].map(
+                lambda value: len(value.split(";")) if value else 0
+            )
+    if "RADII" in merged.columns:
+        radii = merged["RADII"].map(
+            lambda value: sorted(map(int, value.split(";"))) if value else []
+        )
+        merged["RADII"] = radii.map(lambda values: ";".join(map(str, values)))
+        for column, position in (("RADIUS_MIN", 0), ("RADIUS_MAX", -1)):
+            if column in merged.columns:
+                merged[column] = radii.map(
+                    lambda values, position=position: (
+                        values[position] if values else None
+                    )
+                )
+    result = concat([templates[~duplicate], merged], ignore_index=True)
+    return (
+        result.set_index("TEMPLATE_ID")
+        .loc[templates["TEMPLATE_ID"].drop_duplicates()]
+        .reset_index()
+    )
 
 
 def parse_rules(
@@ -94,7 +172,7 @@ def parse_rules(
     release: str
         RetroRules version (default 3.1.0), rr02, or latest.
     dataset: str
-        Dataset discovered on retrorules.org (default metanetx).
+        Dataset name, comma/plus-separated names, or all (default metanetx).
     radii: str
         Comma-separated radii 0–10, as an alternative to diameters.
 
@@ -116,36 +194,20 @@ def parse_rules(
         rule_type, diameters, input_format, output_format
     )
 
-    # If 'rules_file' is set to RetroRules, then fetch RetroRules on Internet
+    rules_files = [rules_file]
     if rules_file == "retrorules":
-        rules_file = fetch_retrorules(rules_dir, logger, release, dataset)
+        rules_files = fetch_datasets(rules_dir, release, dataset)
         sep = ","
 
     logger.debug("Reading values...")
     # Read 'csv' as 'tsv' by specying separator
     read_options = {
         "sep": sep,
-        "dtype": {"RADII": str},
+        "dtype": {"RADII": str, "ECS": str, "EC number": str},
         "float_precision": "round_trip",
     }
-    if str(rules_file).endswith(".tar.gz"):
-        with open_tar(rules_file, mode="r:gz") as archive:
-            member = next(
-                (
-                    item
-                    for item in archive
-                    if item.name in (RR02_FILE, "./" + RR02_FILE) and item.isfile()
-                ),
-                None,
-            )
-            if member is None:
-                raise ValueError(
-                    f"RetroRules rr02 archive does not contain {RR02_FILE}"
-                )
-            with archive.extractfile(member) as source:
-                rf = read_csv(source, **read_options)
-    else:
-        rf = read_csv(rules_file, **read_options)
+    frames = [_read_rules(filename, **read_options) for filename in rules_files]
+    rf = _merge_templates(frames) if len(frames) > 1 else frames[0]
 
     # Filter rules according to 'rule_type' and 'diameters'
     templates = "TEMPLATE_ID" in rf.columns

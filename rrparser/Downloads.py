@@ -87,7 +87,9 @@ def _selection_error(message, datasets=None):
     return ValueError(f"{message}\nAvailable releases and datasets:\n{choices}")
 
 
-def fetch_dataset(rules_dir, release=DEFAULT_RELEASE, dataset="metanetx"):
+def fetch_dataset(
+    rules_dir, release=DEFAULT_RELEASE, dataset="metanetx", available=None
+):
     """Reuse cached rules; resolve latest only on the first download."""
     if release == "rr02":
         if dataset != "metanetx":
@@ -111,7 +113,7 @@ def fetch_dataset(rules_dir, release=DEFAULT_RELEASE, dataset="metanetx"):
     filename = cache / (f"retrorules-{release}-{dataset}.csv.gz")
     if release != "latest" and filename.is_file():
         return str(filename)
-    datasets = list_retrorules()
+    datasets = available if available is not None else list_retrorules()
     if release == "latest":
         release = next(
             (
@@ -132,3 +134,62 @@ def fetch_dataset(rules_dir, release=DEFAULT_RELEASE, dataset="metanetx"):
     if latest:
         selection.write_text(release)
     return str(filename)
+
+
+def fetch_datasets(rules_dir, release=DEFAULT_RELEASE, dataset="metanetx"):
+    """Select datasets from one release, preserving their individual caches."""
+    names = sorted({name.strip() for name in dataset.replace("+", ",").split(",")})
+    if any(not fullmatch(r"[a-z0-9_-]+", name) for name in names):
+        raise ValueError("Use dataset names separated by commas, or all")
+    if "all" in names and names != ["all"]:
+        raise ValueError("Use all alone, or a list of dataset names")
+    if release == "rr02" and names == ["all"]:
+        names = ["metanetx"]
+    if len(names) == 1 and names != ["all"]:
+        return [fetch_dataset(rules_dir, release, names[0])]
+    if release == "rr02":
+        raise ValueError("RetroRules rr02 is only available for metanetx")
+    if release != "latest" and not fullmatch(r"\d+\.\d+(?:\.\d+)?", release):
+        raise _selection_error(f"Invalid release {release!r}")
+    cache = Path(rules_dir)
+    selection = cache / f"retrorules-selection-{release}-{'-'.join(names)}.txt"
+    if selection.is_file():
+        saved = selection.read_text().splitlines()
+        if len(saved) == 2 and fullmatch(r"\d+\.\d+(?:\.\d+)?", saved[0]):
+            selected = saved[1].split(",")
+            if selected and all(fullmatch(r"[a-z0-9_-]+", name) for name in selected):
+                files = [
+                    cache / f"retrorules-{saved[0]}-{name}.csv.gz" for name in selected
+                ]
+                if (release == "latest" or release == saved[0]) and all(
+                    file.is_file() for file in files
+                ):
+                    return list(map(str, files))
+    if release != "latest" and names != ["all"]:
+        files = [cache / f"retrorules-{release}-{name}.csv.gz" for name in names]
+        if all(file.is_file() for file in files):
+            return list(map(str, files))
+    available = list_retrorules()
+    versions = list(
+        dict.fromkeys(version for version, _ in available if version != "rr02")
+    )
+    version = next(
+        (
+            version
+            for version in versions
+            if (release == "latest" or release == version)
+            and (
+                names == ["all"] or all((version, name) in available for name in names)
+            )
+        ),
+        None,
+    )
+    if version is None:
+        raise _selection_error(
+            f"Release/datasets unavailable: {release} / {dataset}", available
+        )
+    if names == ["all"]:
+        names = [name for candidate, name in available if candidate == version]
+    files = [fetch_dataset(cache, version, name, available) for name in names]
+    selection.write_text(version + "\n" + ",".join(names))
+    return files
