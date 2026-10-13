@@ -1,3 +1,4 @@
+# ruff: noqa: N999 -- Preserve the public rrparser.Parser import path.
 """
 Created on May 4 2020
 
@@ -5,42 +6,27 @@ Created on May 4 2020
 
 """
 
-from os import (
-    path as os_path
-)
-from brs_utils import (
-    download_and_extract_tar_gz
-)
-from pandas import (
-    read_csv,
-    DataFrame
-)
-from csv import (
-    QUOTE_ALL,
-    QUOTE_NONE
-)
-from typing import (
-    List,
-    Tuple,
-    Literal
-)
-from logging import (
-    Logger,
-    getLogger
-)
+from __future__ import annotations
+
+from csv import QUOTE_ALL, QUOTE_NONE
+from logging import Logger, getLogger
+from re import fullmatch
+from tarfile import open as open_tar
+
+from pandas import DataFrame, read_csv
+
 from .Args import (
+    DEFAULT_DIAMETERS,
+    DEFAULT_RELEASE,
+    DEFAULT_RULES_DIR,
     DEFAULT_RULES_FILE,
-    DEFAULT_RULES_DIR
 )
+from .Downloads import RR02_FILE, fetch_dataset
+
+LOGGER = getLogger(__name__)
 
 
-RETRORULES_URL = 'https://zenodo.org/record/5828017/files/retrorules_rr02_rp2_hs.tar.gz'
-
-
-def read_ecnumbers(
-    ec_file: str,
-    logger: Logger = getLogger(__name__)
-) -> List[str]:
+def read_ecnumbers(ec_file: str, logger: Logger = LOGGER) -> list[str]:
     """
     Read EC numbers from a file.
 
@@ -56,25 +42,28 @@ def read_ecnumbers(
     ecx: List[str]
         List of EC numbers.
     """
-    logger.debug('Reading EC numbers from file...')
-    with open(ec_file, 'r') as f:
-        ec = f.read().split(',')
+    logger.debug("Reading EC numbers from file...")
+    with open(ec_file, "r") as f:
+        ec = f.read().split(",")
         return ec
 
 
 def parse_rules(
-    outfile:          str,
-    rules_file:       str = DEFAULT_RULES_FILE,
-    scores_file:      str = None,
-    rules_dir:        str = DEFAULT_RULES_DIR,
-    input_format:     str = 'csv',
-    rule_type:        str = 'all',
-    diameters:        str = '2,4,6,8,10,12,14,16',
-    ecx:              List[str] = [],
-    ec:               List[str] = [],
-    output_format:    str = 'csv',
-    logger:           Logger = getLogger(__name__)
-) -> None or str:
+    outfile: str | None,
+    rules_file: str = DEFAULT_RULES_FILE,
+    scores_file: str | None = None,
+    rules_dir: str = DEFAULT_RULES_DIR,
+    input_format: str = "csv",
+    rule_type: str = "all",
+    diameters: str = DEFAULT_DIAMETERS,
+    ecx: list[str] | None = None,
+    ec: list[str] | None = None,
+    output_format: str = "csv",
+    logger: Logger = LOGGER,
+    release: str = DEFAULT_RELEASE,
+    dataset: str = "metanetx",
+    radii: str | None = None,
+) -> str | None:
     """
     Parse a reaction rules file and extract sub-part according 'diameters' and 'rule_type' filters.
 
@@ -85,7 +74,7 @@ def parse_rules(
     scores_file: str
         Reactions scores file (if not set RetroRules are considered)
     rules_dir: str
-        Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
+        Source archive cache (default: cache directory inside the rrparser package).
     outfile: str
         Filename where to write results (if not set results are returned as a string)
     input_format: str
@@ -93,7 +82,7 @@ def parse_rules(
     rule_type: str
         Type of reaction rules ['all', 'forward', 'retro'] (default 'all')
     diameters: str
-        Diameters to filter [2,4,6,8,10,12,14,16] (default)
+        Diameters to filter (default: all even values from 0 to 20).
     ecx: List[str]
         List of EC numbers to remove from rules
     ec: List[str]
@@ -102,6 +91,12 @@ def parse_rules(
         Format of file results are written into
     logger : Logger
         The logger object.
+    release: str
+        RetroRules version (default 3.1.0), rr02, or latest.
+    dataset: str
+        Dataset discovered on retrorules.org (default metanetx).
+    radii: str
+        Comma-separated radii 0–10, as an alternative to diameters.
 
     Returns
     -------
@@ -110,48 +105,77 @@ def parse_rules(
     """
 
     # Check args is here since the method is directly callable.
+    if radii is not None:
+        if diameters != DEFAULT_DIAMETERS:
+            raise ValueError("Use either radii or diameters")
+        values = radii.split(",")
+        if any(not value.isdigit() or int(value) > 10 for value in values):
+            raise ValueError("Radii must be integers from 0 to 10, separated by commas")
+        diameters = ",".join(str(2 * int(value)) for value in values)
     diameters, sep, quoting = check_args(
-        rule_type,
-        diameters,
-        input_format,
-        output_format
+        rule_type, diameters, input_format, output_format
     )
 
     # If 'rules_file' is set to RetroRules, then fetch RetroRules on Internet
-    if rules_file == 'retrorules':
-        rules_file = fetch_retrorules(rules_dir)
+    if rules_file == "retrorules":
+        rules_file = fetch_retrorules(rules_dir, logger, release, dataset)
+        sep = ","
 
-    logger.debug('Reading values...')
+    logger.debug("Reading values...")
     # Read 'csv' as 'tsv' by specying separator
-    rf = read_csv(
-        rules_file,
-        sep=sep,
-        float_precision='round_trip'
-    )
+    read_options = {
+        "sep": sep,
+        "dtype": {"RADII": str},
+        "float_precision": "round_trip",
+    }
+    if str(rules_file).endswith(".tar.gz"):
+        with open_tar(rules_file, mode="r:gz") as archive:
+            member = next(
+                (
+                    item
+                    for item in archive
+                    if item.name in (RR02_FILE, "./" + RR02_FILE) and item.isfile()
+                ),
+                None,
+            )
+            if member is None:
+                raise ValueError(
+                    f"RetroRules rr02 archive does not contain {RR02_FILE}"
+                )
+            with archive.extractfile(member) as source:
+                rf = read_csv(source, **read_options)
+    else:
+        rf = read_csv(rules_file, **read_options)
 
     # Filter rules according to 'rule_type' and 'diameters'
+    templates = "TEMPLATE_ID" in rf.columns
+    if templates:
+        rf = rf.rename(
+            columns={
+                "TEMPLATE_ID": "Rule ID",
+                "TEMPLATE": "Rule",
+                "ECS": "EC number",
+                "SCORE": "Score",
+            }
+        )
     results = filter_(rf, rule_type, diameters, ecx, ec, logger=logger)
 
     # If 'rules_scores_file' is set, then read it and merge with 'results'
     if scores_file:
-        logger.debug('Reading scores values...')
-        rsf = read_csv(
-            scores_file,
-            sep=sep,
-            float_precision='round_trip'
-        )
+        logger.debug("Reading scores values...")
+        rsf = read_csv(scores_file, sep=sep, float_precision="round_trip")
         results = replace_scores(results, rsf, logger=logger)
 
-    logger.info('Writing results...')
+    logger.info("Writing results...")
     return results.to_csv(
         outfile,
         index=False,
-        sep=sep,
-        quoting=quoting
+        sep=("," if output_format == "csv" else "\t") if templates else sep,
+        **({} if templates else {"quoting": quoting}),
     )
 
 
-def replace_scores(results, scores, logger: Logger = getLogger(__name__)):
+def replace_scores(results, scores, logger: Logger = LOGGER):
     """
     Replace scores in 'results' with those in 'rules_scores_file'.
 
@@ -167,14 +191,14 @@ def replace_scores(results, scores, logger: Logger = getLogger(__name__)):
         The logger object.
     """
     # Replace scores in results with those in 'rules_scores_file' for the same rules
-    logger.debug('Merging scores with rules...')
+    logger.debug("Merging scores with rules...")
     # Create a mapping from df2
-    score_map = scores.set_index('Rule ID')['Score']
+    score_map = scores.set_index("Rule ID")["Score"]
     # Update the Score in df1 if Rule ID is in df2
     results = results.copy()
     # warning if Rule ID has been found
     # in scores but not in results
-    missing_rules = set(scores['Rule ID']) - set(results['Rule ID'])
+    missing_rules = set(scores["Rule ID"]) - set(results["Rule ID"])
     if missing_rules:
         logger.warning(
             f"Rule IDs {missing_rules} found in scores file but not in results. "
@@ -182,8 +206,8 @@ def replace_scores(results, scores, logger: Logger = getLogger(__name__)):
         )
     # Update the Score in results DataFrame
     # using the mapping from scores
-    results['Score'] = results['Rule ID'].map(score_map).fillna(results['Score'])
-    results.loc[:, 'Score'] = results['Rule ID'].map(score_map).fillna(results['Score'])
+    results["Score"] = results["Rule ID"].map(score_map).fillna(results["Score"])
+    results.loc[:, "Score"] = results["Rule ID"].map(score_map).fillna(results["Score"])
     # # Optional: convert Score back to the original dtype if needed
     # results['Score'] = results['Score'].astype(float)
     return results
@@ -192,11 +216,11 @@ def replace_scores(results, scores, logger: Logger = getLogger(__name__)):
 def filter_(
     df: DataFrame,
     rule_type: str,
-    diameters: List[int],
-    ecx: List[str] = [],
-    ec: List[str] = [],
-    logger: Logger = getLogger(__name__)
-) -> List[int]:
+    diameters: list[int],
+    ecx: list[str] | None = None,
+    ec: list[str] | None = None,
+    logger: Logger = LOGGER,
+) -> DataFrame:
     """
     Filter a pandas dataframe with 'Diameters' and 'Rule usage' criteria.
 
@@ -220,48 +244,67 @@ def filter_(
     query: Pandas dataframe
         Original dataframe filtered according to 'rule_type' and 'diameters'.
     """
-    logger.debug(
-        'Args: {df}, {rt}, {dia}'.format(
-            df=df,
-            rt=rule_type,
-            dia=diameters,
-            ecx=ecx
-        )
-    )
+    logger.debug(f"Args: {df}, {rule_type}, {diameters}")
 
+    ecx = ecx if ecx is not None else []
+    ec = ec if ec is not None else []
     ec_filter = ecx if ecx else ec
-    filter = 'in' if ec else 'not in'
-    logger.info('Filtering rules:')
-    logger.info(f' -> EC numbers ({filter}): {ec_filter}')
-    logger.info(f' -> Diameters: {diameters}')
-    logger.info(f' -> Rule types: {rule_type}')
+    filter = "in" if ec else "not in"
+    logger.info("Filtering rules:")
+    logger.info(f" -> EC numbers ({filter}): {ec_filter}")
+    logger.info(f" -> Diameters: {diameters}")
+    logger.info(f" -> Rule types: {rule_type}")
 
     # Identify rules that contain at least one EC number starting by a pattern contained in 'ecx'
     rules_idx = filter_rules_by_ec(df, ec_filter, logger)
 
     # Build the filtering query
     query = f"index {filter} @rules_idx"
-    query += ' & Diameter == @diameters'
-    if rule_type != 'all':
-        query += ' & `Rule usage` == @rule_usage_filter'
-    logger.debug(f'Query: {query}')
-    # Used in 'e' in case of exception raised
-    rule_usage_filter = ['both', rule_type]
+    query_vars = {
+        "rules_idx": rules_idx,
+        "diameters": diameters,
+        "rule_usage_filter": ["both", rule_type],
+    }
+    if "RADII" in df.columns:
+        if any(diameter % 2 or diameter > 20 for diameter in diameters):
+            raise ValueError(
+                "Template diameters must be even values from 0 to 20 (radii 0 to 10)"
+            )
+        if rule_type != "all":
+            raise ValueError(
+                "RetroRules templates have no retro/forward annotation; use --rule-type all"
+            )
+        radii = {diameter // 2 for diameter in diameters}
+        radius_idx = df[
+            df["RADII"]
+            .fillna("")
+            .astype(str)
+            .apply(
+                lambda values: any(
+                    int(radius) in radii for radius in values.split(";") if radius
+                )
+            )
+        ].index
+        query_vars["radius_idx"] = radius_idx
+        query += " & index in @radius_idx"
+    else:
+        query += " & Diameter == @diameters"
+    if rule_type != "all":
+        query += " & `Rule usage` == @rule_usage_filter"
+    logger.debug(f"Query: {query}")
     try:
-        _df = df.query(query)
-        logger.info('')
-        logger.info(f'=> {len(_df)} rules found')
-        logger.info('')
+        _df = df.query(query, local_dict=query_vars)
+        logger.info("")
+        logger.info(f"=> {len(_df)} rules found")
+        logger.info("")
         return _df
-    except Exception as e:
-        raise KeyError(e)
+    except (KeyError, TypeError, ValueError) as e:
+        raise KeyError(e) from e
 
 
 def filter_rules_by_ec(
-    df: DataFrame,
-    ec_filter: List[str],
-    logger: Logger = getLogger(__name__)
-) -> List[int]:
+    df: DataFrame, ec_filter: list[str], logger: Logger = LOGGER
+) -> list[int]:
     """
     Filter out rules that contain at least one EC number that starts with one in 'ecx'.
 
@@ -275,19 +318,23 @@ def filter_rules_by_ec(
         The logger object.
     """
     # Consider EC numbers as list (separator: ';')
-    ec_numbers = df['EC number'].str.split(';')
+    ec_numbers = df["EC number"].fillna("").str.split(";")
 
     # Find indices of rows where any EC number starts with one in 'ec_filter'
     def filter_ec_numbers(ec_list, ec_filter):
         return any(any(ec.startswith(ec_f) for ec_f in ec_filter) for ec in ec_list)
 
     # Apply filtering function and get indices
-    rules_idx = df[ec_numbers.apply(lambda x: filter_ec_numbers(x, ec_filter))].index.tolist()
+    rules_idx = df[
+        ec_numbers.apply(lambda x: filter_ec_numbers(x, ec_filter))
+    ].index.tolist()
 
     # Debug log
     if logger.level == 10:
         for i in rules_idx:
-            logger.debug(f"Tagging rule {i} with EC numbers {df.at[i, 'EC number']} because an EC number appears in the exclusion filter")
+            logger.debug(
+                f"Tagging rule {i} with EC numbers {df.at[i, 'EC number']} because an EC number appears in the exclusion filter"
+            )
 
     # # Remove rules that contain at least one EC number that starts with one in 'ecx',
     # # e.g. rule with EC numbers = ['1.1.1.1', '2.2.2.2'] will be removed if 'ecx' contains '1.1'
@@ -303,7 +350,9 @@ def filter_rules_by_ec(
 
 def fetch_retrorules(
     rules_dir: str = DEFAULT_RULES_DIR,
-    logger: Logger = getLogger(__name__)
+    logger: Logger = LOGGER,
+    release: str = DEFAULT_RELEASE,
+    dataset: str = "metanetx",
 ) -> str:
     """
     Fetch RetroRules over Internet if not already on disk.
@@ -311,7 +360,7 @@ def fetch_retrorules(
     Parameters
     ----------
     rules_dir: str
-        Directory where to store RetroRules (if not set RetroRules are stored in the current directory)
+        Directory where to cache RetroRules source files.
     logger : Logger
         The logger object.
 
@@ -320,18 +369,37 @@ def fetch_retrorules(
     filename: str
         Path to downoaded filename.
     """
-    filename = 'retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv'
-    rules_file = os_path.join(rules_dir, filename)
+    return fetch_dataset(rules_dir, release, dataset)
 
-    if not os_path.exists(rules_file):
-        logger.info('Downloading retrorules file...')
-        download_and_extract_tar_gz(
-            RETRORULES_URL,
-            rules_dir,
-            filename
-        )
 
-    return rules_file
+def parse_diameters(expression: str) -> list[int]:
+    """Expand lists, inclusive ranges and comparisons into diameters."""
+    diameters = set()
+    for term in expression.split(","):
+        term = term.strip()
+        interval = fullmatch(r"(\d+)\s*-\s*(\d+)", term)
+        comparison = fullmatch(r"([<>])(=?)\s*(\d+)", term)
+        if term.isdigit():
+            diameters.add(int(term))
+        elif interval:
+            lower, upper = map(int, interval.groups())
+            if lower > upper:
+                raise ValueError("Diameter range must have its lower bound first")
+            diameters.update(d for d in range(0, 21, 2) if lower <= d <= upper)
+        elif comparison:
+            operator, inclusive, bound = comparison.groups()
+            bound = int(bound)
+            diameters.update(
+                d
+                for d in range(0, 21, 2)
+                if (d < bound if operator == "<" else d > bound)
+                or (inclusive and d == bound)
+            )
+        else:
+            raise ValueError(
+                "Invalid --diameters: use a list (0,2,4), range (0-8), <8, <=8, >8 or >=8"
+            )
+    return sorted(diameters)
 
 
 def check_args(
@@ -339,8 +407,8 @@ def check_args(
     diameters: str,
     input_format: str,
     output_format: str,
-    logger: Logger = getLogger(__name__)
-) -> Tuple[List[int], str, str]:
+    logger: Logger = LOGGER,
+) -> tuple[list[int], str, int]:
     """
     Check arguments are well-formed and format them.
 
@@ -349,7 +417,7 @@ def check_args(
     rule_type: str
         Type of reaction rules ['all', 'forward', 'retro'] (default 'all')
     diameters: str
-        Diameters to filter [2,4,6,8,10,12,14,16] (default)
+        Diameters to filter (default: all even values from 0 to 20).
     input_format: str
         Input format of rules_file ['csv', 'tsv'] (default 'csv')
     output_format: str
@@ -364,40 +432,29 @@ def check_args(
         sep - separation character detected from 'input_format'.
         quoting - quoting behavior detected from 'output_format'.
     """
-    logger.debug(
-        'Args: {rt}, {dia}, {i_f}, {o_f}'.format(
-            rt=rule_type,
-            dia=diameters,
-            i_f=input_format,
-            o_f=output_format
-        )
-    )
+    logger.debug(f"Args: {rule_type}, {diameters}, {input_format}, {output_format}")
 
     # Rule type
-    if not rule_type or rule_type not in ['all', 'retro', 'forward']:
-        raise ValueError('Cannot detect \'rule_type\' input: '+str(rule_type))
+    if not rule_type or rule_type not in ["all", "retro", "forward"]:
+        raise ValueError("Cannot detect 'rule_type' input: " + str(rule_type))
 
     # Diameter
-    diameters = diameters.split(',')
-    for d in diameters:
-        if not d.isdigit():
-            raise ValueError(
-                    "--diameters takes only digit separated by comma")
+    diameters = parse_diameters(diameters)
 
     # Input format
-    if input_format == 'csv':
-        sep = ','
-    elif input_format == 'tsv':
-        sep = '\t'
+    if input_format == "csv":
+        sep = ","
+    elif input_format == "tsv":
+        sep = "\t"
     else:
-        raise ValueError('Can only have \'csv\' or \'tsv\' input formats')
+        raise ValueError("Can only have 'csv' or 'tsv' input formats")
 
     # Output format
-    if output_format == 'csv':
+    if output_format == "csv":
         quoting = QUOTE_NONE
-    elif output_format == 'tsv':
+    elif output_format == "tsv":
         quoting = QUOTE_ALL
     else:
-        raise ValueError('Can only have \'csv\' or \'tsv\' input formats')
+        raise ValueError("Can only have 'csv' or 'tsv' input formats")
 
-    return list(map(int, diameters)), sep, quoting
+    return diameters, sep, quoting
