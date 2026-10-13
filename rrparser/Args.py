@@ -59,7 +59,7 @@ def _add_arguments(parser):
     parser.add_argument(
         "--dataset",
         default="metanetx",
-        help="RetroRules dataset (default: metanetx; see --list-releases)",
+        help="Dataset names (metanetx,rhea or metanetx+rhea), or all (default: metanetx; see --list-releases)",
     )
     parser.add_argument(
         "-o",

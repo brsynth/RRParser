@@ -39,6 +39,10 @@ python -m rrparser --release 3.1.0 --dataset rhea --diameters 0-8 -o rules.csv
 # Equivalent selection using radii.
 python -m rrparser --dataset rhea --radii 0,1,2,3,4 -o rules.csv
 
+# Aggregate datasets within one release (comma or + separator).
+python -m rrparser --release 3.1.0 --dataset metanetx,rhea -d 0-8 -o rules.csv
+python -m rrparser --release 3.1.0 --dataset all -o rules.csv
+
 # Historical rr02 rules, restricted to retro usage and diameter 10.
 python -m rrparser --release rr02 --rule-type retro -d 10 -o rules.csv
 
@@ -58,6 +62,26 @@ chosen dataset; it does not select rr02. Once downloaded, that selection is
 reused from cache, including offline. To update, list available releases and
 choose a version explicitly, or delete `retrorules-latest-<dataset>.txt` from
 the cache to resolve `latest` again. The default remains pinned to `3.1.0`.
+
+### Aggregate datasets
+
+Use `--dataset metanetx,rhea` or `--dataset metanetx+rhea` to combine datasets,
+or `--dataset all` to include every dataset discovered for the selected release.
+Repeated names are ignored. With rr02, `all` selects its only dataset, MetaNetX.
+
+Aggregation keeps one row per template ID. Shared templates combine their
+source reactions, EC annotations, radii, and dataset provenance as unique
+semicolon-separated values. Counts and radius bounds are recalculated, the
+highest available score is retained, and validation must hold in every source.
+Different SMARTS for the same template ID cause an error. Diameter/radius and
+EC filtering, followed by optional score replacement, apply to the merged data.
+
+Each original dataset uses its own cache file; no combined archive is created.
+`latest` resolves a single release containing all explicitly requested datasets,
+so versions are never mixed. `all` and `latest` selections are recorded in
+`retrorules-selection-<release>-<selection>.txt` for offline reuse. Delete that
+selection file to discover the choices again. An explicit cached combination
+such as `metanetx,rhea` also works offline without a selection file.
 
 ### Diameter and radius selection
 
@@ -130,7 +154,7 @@ archive cache.
 | --- | --- |
 | `--rules_file` | Local input file, or `retrorules` (default) to use a cached/downloaded dataset. |
 | `--release` | Version, `rr02`, or `latest`; default `3.1.0`. |
-| `--dataset` | Dataset name; default `metanetx`. See `--list-releases`. |
+| `--dataset` | Dataset name, comma/plus-separated names, or `all`; default `metanetx`. See `--list-releases`. |
 | `--list-releases` | Print available release/dataset pairs and exit. |
 | `--cache-dir`, `--rules-dir` | Source cache directory; default package-local `rrparser/cache`. |
 | `-d`, `--diameters` | List, range, or comparison; default all even diameters 0–20. |
@@ -170,6 +194,14 @@ csv_text = parse_rules(
     outfile=None,
     dataset="rhea",
     radii="0,1,2",
+)
+
+# Aggregate datasets; dataset="all" is also supported.
+parse_rules(
+    outfile="combined.csv",
+    release="3.1.0",
+    dataset="metanetx+rhea",
+    diameters="<=8",
 )
 
 # Parse a local file with EC filtering and replacement scores.
