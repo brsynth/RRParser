@@ -1,8 +1,17 @@
 # Changelog
 
+## [2.7.2](https://github.com/brsynth/RRParser/tree/2.7.2) (2026-10-13)
+
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.7.1...2.7.2)
+
 ## [2.7.1](https://github.com/brsynth/RRParser/tree/2.7.1) (2026-10-13)
 
 [Full Changelog](https://github.com/brsynth/RRParser/compare/2.7.0...2.7.1)
+
+**Merged pull requests:**
+
+- Main -\> Stable [\#4](https://github.com/brsynth/RRParser/pull/4) ([breakthewall](https://github.com/breakthewall))
+- Rr2026 [\#3](https://github.com/brsynth/RRParser/pull/3) ([breakthewall](https://github.com/breakthewall))
 
 ## [2.7.0](https://github.com/brsynth/RRParser/tree/2.7.0) (2025-03-31)
 
