@@ -1,8 +1,17 @@
 # Changelog
 
+## [2.7.3](https://github.com/brsynth/RRParser/tree/2.7.3) (2026-10-14)
+
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.7.2...2.7.3)
+
 ## [2.7.2](https://github.com/brsynth/RRParser/tree/2.7.2) (2026-10-13)
 
 [Full Changelog](https://github.com/brsynth/RRParser/compare/2.7.1...2.7.2)
+
+**Merged pull requests:**
+
+- Feat: add dataset combinations [\#6](https://github.com/brsynth/RRParser/pull/6) ([breakthewall](https://github.com/breakthewall))
+- Support aggregating RetroRules datasets within one release [\#5](https://github.com/brsynth/RRParser/pull/5) ([breakthewall](https://github.com/breakthewall))
 
 ## [2.7.1](https://github.com/brsynth/RRParser/tree/2.7.1) (2026-10-13)
 
