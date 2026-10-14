@@ -80,6 +80,9 @@ def test_cached_datasets_are_merged_before_filtering(tmp_path, selection):
     assert shared["RADIUS_MIN"] == 0
     assert shared["RADIUS_MAX"] == 10
     assert pd.read_csv(StringIO(filtered))["Rule ID"].tolist() == ["shared"]
+    filtered_row = pd.read_csv(StringIO(filtered), dtype={"RADII": str}).iloc[0]
+    assert filtered_row["RADII"] == "10"
+    assert filtered_row["RADIUS_MIN"] == filtered_row["RADIUS_MAX"] == 10
     assert [source.read_bytes() for source in sources] == originals
 
 

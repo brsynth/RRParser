@@ -106,7 +106,7 @@ python -m rrparser --dataset rhea --diameters '<=8' -o rules.csv
 python -m rrparser --dataset rhea --diameters '>=8' -o rules.csv
 ```
 
-`--radii` supports the same expressions over integer radii 0–10:
+`-r` / `--radii` supports the same expressions over integer radii 0–10:
 `0,1,2`, `0-4`, `<4`, `<=4`, `>4`, `>=4`, and combinations such as `0-2,>=8`.
 For example, `--radii '<=4'` is equivalent to `--diameters '<=8'`.
 The two options are mutually exclusive. Both are expanded into normalized
@@ -114,8 +114,11 @@ integer radii by the argument parser, before calling `parse_rules()`.
 Without either option, all radii 0–10 (diameters 0,2,…,20) are selected.
 
 For templates, a row is retained when at least one source radius matches
-`diameter / 2`, once per template. The output `RADII` column retains all source
-radii, separated by semicolons. Explicit odd diameters or values above 20 are
+`diameter / 2`, once per template. The output `RADII` column retains only the
+selected radii, separated by semicolons; `RADIUS_MIN` and `RADIUS_MAX` are
+updated to match. For example, `-r '>4'` exports only radii 5–10 even if a
+matching source template also covers radius 4. Cached sources are unchanged.
+Explicit odd diameters or values above 20 are
 rejected before parsing, including for rr02.
 
 rr02 supplies diameters 2,4,…,16. The extended default therefore selects all
@@ -161,7 +164,7 @@ archive cache.
 | `--list-releases` | Print available release/dataset pairs and exit. |
 | `--cache-dir`, `--rules-dir` | Source cache directory; default package-local `rrparser/cache`. |
 | `-d`, `--diameters` | List, range, or comparison; default all even diameters 0–20. |
-| `--radii` | List, range, or comparison over radii 0–10, as an alternative to `--diameters`. |
+| `-r`, `--radii` | List, range, or comparison over radii 0–10, as an alternative to `--diameters`. |
 | `-rt`, `--rule-type` | `all` (default), `retro`, or `forward`; templates require `all`. |
 | `-ec`, `--ec` | File of comma-separated EC prefixes to keep. |
 | `-ecx`, `--ecx` | File of comma-separated EC prefixes to exclude; mutually exclusive with `--ec`. |

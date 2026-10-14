@@ -142,6 +142,7 @@ def _add_arguments(parser):
         "For templates, diameter = 2 * radius; rr02 provides diameters 2 to 16",
     )
     sizes.add_argument(
+        "-r",
         "--radii",
         type=parse_radii,
         help='Radii: list (0,1,2), inclusive range (0-4), "<4", "<=4", ">4" or ">=4". '
