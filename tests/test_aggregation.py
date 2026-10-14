@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 from rrparser import build_args_parser, parse_rules
+from rrparser.Args import parse_radii
 from rrparser.Downloads import fetch_datasets
 
 
@@ -61,7 +62,11 @@ def test_cached_datasets_are_merged_before_filtering(tmp_path, selection):
     ):
         output = parse_rules(None, rules_dir=str(tmp_path), dataset=args.dataset)
         filtered = parse_rules(
-            None, rules_dir=str(tmp_path), dataset=selection, radii="10", ec=["1.1"]
+            None,
+            rules_dir=str(tmp_path),
+            dataset=selection,
+            radii=parse_radii("10"),
+            ec=["1.1"],
         )
     frame = pd.read_csv(StringIO(output))
     assert set(frame["Rule ID"]) == {"shared", "mnx", "rhea"}
@@ -145,7 +150,7 @@ def test_merged_score_replacement_and_missing_annotations(tmp_path):
         None,
         rules_dir=str(tmp_path),
         dataset="rhea,uspto",
-        radii="10",
+        radii=parse_radii("10"),
         scores_file=str(scores),
     )
     shared = pd.read_csv(StringIO(result)).iloc[0]

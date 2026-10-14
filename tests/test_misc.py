@@ -18,6 +18,7 @@ from pandas import read_csv
 from test_main import Test_RR
 
 from rrparser import parse_rules
+from rrparser.Args import parse_diameters
 from rrparser.Downloads import RR02_CACHE_FILE, RR02_FILE
 
 
@@ -33,7 +34,7 @@ class Test_Misc(Test_RR):
                     parse_rules(
                         str(outfile),
                         rules_file=self.rules_file,
-                        diameters="2",
+                        radii=parse_diameters("2"),
                         output_format=format,
                     )
                     reference = Path(getattr(self, "ref_d2_" + format))
@@ -57,7 +58,7 @@ class Test_Misc(Test_RR):
                             rules_dir=str(cache),
                             release="rr02",
                             rule_type=rule_type,
-                            diameters=",".join(map(str, diameters)),
+                            radii=parse_diameters(",".join(map(str, diameters))),
                         )
                         results = read_csv(outfile)
                         self.assertFalse(results.empty)
