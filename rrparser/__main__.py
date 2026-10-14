@@ -51,7 +51,6 @@ def entry_point():
             outfile=args.outfile,
             input_format=args.input_format,
             rule_type=args.rule_type,
-            diameters=args.diameters,
             ecx=ecx,
             ec=ec,
             output_format=args.output_format,

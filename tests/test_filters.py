@@ -34,7 +34,7 @@ class Test_RR_Filters(Test_RR):
                 df = filter_(
                     df=self.df,
                     rule_type=rule_type,
-                    diameters=[2, 4, 6, 8, 10, 12, 14, 16],
+                    radii=[diameter // 2 for diameter in [2, 4, 6, 8, 10, 12, 14, 16]],
                     ecx=[],
                 )
                 # reindex df
@@ -51,7 +51,12 @@ class Test_RR_Filters(Test_RR):
                         f"rules_d_{'-'.join(str(x) for x in diameters)}.csv",
                     )
                 )
-                df = filter_(df=self.df, rule_type="all", diameters=diameters, ecx=[])
+                df = filter_(
+                    df=self.df,
+                    rule_type="all",
+                    radii=[diameter // 2 for diameter in diameters],
+                    ecx=[],
+                )
                 # reindex df
                 df = df.reset_index(drop=True)
                 self.assertTrue(df.equals(df_expected))
@@ -60,7 +65,10 @@ class Test_RR_Filters(Test_RR):
         ecx = read_ecnumbers(path.join(self.here, "data", "ec.csv"))
         df_expected = read_csv(path.join(self.here, "data", "rules_ecx.csv"))
         df = filter_(
-            df=self.df, rule_type="all", diameters=[2, 4, 6, 8, 10, 12, 14, 16], ecx=ecx
+            df=self.df,
+            rule_type="all",
+            radii=[diameter // 2 for diameter in [2, 4, 6, 8, 10, 12, 14, 16]],
+            ecx=ecx,
         )
         # reindex df
         df = df.reset_index(drop=True)

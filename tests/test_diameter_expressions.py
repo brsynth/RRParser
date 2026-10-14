@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from rrparser import build_args_parser, parse_rules
-from rrparser.Parser import parse_diameters
+from rrparser.Args import parse_diameters
 
 
 @pytest.mark.parametrize(
@@ -33,7 +33,7 @@ from rrparser.Parser import parse_diameters
     ],
 )
 def test_expressions(expression, expected, tmp_path):
-    assert parse_diameters(expression) == expected
+    assert parse_diameters(expression) == [diameter // 2 for diameter in expected]
     args = build_args_parser().parse_args(["--diameters", expression])
     rules = tmp_path / "templates.csv"
     pd.DataFrame(
@@ -45,7 +45,7 @@ def test_expressions(expression, expected, tmp_path):
             "RADII": list(range(11)),
         }
     ).to_csv(rules, index=False)
-    output = parse_rules(None, rules_file=str(rules), diameters=args.diameters)
+    output = parse_rules(None, rules_file=str(rules), radii=args.radii)
     assert pd.read_csv(StringIO(output))["Rule ID"].tolist() == [
         f"RR:{diameter // 2}" for diameter in expected
     ]
@@ -71,6 +71,6 @@ def test_invalid_expressions(expression):
 )
 def test_legacy_rules(expression, enumeration):
     rules = str(Path(__file__).parent / "data/rules.csv")
-    assert parse_rules(None, rules_file=rules, diameters=expression) == parse_rules(
-        None, rules_file=rules, diameters=enumeration
-    )
+    assert parse_rules(
+        None, rules_file=rules, radii=parse_diameters(expression)
+    ) == parse_rules(None, rules_file=rules, radii=parse_diameters(enumeration))

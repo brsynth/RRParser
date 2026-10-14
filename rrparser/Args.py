@@ -8,13 +8,60 @@ Created on May 4 2020
 
 from argparse import ArgumentParser
 from os import path as os_path
+from re import fullmatch
 
 from rrparser._version import __version__
 
 DEFAULT_RULES_DIR = os_path.join(os_path.dirname(os_path.realpath(__file__)), "cache")
 DEFAULT_RULES_FILE = "retrorules"
 DEFAULT_RELEASE = "3.1.0"
-DEFAULT_DIAMETERS = "0,2,4,6,8,10,12,14,16,18,20"
+DEFAULT_RADII = tuple(range(11))
+
+
+def _parse_sizes(expression, maximum, step):
+    values = set()
+    for term in expression.split(","):
+        term = term.strip()
+        interval = fullmatch(r"(\d+)\s*-\s*(\d+)", term)
+        comparison = fullmatch(r"([<>])(=?)\s*(\d+)", term)
+        if term.isdigit():
+            value = int(term)
+            if value > maximum or value % step:
+                raise ValueError(
+                    f"Values must be multiples of {step} from 0 to {maximum}"
+                )
+            values.add(value)
+        elif interval:
+            lower, upper = map(int, interval.groups())
+            if lower > upper:
+                raise ValueError("Range must have its lower bound first")
+            values.update(
+                value
+                for value in range(0, maximum + 1, step)
+                if lower <= value <= upper
+            )
+        elif comparison:
+            operator, inclusive, bound = comparison.groups()
+            bound = int(bound)
+            values.update(
+                value
+                for value in range(0, maximum + 1, step)
+                if (value < bound if operator == "<" else value > bound)
+                or (inclusive and value == bound)
+            )
+        else:
+            raise ValueError("Use a list (0,2,4), range (0-8), <8, <=8, >8 or >=8")
+    return sorted(values)
+
+
+def parse_radii(expression):
+    """Expand a radius expression into integer radii 0–10."""
+    return _parse_sizes(expression, 10, 1)
+
+
+def parse_diameters(expression):
+    """Expand a diameter expression and convert it to integer radii."""
+    return [diameter // 2 for diameter in _parse_sizes(expression, 20, 2)]
 
 
 def build_args_parser():
@@ -87,16 +134,18 @@ def _add_arguments(parser):
     sizes.add_argument(
         "-d",
         "--diameters",
-        type=str,
-        default=DEFAULT_DIAMETERS,
+        type=parse_diameters,
+        dest="radii",
+        default=DEFAULT_RADII,
         help='Diameters: list (0,2,4), inclusive range (0-8), "<8", "<=8", ">8" or ">=8". '
         "Ranges and comparisons select even values from 0 to 20 (default: all). "
         "For templates, diameter = 2 * radius; rr02 provides diameters 2 to 16",
     )
     sizes.add_argument(
         "--radii",
-        type=str,
-        help="Comma-separated radii from 0 to 10 (alternative to --diameters)",
+        type=parse_radii,
+        help='Radii: list (0,1,2), inclusive range (0-4), "<4", "<=4", ">4" or ">=4". '
+        "Values range from 0 to 10 (default: all); mutually exclusive with --diameters.",
     )
     parser.add_argument(
         "-of",

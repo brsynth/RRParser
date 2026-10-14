@@ -1,5 +1,6 @@
 from test_main import Test_RR
 
+from rrparser.Args import parse_diameters
 from rrparser.Parser import parse_rules
 
 
@@ -12,5 +13,5 @@ class Test_RR_RuleType(Test_RR):
                     parse_rules,
                     None,
                     rule_type=rule_type,
-                    diameters="2",
+                    radii=parse_diameters("2"),
                 )

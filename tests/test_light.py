@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 from test_main import Test_RR
 
 from rrparser import parse_rules
+from rrparser.Args import parse_diameters
 
 
 class Test_RR_Light(Test_RR):
@@ -15,7 +16,7 @@ class Test_RR_Light(Test_RR):
                 str(outfile),
                 rules_file=self.rules_file,
                 input_format="csv",
-                diameters="2",
+                radii=parse_diameters("2"),
             )
             self.assertEqual(outfile.read_text(), Path(self.ref_d2_csv).read_text())
 
@@ -26,7 +27,7 @@ class Test_RR_Light(Test_RR):
             None,
             rules_file=self.rules_file,
             input_format="tsv",
-            diameters="2",
+            radii=parse_diameters("2"),
         )
 
     def test_BadInputFormatCSV_2(self):
@@ -36,5 +37,5 @@ class Test_RR_Light(Test_RR):
             None,
             rules_file=self.rules_file,
             input_format="other",
-            diameters="2",
+            radii=parse_diameters("2"),
         )
