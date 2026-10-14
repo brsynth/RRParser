@@ -37,7 +37,7 @@ python -m rrparser -o rules.csv
 python -m rrparser --release 3.1.0 --dataset rhea --diameters 0-8 -o rules.csv
 
 # Equivalent selection using radii.
-python -m rrparser --dataset rhea --radii 0,1,2,3,4 -o rules.csv
+python -m rrparser --dataset rhea --radii 0-4 -o rules.csv
 
 # Aggregate datasets within one release (comma or + separator).
 python -m rrparser --release 3.1.0 --dataset metanetx,rhea -d 0-8 -o rules.csv
@@ -106,14 +106,17 @@ python -m rrparser --dataset rhea --diameters '<=8' -o rules.csv
 python -m rrparser --dataset rhea --diameters '>=8' -o rules.csv
 ```
 
-Alternatively, `--radii` accepts comma-separated integers from 0 to 10:
-`--radii 0,1,2` is equivalent to `--diameters 0,2,4`. The two options are
-mutually exclusive. Without either option, all diameters 0,2,…,20 are selected.
+`--radii` supports the same expressions over integer radii 0–10:
+`0,1,2`, `0-4`, `<4`, `<=4`, `>4`, `>=4`, and combinations such as `0-2,>=8`.
+For example, `--radii '<=4'` is equivalent to `--diameters '<=8'`.
+The two options are mutually exclusive. Both are expanded into normalized
+integer radii by the argument parser, before calling `parse_rules()`.
+Without either option, all radii 0–10 (diameters 0,2,…,20) are selected.
 
 For templates, a row is retained when at least one source radius matches
 `diameter / 2`, once per template. The output `RADII` column retains all source
 radii, separated by semicolons. Explicit odd diameters or values above 20 are
-rejected for templates.
+rejected before parsing, including for rr02.
 
 rr02 supplies diameters 2,4,…,16. The extended default therefore selects all
 its rules. A selection containing no available diameter, such as `-d 20`,
@@ -158,7 +161,7 @@ archive cache.
 | `--list-releases` | Print available release/dataset pairs and exit. |
 | `--cache-dir`, `--rules-dir` | Source cache directory; default package-local `rrparser/cache`. |
 | `-d`, `--diameters` | List, range, or comparison; default all even diameters 0–20. |
-| `--radii` | Comma-separated radii 0–10, as an alternative to `--diameters`. |
+| `--radii` | List, range, or comparison over radii 0–10, as an alternative to `--diameters`. |
 | `-rt`, `--rule-type` | `all` (default), `retro`, or `forward`; templates require `all`. |
 | `-ec`, `--ec` | File of comma-separated EC prefixes to keep. |
 | `-ecx`, `--ecx` | File of comma-separated EC prefixes to exclude; mutually exclusive with `--ec`. |
@@ -176,7 +179,7 @@ Run `python -m rrparser --help` for the full CLI help.
 Use keyword arguments to select the source, filters and output:
 
 ```python
-from rrparser import list_retrorules, parse_rules
+from rrparser import list_retrorules, parse_diameters, parse_radii, parse_rules
 
 # Mapping: (release, dataset) -> download URL.
 choices = list_retrorules()
@@ -186,14 +189,14 @@ parse_rules(
     outfile="rules.csv",
     release="3.1.0",
     dataset="rhea",
-    diameters="<=8",
+    radii=parse_radii("<=4"),
 )
 
 # Return CSV text instead of writing a file.
 csv_text = parse_rules(
     outfile=None,
     dataset="rhea",
-    radii="0,1,2",
+    radii=[0, 1, 2],
 )
 
 # Aggregate datasets; dataset="all" is also supported.
@@ -201,25 +204,34 @@ parse_rules(
     outfile="combined.csv",
     release="3.1.0",
     dataset="metanetx+rhea",
-    diameters="<=8",
+    radii=parse_diameters("<=8"),
 )
 
 # Parse a local file with EC filtering and replacement scores.
 parse_rules(
     outfile="filtered.csv",
     rules_file="input.csv",
-    diameters="2,4",
+    radii=[1, 2],
     ec=["1.1"],
     scores_file="scores.csv",
 )
 ```
 
 `rules_dir=` overrides the cache directory. `release=`, `dataset=`, and cache
-lookup apply when `rules_file='retrorules'`, the default. Diameter expressions
-have the same meaning in Python and on the CLI. Pass `radii=` as an alternative
-to `diameters=`. `ec=` and `ecx=` take lists of prefixes; `read_ecnumbers()`
+lookup apply when `rules_file='retrorules'`, the default.
+
+`parse_rules()` accepts only normalized integer radii via `radii=` (a list or
+tuple, default 0–10); it no longer accepts `diameters=` or expression strings.
+Use the exported `parse_radii(expression)` to expand radius expressions, or
+`parse_diameters(expression)` to expand diameter expressions and convert them
+to radii before calling `parse_rules()`. Existing Python callers using
+`diameters=expression` should migrate to `radii=parse_diameters(expression)`;
+callers using `radii=expression` should use `radii=parse_radii(expression)`.
+`ec=` and `ecx=` take lists of prefixes; `read_ecnumbers()`
 can load these from a comma-separated file. Invalid selections raise
-`ValueError`; the CLI reports these errors and exits with status 1.
+`ValueError`; invalid radius sequence types raise `TypeError`. Invalid CLI
+expressions are rejected by the argument parser with status 2 before any
+download; runtime selection errors are reported with status 1.
 
 The CLI argument parser is also available:
 
@@ -228,6 +240,7 @@ from rrparser import build_args_parser
 
 parser = build_args_parser()
 params = parser.parse_args(["--dataset", "rhea", "--diameters", "<=8"])
+assert params.radii == [0, 1, 2, 3, 4]  # No separate diameters attribute.
 ```
 
 ## Output compatibility

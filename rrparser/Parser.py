@@ -8,15 +8,16 @@ Created on May 4 2020
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from csv import QUOTE_ALL, QUOTE_NONE
 from logging import Logger, getLogger
-from re import fullmatch, split
+from re import split
 from tarfile import open as open_tar
 
 from pandas import DataFrame, concat, read_csv
 
 from .Args import (
-    DEFAULT_DIAMETERS,
+    DEFAULT_RADII,
     DEFAULT_RELEASE,
     DEFAULT_RULES_DIR,
     DEFAULT_RULES_FILE,
@@ -133,17 +134,16 @@ def parse_rules(
     rules_dir: str = DEFAULT_RULES_DIR,
     input_format: str = "csv",
     rule_type: str = "all",
-    diameters: str = DEFAULT_DIAMETERS,
+    radii: Sequence[int] = DEFAULT_RADII,
     ecx: list[str] | None = None,
     ec: list[str] | None = None,
     output_format: str = "csv",
     logger: Logger = LOGGER,
     release: str = DEFAULT_RELEASE,
     dataset: str = "metanetx",
-    radii: str | None = None,
 ) -> str | None:
     """
-    Parse a reaction rules file and extract sub-part according 'diameters' and 'rule_type' filters.
+    Parse reaction rules using normalized radii and rule usage filters.
 
     Parameters
     ----------
@@ -159,8 +159,8 @@ def parse_rules(
         Input format of rules_file ['csv', 'tsv'] (default 'csv')
     rule_type: str
         Type of reaction rules ['all', 'forward', 'retro'] (default 'all')
-    diameters: str
-        Diameters to filter (default: all even values from 0 to 20).
+    radii: Sequence[int]
+        Integer radii to keep (default 0–10). Expressions are expanded before this call.
     ecx: List[str]
         List of EC numbers to remove from rules
     ec: List[str]
@@ -173,8 +173,6 @@ def parse_rules(
         RetroRules version (default 3.1.0), rr02, or latest.
     dataset: str
         Dataset name, comma/plus-separated names, or all (default metanetx).
-    radii: str
-        Comma-separated radii 0–10, as an alternative to diameters.
 
     Returns
     -------
@@ -182,17 +180,7 @@ def parse_rules(
 
     """
 
-    # Check args is here since the method is directly callable.
-    if radii is not None:
-        if diameters != DEFAULT_DIAMETERS:
-            raise ValueError("Use either radii or diameters")
-        values = radii.split(",")
-        if any(not value.isdigit() or int(value) > 10 for value in values):
-            raise ValueError("Radii must be integers from 0 to 10, separated by commas")
-        diameters = ",".join(str(2 * int(value)) for value in values)
-    diameters, sep, quoting = check_args(
-        rule_type, diameters, input_format, output_format
-    )
+    radii, sep, quoting = check_args(rule_type, radii, input_format, output_format)
 
     rules_files = [rules_file]
     if rules_file == "retrorules":
@@ -209,7 +197,7 @@ def parse_rules(
     frames = [_read_rules(filename, **read_options) for filename in rules_files]
     rf = _merge_templates(frames) if len(frames) > 1 else frames[0]
 
-    # Filter rules according to 'rule_type' and 'diameters'
+    # Filter rules according to rule usage and normalized radii.
     templates = "TEMPLATE_ID" in rf.columns
     if templates:
         rf = rf.rename(
@@ -220,7 +208,7 @@ def parse_rules(
                 "SCORE": "Score",
             }
         )
-    results = filter_(rf, rule_type, diameters, ecx, ec, logger=logger)
+    results = filter_(rf, rule_type, radii, ecx, ec, logger=logger)
 
     # If 'rules_scores_file' is set, then read it and merge with 'results'
     if scores_file:
@@ -278,13 +266,13 @@ def replace_scores(results, scores, logger: Logger = LOGGER):
 def filter_(
     df: DataFrame,
     rule_type: str,
-    diameters: list[int],
+    radii: list[int],
     ecx: list[str] | None = None,
     ec: list[str] | None = None,
     logger: Logger = LOGGER,
 ) -> DataFrame:
     """
-    Filter a pandas dataframe with 'Diameters' and 'Rule usage' criteria.
+    Filter a pandas dataframe using radii and rule usage.
 
     Parameters
     ----------
@@ -292,8 +280,8 @@ def filter_(
         Pandas dataframe
     rule_type: str
         Type of reaction rules ['all', 'forward', 'retro']
-    diameters: List[int]
-        Diameters to filter
+    radii: List[int]
+        Radii to filter
     ecx: List[str]
         List of EC numbers to filter out from rules
     ec: List[str]
@@ -304,9 +292,9 @@ def filter_(
     Returns
     -------
     query: Pandas dataframe
-        Original dataframe filtered according to 'rule_type' and 'diameters'.
+        Original dataframe filtered by rule usage and radii.
     """
-    logger.debug(f"Args: {df}, {rule_type}, {diameters}")
+    logger.debug(f"Args: {df}, {rule_type}, {radii}")
 
     ecx = ecx if ecx is not None else []
     ec = ec if ec is not None else []
@@ -314,7 +302,7 @@ def filter_(
     filter = "in" if ec else "not in"
     logger.info("Filtering rules:")
     logger.info(f" -> EC numbers ({filter}): {ec_filter}")
-    logger.info(f" -> Diameters: {diameters}")
+    logger.info(f" -> Radii: {radii}")
     logger.info(f" -> Rule types: {rule_type}")
 
     # Identify rules that contain at least one EC number starting by a pattern contained in 'ecx'
@@ -324,19 +312,14 @@ def filter_(
     query = f"index {filter} @rules_idx"
     query_vars = {
         "rules_idx": rules_idx,
-        "diameters": diameters,
+        "radii": radii,
         "rule_usage_filter": ["both", rule_type],
     }
     if "RADII" in df.columns:
-        if any(diameter % 2 or diameter > 20 for diameter in diameters):
-            raise ValueError(
-                "Template diameters must be even values from 0 to 20 (radii 0 to 10)"
-            )
         if rule_type != "all":
             raise ValueError(
                 "RetroRules templates have no retro/forward annotation; use --rule-type all"
             )
-        radii = {diameter // 2 for diameter in diameters}
         radius_idx = df[
             df["RADII"]
             .fillna("")
@@ -350,6 +333,7 @@ def filter_(
         query_vars["radius_idx"] = radius_idx
         query += " & index in @radius_idx"
     else:
+        query_vars["diameters"] = [2 * radius for radius in radii]
         query += " & Diameter == @diameters"
     if rule_type != "all":
         query += " & `Rule usage` == @rule_usage_filter"
@@ -434,39 +418,9 @@ def fetch_retrorules(
     return fetch_dataset(rules_dir, release, dataset)
 
 
-def parse_diameters(expression: str) -> list[int]:
-    """Expand lists, inclusive ranges and comparisons into diameters."""
-    diameters = set()
-    for term in expression.split(","):
-        term = term.strip()
-        interval = fullmatch(r"(\d+)\s*-\s*(\d+)", term)
-        comparison = fullmatch(r"([<>])(=?)\s*(\d+)", term)
-        if term.isdigit():
-            diameters.add(int(term))
-        elif interval:
-            lower, upper = map(int, interval.groups())
-            if lower > upper:
-                raise ValueError("Diameter range must have its lower bound first")
-            diameters.update(d for d in range(0, 21, 2) if lower <= d <= upper)
-        elif comparison:
-            operator, inclusive, bound = comparison.groups()
-            bound = int(bound)
-            diameters.update(
-                d
-                for d in range(0, 21, 2)
-                if (d < bound if operator == "<" else d > bound)
-                or (inclusive and d == bound)
-            )
-        else:
-            raise ValueError(
-                "Invalid --diameters: use a list (0,2,4), range (0-8), <8, <=8, >8 or >=8"
-            )
-    return sorted(diameters)
-
-
 def check_args(
     rule_type: str,
-    diameters: str,
+    radii: Sequence[int],
     input_format: str,
     output_format: str,
     logger: Logger = LOGGER,
@@ -478,8 +432,8 @@ def check_args(
     ----------
     rule_type: str
         Type of reaction rules ['all', 'forward', 'retro'] (default 'all')
-    diameters: str
-        Diameters to filter (default: all even values from 0 to 20).
+    radii: Sequence[int]
+        Integer radii to keep (default 0–10). Expressions are expanded before this call.
     input_format: str
         Input format of rules_file ['csv', 'tsv'] (default 'csv')
     output_format: str
@@ -489,19 +443,24 @@ def check_args(
 
     Returns
     -------
-    diameters, sep, quoting: Tuple[List[int], str, str]
-        diameters - diameters converted into list of int.
+    radii, sep, quoting: Tuple[List[int], str, int]
+        radii - validated integer radii.
         sep - separation character detected from 'input_format'.
         quoting - quoting behavior detected from 'output_format'.
     """
-    logger.debug(f"Args: {rule_type}, {diameters}, {input_format}, {output_format}")
+    logger.debug(f"Args: {rule_type}, {radii}, {input_format}, {output_format}")
 
     # Rule type
     if not rule_type or rule_type not in ["all", "retro", "forward"]:
         raise ValueError("Cannot detect 'rule_type' input: " + str(rule_type))
 
-    # Diameter
-    diameters = parse_diameters(diameters)
+    if isinstance(radii, (str, bytes)) or not isinstance(radii, Sequence):
+        raise TypeError(
+            "radii must be a sequence of integers from 0 to 10; expand expressions with parse_radii()"
+        )
+    if any(type(radius) is not int or not 0 <= radius <= 10 for radius in radii):
+        raise ValueError("Radii must be integers from 0 to 10")
+    radii = sorted(set(radii))
 
     # Input format
     if input_format == "csv":
@@ -519,4 +478,4 @@ def check_args(
     else:
         raise ValueError("Can only have 'csv' or 'tsv' input formats")
 
-    return diameters, sep, quoting
+    return radii, sep, quoting

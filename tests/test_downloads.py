@@ -10,7 +10,7 @@ import pandas as pd
 import pytest
 
 from rrparser import build_args_parser, list_retrorules, parse_rules
-from rrparser.Args import DEFAULT_RULES_DIR
+from rrparser.Args import DEFAULT_RULES_DIR, parse_diameters, parse_radii
 from rrparser.Downloads import RR02_CACHE_FILE, RR02_FILE, RR02_URL, fetch_dataset
 
 PAGE = b"""<a href="/dl/v3.0/rhea/templates?format=csv">CSV</a>
@@ -121,7 +121,7 @@ def test_rr02_download_cache_and_parsing():
                 rules_dir=directory,
                 release="rr02",
                 rule_type="retro",
-                diameters="2",
+                radii=parse_diameters("2"),
             )
         parsed = pd.read_csv(StringIO(output))
         assert not parsed.empty
@@ -166,7 +166,7 @@ def test_templates_filters_scores_and_output():
         output = parse_rules(
             None,
             rules_file=str(rules),
-            diameters="8",
+            radii=parse_diameters("8"),
             ec=["1.1"],
             scores_file=str(scores),
             output_format="tsv",
@@ -178,7 +178,11 @@ def test_templates_filters_scores_and_output():
         assert (
             len(
                 pd.read_csv(
-                    StringIO(parse_rules(None, rules_file=str(rules), diameters="20"))
+                    StringIO(
+                        parse_rules(
+                            None, rules_file=str(rules), radii=parse_diameters("20")
+                        )
+                    )
                 )
             )
             == 1
@@ -190,7 +194,7 @@ def test_templates_filters_scores_and_output():
 def test_default_release_ignores_latest_cache():
     args = build_args_parser().parse_args([])
     assert args.release == "3.1.0"
-    assert args.diameters == ",".join(str(diameter) for diameter in range(0, 21, 2))
+    assert list(args.radii) == list(range(11))
     with TemporaryDirectory() as directory:
         cache = Path(directory)
         rules = cache / "retrorules-3.1.0-metanetx.csv.gz"
@@ -220,11 +224,15 @@ def test_all_template_diameters():
         output = parse_rules(None, rules_file=str(rules))
         assert len(pd.read_csv(StringIO(output))) == 11
         for diameter in range(0, 21, 2):
-            output = parse_rules(None, rules_file=str(rules), diameters=str(diameter))
+            output = parse_rules(
+                None, rules_file=str(rules), radii=parse_diameters(str(diameter))
+            )
             assert pd.read_csv(StringIO(output))["Rule ID"].tolist() == [
                 f"RR:{diameter // 2}"
             ]
-        output = parse_rules(None, rules_file=str(rules), diameters="0,18,20")
+        output = parse_rules(
+            None, rules_file=str(rules), radii=parse_diameters("0,18,20")
+        )
         assert pd.read_csv(StringIO(output))["Rule ID"].tolist() == [
             "RR:0",
             "RR:9",
@@ -232,7 +240,7 @@ def test_all_template_diameters():
         ]
         for invalid in ["1", "3", "19", "21", "22", "-2"]:
             with pytest.raises(ValueError):
-                parse_rules(None, rules_file=str(rules), diameters=invalid)
+                parse_rules(None, rules_file=str(rules), radii=parse_diameters(invalid))
 
 
 def test_cache_and_filtered_output_are_separate():
@@ -272,11 +280,16 @@ def test_cache_and_filtered_output_are_separate():
         with patch(
             "rrparser.Downloads.urlopen", side_effect=AssertionError("Network used")
         ):
-            parse_rules(str(output), rules_dir=str(cache), dataset="rhea", radii="10")
+            parse_rules(
+                str(output),
+                rules_dir=str(cache),
+                dataset="rhea",
+                radii=parse_radii("10"),
+            )
         assert pd.read_csv(output)["Rule ID"].tolist() == ["RR:2"]
         assert gzip.decompress(source.read_bytes()) == CSV
         assert not (cache / "rules.csv").exists()
         assert not (Path(directory) / source.name).exists()
         for invalid in ["-1", "11", "1.5", ""]:
-            with pytest.raises(ValueError, match="Radii must"):
+            with pytest.raises(TypeError, match="radii must"):
                 parse_rules(None, rules_file=str(source), radii=invalid)
