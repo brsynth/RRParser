@@ -50,6 +50,7 @@ def test_radius_expressions_select_templates(tmp_path, expression, expected):
     [
         ("--radii", "0-4", [0, 1, 2, 3, 4]),
         ("--radii", "<=4", [0, 1, 2, 3, 4]),
+        ("-r", ">4", [5, 6, 7, 8, 9, 10]),
         ("--diameters", "0-8", [0, 1, 2, 3, 4]),
         ("-d", "<=8", [0, 1, 2, 3, 4]),
         ("--radii", ">=8", [8, 9, 10]),
@@ -108,3 +109,43 @@ def test_defaults_and_empty_selection():
     args = build_args_parser().parse_args([])
     assert list(args.radii) == list(range(11))
     assert parse_diameters("<0") == parse_radii("<0") == []
+
+
+@pytest.mark.parametrize(
+    "option,expression,expected",
+    [
+        ("-r", ">4", "5;6;7;8;9;10"),
+        ("--radii", ">=4", "4;5;6;7;8;9;10"),
+        ("-r", "4-6", "4;5;6"),
+        ("-r", "0,10", "10"),
+        ("-d", ">8", "5;6;7;8;9;10"),
+        ("-r", ">10", ""),
+    ],
+)
+def test_exported_radius_metadata_matches_selection(
+    tmp_path, option, expression, expected
+):
+    source = tmp_path / "templates.csv"
+    pd.DataFrame(
+        {
+            "TEMPLATE_ID": ["RR:shared"],
+            "TEMPLATE": ["[C]>>[O]"],
+            "SCORE": [1.0],
+            "ECS": ["1.1.1.1"],
+            "RADII": ["4;5;6;7;8;9;10"],
+            "RADIUS_MIN": [4],
+            "RADIUS_MAX": [10],
+        }
+    ).to_csv(source, index=False)
+    original = source.read_bytes()
+    args = build_args_parser().parse_args([option, expression])
+    result = parse_rules(None, rules_file=str(source), radii=args.radii)
+    output = pd.read_csv(StringIO(result), dtype={"RADII": str})
+    if expected:
+        assert output["RADII"].tolist() == [expected]
+        radii = list(map(int, expected.split(";")))
+        assert output["RADIUS_MIN"].tolist() == [min(radii)]
+        assert output["RADIUS_MAX"].tolist() == [max(radii)]
+    else:
+        assert output.empty
+    assert source.read_bytes() == original

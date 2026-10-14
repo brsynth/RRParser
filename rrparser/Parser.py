@@ -320,16 +320,18 @@ def filter_(
             raise ValueError(
                 "RetroRules templates have no retro/forward annotation; use --rule-type all"
             )
-        radius_idx = df[
+        selection = set(radii)
+        selected_radii = (
             df["RADII"]
             .fillna("")
             .astype(str)
-            .apply(
-                lambda values: any(
-                    int(radius) in radii for radius in values.split(";") if radius
+            .map(
+                lambda values: sorted(
+                    {int(radius) for radius in values.split(";") if radius} & selection
                 )
             )
-        ].index
+        )
+        radius_idx = df[selected_radii.map(bool)].index
         query_vars["radius_idx"] = radius_idx
         query += " & index in @radius_idx"
     else:
@@ -340,6 +342,13 @@ def filter_(
     logger.debug(f"Query: {query}")
     try:
         _df = df.query(query, local_dict=query_vars)
+        if "RADII" in _df.columns:
+            _df = _df.copy()
+            retained_radii = selected_radii.loc[_df.index]
+            _df["RADII"] = retained_radii.map(lambda values: ";".join(map(str, values)))
+            for column, bound in (("RADIUS_MIN", min), ("RADIUS_MAX", max)):
+                if column in _df.columns:
+                    _df[column] = retained_radii.map(bound)
         logger.info("")
         logger.info(f"=> {len(_df)} rules found")
         logger.info("")
