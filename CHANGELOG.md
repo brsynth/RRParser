@@ -1,8 +1,17 @@
 # Changelog
 
+## [2.7.4](https://github.com/brsynth/RRParser/tree/2.7.4) (2026-10-14)
+
+[Full Changelog](https://github.com/brsynth/RRParser/compare/2.7.3...2.7.4)
+
 ## [2.7.3](https://github.com/brsynth/RRParser/tree/2.7.3) (2026-10-14)
 
 [Full Changelog](https://github.com/brsynth/RRParser/compare/2.7.2...2.7.3)
+
+**Merged pull requests:**
+
+- Main [\#8](https://github.com/brsynth/RRParser/pull/8) ([breakthewall](https://github.com/breakthewall))
+- Normalize radius and diameter expressions before parsing rules [\#7](https://github.com/brsynth/RRParser/pull/7) ([breakthewall](https://github.com/breakthewall))
 
 ## [2.7.2](https://github.com/brsynth/RRParser/tree/2.7.2) (2026-10-13)
 
